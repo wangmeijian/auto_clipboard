@@ -1,0 +1,30 @@
+{
+  "manifest_version": 3,
+  "name": "__MSG_extName__",
+  "version": "0.2.0",
+
+  "action": {
+    "default_icon": {              
+      "16": "images/icon16.png",   
+      "24": "images/icon24.png",   
+      "32": "images/icon32.png"    
+    },
+    "default_title": "__MSG_defaultTitle__",
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "all_frames": true,
+      "js": ["content-script.js"],
+      "match_about_blank": true
+    }
+  ],
+  "default_locale": "zh_CN",
+  "description": "__MSG_description__",
+  "author": "wangmeijian",
+  "options_ui": {
+    "page": "option.html"
+  },
+  "permissions": ["clipboardWrite", "storage"]
+}

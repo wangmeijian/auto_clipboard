@@ -1,0 +1,13 @@
+{
+  "extName": {
+    "message": "Auto Clipboard",
+    "description": "Extension name."
+  },
+  "defaultTitle": {
+    "message": "Click me to view history",
+    "description": "Mouse hover icon prompt"
+  },
+  "description": {
+    "message": "Selected text is automatically copied to the clipboard, saving you time"
+  }
+}

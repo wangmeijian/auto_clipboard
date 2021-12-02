@@ -1,0 +1,13 @@
+{
+  "extName": {
+    "message": "自动剪切板",
+    "description": "扩展名称"
+  },
+  "defaultTitle": {
+    "message": "查看剪切板历史",
+    "description": "鼠标滑过插件图标时的提示语"
+  },
+  "description": {
+    "message": "选中文本自动复制到剪切板，节省你的时间"
+  }
+}
