@@ -8,6 +8,11 @@
     "description": "鼠标滑过插件图标时的提示语"
   },
   "description": {
-    "message": "选中文本自动复制到剪切板，节省你的时间"
+    "message": "选中文本自动复制到剪切板，节省你的时间",
+    "description": "插件描述"
+  },
+  "copyError": {
+    "message": "Failed to copy: ",
+    "description": "复制失败提示语"
   }
 }

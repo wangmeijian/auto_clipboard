@@ -5,12 +5,21 @@
 
   "action": {
     "default_icon": {              
-      "16": "images/icon16.png",   
-      "24": "images/icon24.png",   
-      "32": "images/icon32.png"    
+      "16": "images/icon.png",   
+      "24": "images/icon.png",   
+      "32": "images/icon.png",   
+      "48": "images/icon.png",   
+      "128": "images/icon.png"    
     },
     "default_title": "__MSG_defaultTitle__",
     "default_popup": "popup.html"
+  },
+  "icons": {     
+    "16": "images/icon.png",   
+    "24": "images/icon.png",   
+    "32": "images/icon.png",   
+    "48": "images/icon.png",   
+    "128": "images/icon.png"  
   },
   "content_scripts": [
     {

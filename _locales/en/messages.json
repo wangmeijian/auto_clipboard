@@ -9,5 +9,8 @@
   },
   "description": {
     "message": "Selected text is automatically copied to the clipboard, saving you time"
+  },
+  "copyError": {
+    "message": "Failed to copy: "
   }
 }
