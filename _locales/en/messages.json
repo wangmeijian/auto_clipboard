@@ -1,16 +1,22 @@
 {
   "extName": {
     "message": "Auto Clipboard",
-    "description": "Extension name."
+    "description": "扩展名称"
   },
   "defaultTitle": {
     "message": "Click me to view history",
-    "description": "Mouse hover icon prompt"
+    "description": "鼠标滑过插件图标时的提示语"
   },
   "description": {
-    "message": "Selected text is automatically copied to the clipboard, saving you time"
+    "message": "Selected text is automatically copied to the clipboard, saving you time",
+    "description": "插件描述"
   },
   "copyError": {
-    "message": "Failed to copy: "
+    "message": "Failed to copy: ",
+    "description": "复制失败提示"
+  },
+  "copySuccess": {
+    "message": "Copy Success",
+    "description": "复制成功提示"
   }
 }

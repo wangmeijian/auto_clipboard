@@ -2,7 +2,6 @@
   "manifest_version": 3,
   "name": "__MSG_extName__",
   "version": "0.2.0",
-
   "action": {
     "default_icon": {              
       "16": "images/icon.png",   
@@ -29,7 +28,7 @@
       "match_about_blank": true
     }
   ],
-  "default_locale": "zh_CN",
+  "default_locale": "en",
   "description": "__MSG_description__",
   "author": "wangmeijian",
   "options_ui": {
