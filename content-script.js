@@ -42,6 +42,8 @@ class AutoClipboard {
       border-radius: 4px;
       font-size: 14px;
       line-height: 30px;
+      margin: 0;
+      padding: 0;
     `)
     message.innerText = i18n("copySuccess");
     message.style.display = 'none';

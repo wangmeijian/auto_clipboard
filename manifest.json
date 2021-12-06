@@ -4,21 +4,20 @@
   "version": "0.2.0",
   "action": {
     "default_icon": {              
-      "16": "images/icon.png",   
-      "24": "images/icon.png",   
-      "32": "images/icon.png",   
-      "48": "images/icon.png",   
-      "128": "images/icon.png"    
+      "16": "images/icon@128.png",   
+      "24": "images/icon@128.png",   
+      "32": "images/icon@128.png",   
+      "48": "images/icon@128.png",   
+      "128": "images/icon@128.png"    
     },
-    "default_title": "__MSG_defaultTitle__",
-    "default_popup": "popup.html"
+    "default_title": "__MSG_defaultTitle__"
   },
   "icons": {     
-    "16": "images/icon.png",   
-    "24": "images/icon.png",   
-    "32": "images/icon.png",   
-    "48": "images/icon.png",   
-    "128": "images/icon.png"  
+    "16": "images/icon@128.png",   
+    "24": "images/icon@128.png",   
+    "32": "images/icon@128.png",   
+    "48": "images/icon@128.png",   
+    "128": "images/icon@128.png"  
   },
   "content_scripts": [
     {
@@ -34,5 +33,5 @@
   "options_ui": {
     "page": "option.html"
   },
-  "permissions": ["clipboardWrite", "storage"]
+  "permissions": ["clipboardWrite"]
 }
