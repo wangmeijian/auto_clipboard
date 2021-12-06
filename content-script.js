@@ -63,7 +63,7 @@ class AutoClipboard {
    * 事件绑定
    */
   _addActionListener(){
-    const events = ['dblclick', 'keyup', 'mouseup', 'unload'];
+    const events = ['dblclick', 'keyup', 'mouseup'];
 
     events.forEach(item => {
       document.addEventListener(item, this._handleAction.bind(this))  
