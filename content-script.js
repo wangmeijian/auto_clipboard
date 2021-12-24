@@ -3,6 +3,7 @@ const i18n = key => chrome.i18n.getMessage(key);
 class AutoClipboard {
   constructor(){
     this.message = this._createMessage();
+    this.selectedText = '';
     this._addActionListener();
   }
   /**
@@ -13,6 +14,7 @@ class AutoClipboard {
     const selectedText = window.getSelection().toString()
 
     if(!selectedText || selectedText?.length === 0)return Promise.reject();
+    this.selectedText = selectedText;
     // 仅在https下可用
     if (navigator.clipboard && window.isSecureContext) {
       return navigator.clipboard.writeText(selectedText);
@@ -62,14 +64,27 @@ class AutoClipboard {
     }).catch(() => { }) 
   }
   /**
+   * 组合键
+   * @event Event 事件对象
+   */
+  _combinationKey(event){
+    const keys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Home', 'End'];
+    const actionKey = event.key;
+
+    // 按住shift组合键和上下左右或Home或End
+    if(event.shiftKey && keys.includes(actionKey)){
+      this._handleAction();
+    }
+  }
+  /**
    * 事件绑定
    */
   _addActionListener(){
-    const events = ['dblclick', 'keyup', 'mouseup'];
-
-    events.forEach(item => {
-      document.addEventListener(item, this._handleAction.bind(this))  
-    })
+    document.addEventListener('dblclick', this._handleAction.bind(this));
+    document.addEventListener('keyup', this._combinationKey.bind(this));
+    document.addEventListener('mouseup', () => {
+      setTimeout(this._handleAction.bind(this), 0);
+    });
   }
 }
 
