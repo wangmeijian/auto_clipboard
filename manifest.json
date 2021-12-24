@@ -33,5 +33,5 @@
   "options_ui": {
     "page": "option.html"
   },
-  "permissions": ["clipboardWrite"]
+  "permissions": ["clipboardWrite","storage"]
 }

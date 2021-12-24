@@ -34,18 +34,18 @@ class AutoClipboard {
     message.setAttribute('style', `
       width: 100px;
       height: 30px;
-      background: orange;
       text-align: center;
       position: fixed;
       right: 20px;
       bottom: 20px;
-      z-index: 99999;
-      color: white;
+      z-index: 9999999;
       border-radius: 4px;
       font-size: 14px;
       line-height: 30px;
       margin: 0;
       padding: 0;
+      background: #51b362;
+      color: white;
     `)
     message.innerText = i18n("copySuccess");
     message.style.display = 'none';
@@ -71,7 +71,7 @@ class AutoClipboard {
     const keys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Home', 'End'];
     const actionKey = event.key;
 
-    // 按住shift组合键和上下左右或Home或End
+    // 按住shift组合键和上下左右或Home或End键，来选择文本
     if(event.shiftKey && keys.includes(actionKey)){
       this._handleAction();
     }
