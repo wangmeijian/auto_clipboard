@@ -2,9 +2,29 @@ const i18n = key => chrome.i18n.getMessage(key);
 
 class AutoClipboard {
   constructor(){
-    this.message = this._createMessage();
+    this.message = null;
     this.selectedText = '';
+    this._init();
+  }
+  /**
+   * 初始化提示语颜色
+   */
+  _init(){
+    this._getStorage().then(config => {
+      this.message = this._createMessage(config.background, config.color);
+    })
     this._addActionListener();
+  }
+  /**
+   * 获取配置
+   * @returns Promise 
+   */
+  _getStorage(){
+    return new Promise((resolve, reject) => {
+      chrome.storage.sync.get(['background', 'color'], config => {
+        config ? resolve(config) : reject({})
+      })
+    })
   }
   /**
    * 复制选中的文本
@@ -28,7 +48,7 @@ class AutoClipboard {
    * 提示框
    * @returns HTMLElement
    */
-  _createMessage(){
+  _createMessage(background = "#51b362", color = "white"){
     const message = document.createElement('div');
     message.id = 'autoClipboardMessage';
     message.setAttribute('style', `
@@ -44,8 +64,8 @@ class AutoClipboard {
       line-height: 30px;
       margin: 0;
       padding: 0;
-      background: #51b362;
-      color: white;
+      background: ${background};
+      color: ${color};
     `)
     message.innerText = i18n("copySuccess");
     message.style.display = 'none';

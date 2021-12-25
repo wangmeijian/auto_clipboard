@@ -46,6 +46,9 @@ saveButton.addEventListener('click', () => {
 
 optionForm.addEventListener('reset', () => {
   updatePrviewStyle(DEFAULT_COLOR)
+
+  background.setAttribute('value', DEFAULT_COLOR.background)
+  color.setAttribute('value', DEFAULT_COLOR.color)
 })
 
 background.addEventListener('change', (e) => {
