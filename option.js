@@ -18,6 +18,17 @@ const updatePrviewStyle = (style) => {
     prview.style[key] = style[key];
   })
 }
+// 更新配置
+const updateStorage = style => {
+  chrome.storage.sync.set({
+    ...style
+  }, () => {
+    tips.style.display = 'inline-block';
+    setTimeout(() => {
+      tips.style.display = 'none';
+    }, 1000)
+  })
+}
 // 初始化
 const init = (colorConfig = DEFAULT_COLOR) => {
   background.setAttribute('value', colorConfig.background)
@@ -37,7 +48,7 @@ saveButton.addEventListener('click', () => {
     background: data.get('background'),
     color: data.get('color'),
   }, () => {
-    tips.style.display = 'block';
+    tips.style.display = 'inline-block';
     setTimeout(() => {
       tips.style.display = 'none';
     }, 1000)

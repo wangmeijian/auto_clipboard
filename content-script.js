@@ -5,6 +5,18 @@ class AutoClipboard {
     this.message = null;
     this.selectedText = '';
     this._init();
+    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+      switch(message.type){
+        case 'updateMessage':
+          if(this.message){
+            Object.keys(message.data).forEach(key => {
+              this.message.style[key] = message.data[key];
+            })
+          }
+          break;
+      }
+      sendResponse();
+    });
   }
   /**
    * 初始化提示语颜色
@@ -15,6 +27,7 @@ class AutoClipboard {
     })
     this._addActionListener();
   }
+  
   /**
    * 获取配置
    * @returns Promise 
