@@ -70,7 +70,7 @@ saveButton.addEventListener('click', () => {
     tips.style.display = 'inline-block';
     setTimeout(() => {
       tips.style.display = 'none';
-    }, 1000)
+    }, 1500)
   })
 })
 
