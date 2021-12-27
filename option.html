@@ -7,7 +7,7 @@
   <title>Auto Clipboard</title>
   <style>
     .auto_clipboard_options{
-      width: 450px;
+      width: 500px;
       margin: 0 20px;
       display: grid;
       grid-template-columns: auto 100px;
@@ -15,6 +15,7 @@
     .auto_clipboard_options .form_item{
       line-height: 32px;
       font-size: 14px;
+      vertical-align: text-top;
     }
     .auto_clipboard_options .form_submit{
       line-height: 32px;
@@ -30,14 +31,14 @@
       width: 100px;
       height: 30px;
       text-align: center;
-      right: 20px;
-      bottom: 20px;
       z-index: 9999999;
       border-radius: 4px;
       font-size: 14px;
       line-height: 30px;
       margin: 0;
       padding: 0;
+      right: 20px;
+      bottom: 20px;
     }
     .auto_clipboard_options .option_tips{
       color: #51b362;
@@ -46,21 +47,6 @@
   </style>
 </head>
 <body>
-  <div class="auto_clipboard_options">
-    <form id="optionForm">
-      <div class="form_item"><label>提示语背景颜色：<input type="color" name="background" /></label></div>
-      <div class="form_item"><label>提示语文字颜色：<input type="color" name="color" /></label></div>
-      <div class="form_submit">
-        <button id="submit" type="button">保存</button>
-        <button id="recover" type="reset">重置</button>
-        <span class="option_tips">保存成功</span>
-      </div>
-    </form>
-    <div class="prview_wrap">
-      <div class="preview_desc">预览</div>
-      <div class="prview">复制成功</div>
-    </div>
-  </div>
   <script src="option.js"></script>
 </body>
 </html>

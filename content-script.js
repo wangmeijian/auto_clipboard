@@ -5,7 +5,7 @@ class AutoClipboard {
     this.message = null;
     this.selectedText = '';
     this._init();
-    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    chrome.runtime.onMessage.addListener((message, _, sendResponse) => {
       switch(message.type){
         case 'updateMessage':
           if(this.message){
@@ -93,7 +93,7 @@ class AutoClipboard {
       this.message.style.display = 'block';
       setTimeout(() => {
         this.message.style.display = 'none';
-      }, 1000) 
+      }, 1500) 
     }).catch(() => { }) 
   }
   /**

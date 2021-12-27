@@ -18,5 +18,29 @@
   "copySuccess": {
     "message": "Copy Success",
     "description": "复制成功提示"
+  },
+  "prview": {
+    "message": "prview",
+    "description": "预览"
+  },
+  "messageBackground": {
+    "message": "Prompt background color:",
+    "description": "提示语背景色"
+  },
+  "messageColor": {
+    "message": "Prompt Language color:",
+    "description": "提示语文字色"
+  },
+  "save": {
+    "message": "save",
+    "description": "保存"
+  },
+  "reset": {
+    "message": "reset",
+    "description": "重置"
+  },
+  "saveSuccess": {
+    "message": "save success",
+    "description": "保存成功"
   }
 }

@@ -1,49 +1,68 @@
-const dq = selector => document.querySelector(selector);
-const optionForm = dq('#optionForm');
-const saveButton = dq('#submit');
-const resetButton = dq('#recover');
-const background = dq('input[name="background"]');
-const color = dq('input[name="color"]');
-const prview = dq('.prview');
-const tips = dq('.option_tips');
+const i18n = key => chrome.i18n.getMessage(key);
 
 // 默认颜色
 const DEFAULT_COLOR = {
   background: '#51b362',
-  color: '#ffffff',
+  color: "#FFFFFF",
 }
+
+const optionsHTML = `
+  <div class="auto_clipboard_options">
+    <form id="optionForm" name="optionForm">
+      <div class="form_item">${i18n("messageBackground")}<label><input type="color" name="background" value="${DEFAULT_COLOR.background}" /></label></div>
+      <div class="form_item">${i18n("messageColor")}<label><input type="color" name="color" value="${DEFAULT_COLOR.color}" /></label></div>
+      <div class="form_submit">
+        <button id="submit" type="button">${i18n("save")}</button>
+        <button id="recover" type="reset">${i18n("reset")}</button>
+        <span class="option_tips">${i18n("saveSuccess")}</span>
+      </div>
+    </form>
+    <div class="prview_wrap">
+      <div class="preview_desc">${i18n("prview")}</div>
+      <div class="prview rightBottom" id="prview">${i18n("copySuccess")}</div>
+    </div>
+  </div>
+`;
+const optionsDOM = document.createElement('div')
+optionsDOM.innerHTML = optionsHTML;
+document.body.appendChild(optionsDOM)
+
+const dq = selector => document.querySelector(selector);
+const optionForm = dq('#optionForm');
+const saveButton = dq('#submit');
+const resetButton = dq('#recover');
+const backgroundFormItem = dq('input[name="background"]');
+const colorFormItem = dq('input[name="color"]');
+const prview = dq('#prview');
+const tips = dq('.option_tips');
+
+
 // 更新预览
 const updatePrviewStyle = (style) => {
   Object.keys(style).forEach(key => {
     prview.style[key] = style[key];
   })
 }
-// 更新配置
-const updateStorage = style => {
-  chrome.storage.sync.set({
-    ...style
-  }, () => {
-    tips.style.display = 'inline-block';
-    setTimeout(() => {
-      tips.style.display = 'none';
-    }, 1000)
-  })
-}
+
 // 初始化
 const init = (colorConfig = DEFAULT_COLOR) => {
-  background.setAttribute('value', colorConfig.background)
-  color.setAttribute('value', colorConfig.color)
+  // 数据回填表单
+  document.optionForm.background.value = colorConfig.background;
+  document.optionForm.color.value = colorConfig.color;
+  // 更新预览
   updatePrviewStyle(colorConfig)
 }
-chrome.storage.sync.get(['background', 'color'], (result) => {
+chrome.storage.sync.get(['background', 'color'], (results) => {
   init({
     ...DEFAULT_COLOR,
-    ...(result || {})
+    ...(results||{})
   })
 })
 
+// 监听事件
 saveButton.addEventListener('click', () => {
   const data = new FormData(optionForm)
+
   chrome.storage.sync.set({
     background: data.get('background'),
     color: data.get('color'),
@@ -58,18 +77,16 @@ saveButton.addEventListener('click', () => {
 optionForm.addEventListener('reset', () => {
   updatePrviewStyle(DEFAULT_COLOR)
 
-  background.setAttribute('value', DEFAULT_COLOR.background)
-  color.setAttribute('value', DEFAULT_COLOR.color)
+  document.optionForm.background.value = DEFAULT_COLOR.background;
+  document.optionForm.color.value = DEFAULT_COLOR.color;
 })
 
-background.addEventListener('change', (e) => {
-  updatePrviewStyle({
-    background: e.target.value
-  })
+optionForm.addEventListener('change', (e) => {
+  const name = e.target.name;
+  if(['background', 'color'].includes(name)){
+    updatePrviewStyle({
+      [name]: e.target.value
+    })
+  }
 })
 
-color.addEventListener('change', (e) => {
-  updatePrviewStyle({
-    color: e.target.value
-  })
-})

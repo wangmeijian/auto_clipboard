@@ -26,7 +26,6 @@ chrome.storage.onChanged.addListener(function (changes) {
     }
   }
   getCurrentWindowTabs().then(tabs => {
-    console.log(tabs);
     if(tabs.length){
       tabs.forEach(tab => {
         chrome.tabs.sendMessage(tab.id, {

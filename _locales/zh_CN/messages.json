@@ -13,5 +13,23 @@
   },
   "copySuccess": {
     "message": "复制成功"
+  },
+  "prview": {
+    "message": "预览"
+  },
+  "messageBackground": {
+    "message": "提示语背景颜色："
+  },
+  "messageColor": {
+    "message": "提示语文字颜色："
+  },
+  "save": {
+    "message": "保存"
+  },
+  "reset": {
+    "message": "重置"
+  },
+  "saveSuccess": {
+    "message": "保存成功"
   }
 }
