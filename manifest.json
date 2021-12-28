@@ -34,5 +34,8 @@
   "default_locale": "en",
   "description": "__MSG_description__",
   "author": "wangmeijian",
+  "options_ui": {
+    "page": "option.html"
+  },
   "permissions": ["clipboardWrite","storage"]
 }
