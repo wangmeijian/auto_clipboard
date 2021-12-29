@@ -82,7 +82,7 @@ class AutoClipboard {
     `)
     message.innerText = i18n("copySuccess");
     message.style.display = 'none';
-    document.body.appendChild(message);
+    document.body && document.body.appendChild(message);
     return message;
   }
   /**
