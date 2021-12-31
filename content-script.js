@@ -89,8 +89,8 @@ class AutoClipboard {
    * 监听事件回调
    */
   _handleAction(e){
-    // 不复制输入框内容，解决”剪切板内容被输入框内容覆盖的问题“
-    if(e.target && ['input', 'textarea'].includes(e.target.nodeName.toLowerCase()))return;
+    // 要复制输入框内容，需按下ctrl键（Mac上为command键）
+    if(e && !e.metaKey && ['input', 'textarea'].includes(document.activeElement.nodeName.toLowerCase()))return;
     this._copySelectedText().then(() => {
       chrome.storage.sync.get(['background', 'color'], results => {
         this._updateMessageStyle({
