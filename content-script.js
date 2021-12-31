@@ -5,18 +5,6 @@ class AutoClipboard {
     this.message = null;
     this.selectedText = '';
     this._init();
-    chrome.runtime.onMessage.addListener((message, _, sendResponse) => {
-      switch(message.type){
-        case 'updateMessage':
-          if(this.message){
-            Object.keys(message.data).forEach(key => {
-              this.message.style[key] = message.data[key];
-            })
-          }
-          break;
-      }
-      sendResponse();
-    });
   }
   /**
    * 初始化提示语颜色
@@ -86,14 +74,34 @@ class AutoClipboard {
     return message;
   }
   /**
+   * 更新Message样式
+   * @style CSSStyleDeclaration
+   */
+  _updateMessageStyle(style){
+    if(!this.message)return;
+    Object.keys(style).forEach(key => {
+      if(key in this.message.style){
+        this.message.style[key] = style[key];
+      }
+    })
+  }
+  /**
    * 监听事件回调
    */
   _handleAction(){
     this._copySelectedText().then(() => {
-      this.message.style.display = 'block';
-      setTimeout(() => {
-        this.message.style.display = 'none';
-      }, 1500) 
+      chrome.storage.sync.get(['background', 'color'], results => {
+        this._updateMessageStyle({
+          ...results,
+          display: 'block'
+        })
+        setTimeout(() => {
+          this._updateMessageStyle({
+            display: 'none'
+          })
+        }, 2000) 
+      })
+      
     }).catch(() => { }) 
   }
   /**
