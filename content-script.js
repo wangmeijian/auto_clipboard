@@ -88,7 +88,9 @@ class AutoClipboard {
   /**
    * 监听事件回调
    */
-  _handleAction(){
+  _handleAction(e){
+    // 不复制输入框内容，解决”剪切板内容被输入框内容覆盖的问题“
+    if(e.target && ['input', 'textarea'].includes(e.target.nodeName.toLowerCase()))return;
     this._copySelectedText().then(() => {
       chrome.storage.sync.get(['background', 'color'], results => {
         this._updateMessageStyle({
@@ -114,7 +116,7 @@ class AutoClipboard {
 
     // 按住shift组合键和上下左右或Home或End键，来选择文本
     if(event.shiftKey && keys.includes(actionKey)){
-      this._handleAction();
+      this._handleAction(event);
     }
   }
   /**
@@ -123,8 +125,8 @@ class AutoClipboard {
   _addActionListener(){
     document.addEventListener('dblclick', this._handleAction.bind(this));
     document.addEventListener('keyup', this._combinationKey.bind(this));
-    document.addEventListener('mouseup', () => {
-      setTimeout(this._handleAction.bind(this), 0);
+    document.addEventListener('mouseup', (e) => {
+      setTimeout(this._handleAction.bind(this, e), 0);
     });
   }
 }
