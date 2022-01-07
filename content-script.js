@@ -7,7 +7,7 @@ class AutoClipboard {
     this._init();
   }
   /**
-   * 初始化提示语颜色
+   * @desc 初始化提示语颜色
    */
   _init(){
     this._getStorage().then(config => {
@@ -17,7 +17,7 @@ class AutoClipboard {
   }
   
   /**
-   * 获取配置
+   * @desc 获取配置
    * @returns Promise 
    */
   _getStorage(){
@@ -28,7 +28,7 @@ class AutoClipboard {
     })
   }
   /**
-   * 复制选中的文本
+   * @desc 复制选中的文本
    * @returns Promise
    */ 
   _copySelectedText() {
@@ -46,10 +46,12 @@ class AutoClipboard {
     }
   }
   /**
-   * 提示框
-   * @returns HTMLElement
+   * @desc 提示框
+   * @arg {string} background 背景色
+   * @arg {string} color 字体颜色
+   * @returns {HTMLElement} HTMLElement
    */
-  _createMessage(background = "#51b362", color = "white"){
+  _createMessage(background = "#51b362", fontColor = "white"){
     const message = document.createElement('div');
     message.id = 'autoClipboardMessage';
     message.setAttribute('style', `
@@ -66,7 +68,7 @@ class AutoClipboard {
       margin: 0;
       padding: 0;
       background: ${background};
-      color: ${color};
+      color: ${fontColor};
     `)
     message.innerText = i18n("copySuccess");
     message.style.display = 'none';
@@ -74,7 +76,7 @@ class AutoClipboard {
     return message;
   }
   /**
-   * 更新Message样式
+   * @desc 更新Message样式
    * @style CSSStyleDeclaration
    */
   _updateMessageStyle(style){
@@ -86,7 +88,7 @@ class AutoClipboard {
     })
   }
   /**
-   * 监听事件回调
+   * @desc 监听事件回调
    */
   _handleAction(e){
     // 要复制输入框内容，需按下ctrl键（Mac上为command键）
@@ -107,8 +109,8 @@ class AutoClipboard {
     }).catch(() => { }) 
   }
   /**
-   * 组合键
-   * @event Event 事件对象
+   * @desc 组合键
+   * @arg {Event} event 事件对象
    */
   _combinationKey(event){
     const keys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Home', 'End'];
@@ -120,7 +122,7 @@ class AutoClipboard {
     }
   }
   /**
-   * 事件绑定
+   * @desc 事件绑定
    */
   _addActionListener(){
     document.addEventListener('dblclick', this._handleAction.bind(this));
