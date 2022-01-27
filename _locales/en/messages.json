@@ -50,5 +50,9 @@
   "historyEmpty": {
     "description": "clipboard history is empty",
     "message": "弹窗没有内容时的提示"
+  },
+  "delete": {
+    "description": "delete",
+    "message": "删除"
   }
 }

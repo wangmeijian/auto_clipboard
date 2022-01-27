@@ -44,7 +44,7 @@ class Popup {
       .map((item, index) => {
         return `<a class="copy_item" href="#">
           <span class="click_target" title="${item}">${item}</span>
-          <span class="delete_item" dindex="${index}"></span>
+          <span class="delete_item" title="${i18n("delete")}" dindex="${index}"></span>
         </a>`;
       })
       .join("");

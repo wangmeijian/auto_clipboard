@@ -37,5 +37,8 @@
   },
   "historyEmpty": {
     "message": "没有记录"
+  },
+  "delete": {
+    "message": "删除"
   }
 }
