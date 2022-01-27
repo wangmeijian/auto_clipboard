@@ -34,6 +34,7 @@ body{
   display: none;
 }
 .copy_history{
+  width: 100%;
   max-height: 520px;
   box-sizing: border-box;
   gap: 10px 10px;
@@ -48,15 +49,18 @@ body{
   display: grid;
   grid-template-columns: auto 30px;
   font-size: 14px;
-  overflow : hidden;
   line-height: 36px;
   padding: 0 5px;
   text-align: left;
-  text-overflow: ellipsis;
-  white-space: nowrap;
   cursor: copy;
   color: rgba(0,0,0,0.85);
   text-decoration: none;
+}
+.copy_history .copy_item .click_target{
+  width: calc(100% - 10px);
+  overflow : hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .copy_history .copy_item:hover{
   background-color: aliceblue;
