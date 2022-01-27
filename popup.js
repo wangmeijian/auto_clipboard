@@ -35,11 +35,11 @@ class Popup {
    */
   _buildHistoryHTML(filterString = "") {
     if (this._history.length === 0) return i18n("historyEmpty");
-    filterString = filterString.trim();
+    filterString = filterString.trim().toLowerCase();
 
     return this._history
       .filter((item) => {
-        return filterString.length > 0 ? item.includes(filterString) : item;
+        return filterString.length > 0 ? item.toLowerCase().includes(filterString) : true;
       })
       .map((item, index) => {
         return `<a class="copy_item" href="#">
