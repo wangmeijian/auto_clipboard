@@ -31,5 +31,11 @@
   },
   "saveSuccess": {
     "message": "保存成功"
+  },
+  "searchHistory": {
+    "message": "搜索剪切板记录"
+  },
+  "historyEmpty": {
+    "message": "没有记录"
   }
 }

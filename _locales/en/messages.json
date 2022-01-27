@@ -16,7 +16,7 @@
     "description": "复制失败提示"
   },
   "copySuccess": {
-    "message": "Copy Success",
+    "message": "Copied",
     "description": "复制成功提示"
   },
   "prview": {
@@ -42,5 +42,13 @@
   "saveSuccess": {
     "message": "save success",
     "description": "保存成功"
+  },
+  "searchHistory": {
+    "message": "search clipboard history",
+    "description": "搜索剪切板记录"
+  },
+  "historyEmpty": {
+    "description": "clipboard history is empty",
+    "message": "弹窗没有内容时的提示"
   }
 }

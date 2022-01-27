@@ -10,7 +10,8 @@
       "48": "images/icon@128.png",   
       "128": "images/icon@128.png"    
     },
-    "default_title": "__MSG_defaultTitle__"
+    "default_title": "__MSG_defaultTitle__",
+    "default_popup": "popup.html"
   },
   "icons": {     
     "16": "images/icon@128.png",   

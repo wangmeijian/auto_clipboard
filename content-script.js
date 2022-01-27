@@ -1,47 +1,46 @@
-const i18n = key => chrome.i18n.getMessage(key);
+const i18n = (key) => chrome.i18n.getMessage(key);
 
 class AutoClipboard {
-  constructor(){
+  constructor() {
     this.message = null;
-    this.selectedText = '';
+    this.selectedText = "";
     this._init();
   }
   /**
    * @desc 初始化提示语颜色
    */
-  _init(){
-    this._getStorage().then(config => {
-      this.message = this._createMessage(config.background, config.color);
-    })
+  _init() {
+    this._getStorage().then((config) => {
+      this._createMessage(config.background, config.color);
+    });
     this._addActionListener();
   }
-  
+
   /**
    * @desc 获取配置
-   * @returns Promise 
+   * @returns Promise
    */
-  _getStorage(){
+  _getStorage() {
     return new Promise((resolve, reject) => {
-      chrome.storage.sync.get(['background', 'color'], config => {
-        config ? resolve(config) : reject({})
-      })
-    })
+      chrome.storage.sync.get(["background", "color"], (config) => {
+        config ? resolve(config) : reject({});
+      });
+    });
   }
   /**
    * @desc 复制选中的文本
    * @returns Promise
-   */ 
-  _copySelectedText() {
-    const selectedText = window.getSelection().toString()
+   */
+  static copySelectedText() {
+    const selectedText = window.getSelection().toString();
 
-    if(!selectedText || selectedText?.length === 0)return Promise.reject();
-    this.selectedText = selectedText;
+    if (!selectedText || selectedText?.length === 0) return Promise.reject();
     // 仅在https下可用
     if (navigator.clipboard && window.isSecureContext) {
       return navigator.clipboard.writeText(selectedText);
     } else {
       return new Promise((resolve, reject) => {
-          document.execCommand('copy') ? resolve() : reject();
+        document.execCommand("copy") ? resolve() : reject();
       });
     }
   }
@@ -51,10 +50,12 @@ class AutoClipboard {
    * @arg {string} color 字体颜色
    * @returns {HTMLElement} HTMLElement
    */
-  _createMessage(background = "#51b362", fontColor = "white"){
-    const message = document.createElement('div');
-    message.id = 'autoClipboardMessage';
-    message.setAttribute('style', `
+  _createMessage(background = "#51b362", fontColor = "white") {
+    const message = document.createElement("div");
+    message.id = "autoClipboardMessage";
+    message.setAttribute(
+      "style",
+      `
       width: 100px;
       height: 30px;
       text-align: center;
@@ -69,69 +70,134 @@ class AutoClipboard {
       padding: 0;
       background: ${background};
       color: ${fontColor};
-    `)
+    `
+    );
+    message.setAttribute("draggable", true);
     message.innerText = i18n("copySuccess");
-    message.style.display = 'none';
+    message.style.display = "none";
     document.body && document.body.appendChild(message);
+    this.message = message;
+    this._addDragListener();
     return message;
   }
   /**
    * @desc 更新Message样式
    * @style CSSStyleDeclaration
    */
-  _updateMessageStyle(style){
-    if(!this.message)return;
-    Object.keys(style).forEach(key => {
-      if(key in this.message.style){
+  _updateMessageStyle(style) {
+    if (!this.message) return;
+    Object.keys(style).forEach((key) => {
+      if (key in this.message.style) {
         this.message.style[key] = style[key];
       }
-    })
+    });
   }
   /**
    * @desc 监听事件回调
    */
-  _handleAction(e){
+  _handleAction(e) {
     // 要复制输入框内容，需按下ctrl键（Mac上为command键）
-    if(e && !e.metaKey && ['input', 'textarea'].includes(document.activeElement.nodeName.toLowerCase()))return;
-    this._copySelectedText().then(() => {
-      chrome.storage.sync.get(['background', 'color'], results => {
-        this._updateMessageStyle({
-          ...results,
-          display: 'block'
-        })
-        setTimeout(() => {
+    if (
+      e &&
+      !e.metaKey &&
+      ["input", "textarea"].includes(
+        document.activeElement.nodeName.toLowerCase()
+      )
+    )
+      return;
+    AutoClipboard.copySelectedText()
+      .then(() => {
+        this.selectedText = window.getSelection().toString();
+        this._updateMessageHistory(this.selectedText);
+
+        chrome.storage.sync.get(["background", "color"], (historyStorage) => {
           this._updateMessageStyle({
-            display: 'none'
-          })
-        }, 2000) 
+            ...historyStorage,
+            display: "block",
+          });
+          this.timer = setTimeout(() => {
+            this._updateMessageStyle({
+              display: "none",
+            });
+            this.timer = null;
+          }, 2000);
+        });
       })
-      
-    }).catch(() => { }) 
+      .catch(() => {});
+  }
+  /**
+   * @desc 更新历史记录
+   */
+  async _updateMessageHistory(text = "") {
+    if (typeof text !== "string" || text.length === 0) return;
+    const STORAGE_KEY = "auto_clipboard_history";
+    let historyStorage = await chrome.storage.sync.get([STORAGE_KEY]);
+    let historysMerge = [];
+    // 已有历史记录
+    if (historyStorage[STORAGE_KEY]) {
+      // 复制的内容和历史记录中某条重复，将其位置放到第一位
+      if (historyStorage[STORAGE_KEY].includes(text)) {
+        const index = historyStorage[STORAGE_KEY].findIndex(
+          (item) => item === text
+        );
+        historyStorage[STORAGE_KEY].splice(index, 1);
+      }
+      historyStorage[STORAGE_KEY].splice(0, 0, text);
+      historysMerge = historyStorage[STORAGE_KEY];
+    } else {
+      historysMerge = [text];
+    }
+    chrome.storage.sync.set({
+      [STORAGE_KEY]: historysMerge,
+    });
   }
   /**
    * @desc 组合键
    * @arg {Event} event 事件对象
    */
-  _combinationKey(event){
-    const keys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Home', 'End'];
+  _combinationKey(event) {
+    const keys = [
+      "ArrowUp",
+      "ArrowDown",
+      "ArrowLeft",
+      "ArrowRight",
+      "Home",
+      "End",
+    ];
     const actionKey = event.key;
 
     // 按住shift组合键和上下左右或Home或End键，来选择文本
-    if(event.shiftKey && keys.includes(actionKey)){
+    if (event.shiftKey && keys.includes(actionKey)) {
       this._handleAction(event);
     }
   }
   /**
    * @desc 事件绑定
    */
-  _addActionListener(){
-    document.addEventListener('dblclick', this._handleAction.bind(this));
-    document.addEventListener('keyup', this._combinationKey.bind(this));
-    document.addEventListener('mouseup', (e) => {
+  _addActionListener() {
+    document.addEventListener("dblclick", this._handleAction.bind(this));
+    document.addEventListener("keyup", this._combinationKey.bind(this));
+    document.addEventListener("mouseup", (e) => {
       setTimeout(this._handleAction.bind(this, e), 0);
+    });
+  }
+
+  /**
+   * @desc 拖动
+   */
+  _addDragListener() {
+    if (!this.message) return;
+    this.message.addEventListener("dragstart", (e) => {
+      clearTimeout(this.timer);
+    });
+    this.message.addEventListener("dragend", (e) => {
+      console.log(e);
+      this._updateMessageStyle({
+        left: `${e.clientX}px`,
+        right: `${e.clientY}px`,
+      });
     });
   }
 }
 
 new AutoClipboard();
-
