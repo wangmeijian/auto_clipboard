@@ -2,7 +2,11 @@ const i18n = (key) => chrome.i18n.getMessage(key);
 
 class AutoClipboard {
   constructor() {
-    this._HISTORY_MAX = 100;
+    // chrome.storage.local 最大容量为5M，即5242880字节
+    // 最多存储条数
+    this._MAX_HISTORY_LENGTH = 100;
+    // 单条数据最大字符数
+    this._MAX_ITEM_LENGTH = 10000;
     this.message = null;
     this.selectedText = "";
     this._init();
@@ -23,7 +27,7 @@ class AutoClipboard {
    */
   _getStorage() {
     return new Promise((resolve, reject) => {
-      chrome.storage.sync.get(["background", "color"], (config) => {
+      chrome.storage.local.get(["background", "color"], (config) => {
         config ? resolve(config) : reject({});
       });
     });
@@ -111,7 +115,7 @@ class AutoClipboard {
         this.selectedText = window.getSelection().toString();
         this._setMessageHistory(this.selectedText);
 
-        chrome.storage.sync.get(["background", "color"], (historyStorage) => {
+        chrome.storage.local.get(["background", "color"], (historyStorage) => {
           this._updateMessageStyle({
             ...historyStorage,
             display: "block",
@@ -131,8 +135,12 @@ class AutoClipboard {
    */
   async _setMessageHistory(text = "") {
     if (typeof text !== "string" || text.length === 0) return;
+    // 限制字符长度
+    if (text.length > this._MAX_ITEM_LENGTH) {
+      text = text.slice(0, this._MAX_ITEM_LENGTH);
+    }
     const STORAGE_KEY = "auto_clipboard_history";
-    let historyStorage = await chrome.storage.sync.get([STORAGE_KEY]);
+    let historyStorage = await chrome.storage.local.get([STORAGE_KEY]);
     let historysMerge = [];
     // 更新
     const updateMessageHistory = () => {
@@ -145,9 +153,9 @@ class AutoClipboard {
       }
       historyStorage[STORAGE_KEY].splice(0, 0, text);
       historysMerge = historyStorage[STORAGE_KEY];
-      // 限制容量为this._HISTORY_MAX
-      if (historysMerge.length > this._HISTORY_MAX) {
-        historysMerge.length = this._HISTORY_MAX;
+      // 限制容量为this._MAX_HISTORY_LENGTH
+      if (historysMerge.length > this._MAX_HISTORY_LENGTH) {
+        historysMerge.length = this._MAX_HISTORY_LENGTH;
       }
     };
 
@@ -155,7 +163,7 @@ class AutoClipboard {
     historyStorage[STORAGE_KEY]
       ? updateMessageHistory()
       : (historysMerge = [text]);
-    chrome.storage.sync.set({
+    chrome.storage.local.set({
       [STORAGE_KEY]: historysMerge,
     });
   }

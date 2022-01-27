@@ -12,7 +12,7 @@ class Popup {
    */
   async _initPage() {
     const storageKey = this._STORAGE_KEY;
-    const historyStorage = await chrome.storage.sync.get([storageKey]);
+    const historyStorage = await chrome.storage.local.get([storageKey]);
     this._history = historyStorage[storageKey] || [];
     const historyHTML = this._buildHistoryHTML();
     const optionsHTML = `
@@ -89,7 +89,7 @@ class Popup {
           const index = e.target.getAttribute("dindex");
           if (typeof index === undefined) return;
           this._history.splice(index, 1);
-          chrome.storage.sync.set({
+          chrome.storage.local.set({
             [this._STORAGE_KEY]: this._history,
           });
           // 刷新页面
