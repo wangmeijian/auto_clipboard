@@ -2,6 +2,7 @@ const i18n = (key) => chrome.i18n.getMessage(key);
 
 class AutoClipboard {
   constructor() {
+    this._HISTORY_MAX = 100;
     this.message = null;
     this.selectedText = "";
     this._init();
@@ -108,7 +109,7 @@ class AutoClipboard {
     AutoClipboard.copySelectedText()
       .then(() => {
         this.selectedText = window.getSelection().toString();
-        this._updateMessageHistory(this.selectedText);
+        this._setMessageHistory(this.selectedText);
 
         chrome.storage.sync.get(["background", "color"], (historyStorage) => {
           this._updateMessageStyle({
@@ -126,15 +127,15 @@ class AutoClipboard {
       .catch(() => {});
   }
   /**
-   * @desc 更新历史记录
+   * @desc 设置历史记录
    */
-  async _updateMessageHistory(text = "") {
+  async _setMessageHistory(text = "") {
     if (typeof text !== "string" || text.length === 0) return;
     const STORAGE_KEY = "auto_clipboard_history";
     let historyStorage = await chrome.storage.sync.get([STORAGE_KEY]);
     let historysMerge = [];
-    // 已有历史记录
-    if (historyStorage[STORAGE_KEY]) {
+    // 更新
+    const updateMessageHistory = () => {
       // 复制的内容和历史记录中某条重复，将其位置放到第一位
       if (historyStorage[STORAGE_KEY].includes(text)) {
         const index = historyStorage[STORAGE_KEY].findIndex(
@@ -144,9 +145,16 @@ class AutoClipboard {
       }
       historyStorage[STORAGE_KEY].splice(0, 0, text);
       historysMerge = historyStorage[STORAGE_KEY];
-    } else {
-      historysMerge = [text];
-    }
+      // 限制容量为this._HISTORY_MAX
+      if (historysMerge.length > this._HISTORY_MAX) {
+        historysMerge.length = this._HISTORY_MAX;
+      }
+    };
+
+    // 已有历史记录 ? 更新历史记录 : 设置历史记录
+    historyStorage[STORAGE_KEY]
+      ? updateMessageHistory()
+      : (historysMerge = [text]);
     chrome.storage.sync.set({
       [STORAGE_KEY]: historysMerge,
     });

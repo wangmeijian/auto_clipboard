@@ -33,7 +33,7 @@ class Popup {
    * @desc 生成历史记录
    * @returns HTMLElement
    */
-  _buildHistoryHTML(filterString = '') {
+  _buildHistoryHTML(filterString = "") {
     if (this._history.length === 0) return i18n("historyEmpty");
     filterString = filterString.trim();
 
@@ -117,7 +117,7 @@ class Popup {
   /**
    * 刷新页面
    */
-  _reload(filterString = '') {
+  _reload(filterString = "") {
     const historyHTML = this._buildHistoryHTML(filterString);
     document.querySelector(".copy_history").innerHTML = historyHTML;
   }
