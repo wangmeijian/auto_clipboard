@@ -7,9 +7,12 @@ class AutoClipboard {
     this._MAX_HISTORY_LENGTH = 100;
     // 单条数据最大字符数
     this._MAX_ITEM_LENGTH = 10000;
-    this.message = null;
+    // message宽高
+    this.MESSAGE_WIDTH = 100;
+    this.MESSAGE_HEIGHT = 30;
     this.selectedText = "";
     this.timer = null;
+    this.message = null;
     this._init();
   }
   /**
@@ -17,7 +20,8 @@ class AutoClipboard {
    */
   _init() {
     this._getStorage().then((config) => {
-      this._createMessage(config.background, config.color);
+      console.log(config);
+      this._createMessage(config.background, config.color, config.messagePosition);
     });
     this._addActionListener();
   }
@@ -28,7 +32,7 @@ class AutoClipboard {
    */
   _getStorage() {
     return new Promise((resolve, reject) => {
-      chrome.storage.local.get(["background", "color"], (config) => {
+      chrome.storage.local.get(["background", "color", "messagePosition"], (config) => {
         config ? resolve(config) : reject({});
       });
     });
@@ -56,29 +60,33 @@ class AutoClipboard {
    * @arg {string} color 字体颜色
    * @returns {HTMLElement} HTMLElement
    */
-  _createMessage(background = "#51b362", fontColor = "white") {
+  _createMessage(background = "#51b362", fontColor = "white", position = {
+    left: document.documentElement.clientWidth - this.MESSAGE_WIDTH - 20,
+    top: document.documentElement.clientHeight - this.MESSAGE_HEIGHT - 20,
+  }) {
     const message = document.createElement("div");
     message.id = "autoClipboardMessage";
     message.setAttribute(
       "style",
       `
-      width: 100px;
-      height: 30px;
+      width: ${this.MESSAGE_WIDTH}px;
+      height: ${this.MESSAGE_HEIGHT}px;
       text-align: center;
       position: fixed;
-      right: 20px;
-      bottom: 20px;
+      left: ${position.left}px;
+      top: ${position.top}px;
       z-index: 9999999;
       border-radius: 4px;
       font-size: 14px;
-      line-height: 30px;
+      line-height: ${this.MESSAGE_HEIGHT}px;
       margin: 0;
       padding: 0;
+      cursor: move;
+      box-shadow: rgba(0,0,0,0.2) 0 5px 15px;
       background: ${background};
       color: ${fontColor};
     `
     );
-    message.setAttribute("draggable", true);
     message.innerText = i18n("copySuccess");
     message.style.display = "none";
     document.body && document.body.appendChild(message);
@@ -122,15 +130,18 @@ class AutoClipboard {
             display: "block",
           });
           clearTimeout(this.timer);
-          this.timer = setTimeout(() => {
-            this._updateMessageStyle({
-              display: "none",
-            });
-            this.timer = null;
-          }, 2000);
+          this._hideMessageSync()
         });
       })
       .catch(() => {});
+  }
+  _hideMessageSync(){
+    this.timer = setTimeout(() => {
+      this._updateMessageStyle({
+        display: "none",
+      });
+      this.timer = null;
+    }, 2000);
   }
   /**
    * @desc 设置历史记录
@@ -205,16 +216,51 @@ class AutoClipboard {
    */
   _addDragListener() {
     if (!this.message) return;
-    this.message.addEventListener("dragstart", (e) => {
+    this.message.addEventListener("mousedown", (e) => {
+      const startLeft = e.clientX;
+      const startTop = e.clientY;
+      const position = e.target.getBoundingClientRect();
+      let endLeft = 0;
+      let endTop = 0;
+
+      document.onmousemove = e => {
+        endLeft = position.left + e.clientX - startLeft;
+        endTop = position.top + e.clientY - startTop;
+
+        // 限制范围
+        endLeft = Math.max(endLeft, 0);
+        endLeft = Math.min(endLeft, document.documentElement.clientWidth - this.MESSAGE_WIDTH);
+        endTop = Math.min(endTop, document.documentElement.clientHeight - this.MESSAGE_HEIGHT);
+        endTop = Math.max(endTop, 0);
+
+        this._updateMessageStyle({
+          left: `${endLeft}px`,
+          top: `${endTop}px`,
+          right: 'none',
+          bottom: 'none'
+        });
+        e.preventDefault();
+      }
+      document.onmouseup = () => {
+        document.onmousemove = () => {}
+        e.preventDefault();
+        // 存储当前位置
+        chrome.storage.local.set({
+          messagePosition: {
+            left: endLeft,
+            top: endTop,
+          }
+        })
+      }
+    });
+
+    this.message.addEventListener('mouseover', () => {
       clearTimeout(this.timer);
-    });
-    this.message.addEventListener("dragend", (e) => {
-      console.log(e);
-      this._updateMessageStyle({
-        left: `${e.clientX}px`,
-        right: `${e.clientY}px`,
-      });
-    });
+    })
+
+    this.message.addEventListener('mouseleave', () => {
+      this._hideMessageSync()
+    })
   }
 }
 
