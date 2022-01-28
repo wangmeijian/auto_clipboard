@@ -20,7 +20,6 @@ class AutoClipboard {
    */
   _init() {
     this._getStorage().then((config) => {
-      console.log(config);
       this._createMessage(config.background, config.color, config.messagePosition);
     });
     this._addActionListener();
@@ -220,10 +219,10 @@ class AutoClipboard {
       const startLeft = e.clientX;
       const startTop = e.clientY;
       const position = e.target.getBoundingClientRect();
-      let endLeft = 0;
-      let endTop = 0;
+      let endLeft = position.left;
+      let endTop = position.top;
 
-      document.onmousemove = e => {
+      const handleMouseMove = e => {
         endLeft = position.left + e.clientX - startLeft;
         endTop = position.top + e.clientY - startTop;
 
@@ -241,9 +240,7 @@ class AutoClipboard {
         });
         e.preventDefault();
       }
-      document.onmouseup = () => {
-        document.onmousemove = () => {}
-        e.preventDefault();
+      const handleMouseUp = () => {
         // 存储当前位置
         chrome.storage.local.set({
           messagePosition: {
@@ -251,7 +248,11 @@ class AutoClipboard {
             top: endTop,
           }
         })
+        document.removeEventListener('mousemove', handleMouseMove)
+        document.removeEventListener('mouseup', handleMouseUp)
       }
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
     });
 
     this.message.addEventListener('mouseover', () => {
