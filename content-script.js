@@ -9,6 +9,7 @@ class AutoClipboard {
     this._MAX_ITEM_LENGTH = 10000;
     this.message = null;
     this.selectedText = "";
+    this.timer = null;
     this._init();
   }
   /**
@@ -120,6 +121,7 @@ class AutoClipboard {
             ...historyStorage,
             display: "block",
           });
+          clearTimeout(this.timer);
           this.timer = setTimeout(() => {
             this._updateMessageStyle({
               display: "none",
