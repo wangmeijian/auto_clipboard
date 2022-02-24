@@ -39,13 +39,20 @@ class Popup {
 
     return this._history
       .filter((item) => {
-        return filterString.length > 0 ? item.toLowerCase().includes(filterString) : true;
+        return filterString.length > 0
+          ? item.toLowerCase().includes(filterString)
+          : true;
       })
       .map((item, index) => {
-        return `<a class="copy_item" href="#">
-          <span class="click_target" title="${item}">${item}</span>
-          <span class="delete_item" title="${i18n("delete")}" dindex="${index}"></span>
-        </a>`;
+        return `<span class="copy_item stick">
+          <a class="click_target" title="${item}" href="#">${item}</a>
+          <span class="action_item delete_item" title="${i18n(
+            "delete"
+          )}" dindex="${index}"></span>
+          <span class="action_item stick_item" title="${i18n(
+            "stick"
+          )}" dindex="${index}"></span>
+        </span>`;
       })
       .join("");
   }
@@ -101,7 +108,8 @@ class Popup {
     // 回车自动复制
     window.addEventListener("keyup", (e) => {
       const code = e.code || e.key;
-      if (code === "Enter" && e.target.className === "copy_item") {
+      
+      if (code === "Enter" && e.target.className.includes("copy_item")) {
         this._selectText(e.target.querySelector(".click_target"));
         this._copy();
       }

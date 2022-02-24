@@ -40,5 +40,8 @@
   },
   "delete": {
     "message": "删除"
+  },
+  "stick": {
+    "message": "置顶"
   }
 }

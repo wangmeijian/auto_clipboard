@@ -63,36 +63,53 @@ body{
 }
 .copy_history .copy_item{
   display: grid;
-  grid-template-columns: auto 30px;
+  grid-template-columns: auto 30px 30px;
   font-size: 14px;
   line-height: 36px;
-  padding: 0 5px;
   text-align: left;
-  cursor: copy;
   color: rgba(0,0,0,0.85);
   text-decoration: none;
+}
+.copy_history .copy_item.stick .stick_item{
+  visibility: visible;
+  opacity: 1;
 }
 .copy_history .copy_item .click_target{
   width: calc(100% - 10px);
   overflow : hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  cursor: copy;
+  text-decoration: none;
+  color: rgba(0,0,0,0.85);
 }
 .copy_history .copy_item:hover{
   background-color: aliceblue;
 }
 
-.copy_history .copy_item:hover .delete_item{
-  display: inline-block;
+.copy_history .copy_item:hover .action_item{
+  visibility: visible;
 }
 
+.copy_history .action_item{
+  width: 16px;
+  height: 16px;
+  visibility: hidden;
+  padding: 6px;
+  background-size: 16px 16px;
+  margin: 4px 2px;
+  opacity: 0.4;
+  cursor: pointer;
+}
+.copy_history .action_item:hover{
+  opacity: 1;
+}
 .copy_history .delete_item{
-  width: 18px;
-  height: 18px;
-  display: none;
   background: url('chrome-extension://__MSG_@@extension_id__/images/delete.svg')
     center center no-repeat;
-  background-size: cover;
-  margin: 9px;
-  cursor: pointer;
+  background-size: 15px 15px;
+}
+.copy_history .stick_item{
+  background: url('chrome-extension://__MSG_@@extension_id__/images/stick.svg')
+    center center no-repeat;
 }

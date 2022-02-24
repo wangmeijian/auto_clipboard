@@ -54,5 +54,9 @@
   "delete": {
     "description": "delete",
     "message": "删除"
+  },
+  "stick": {
+    "description": "stick",
+    "message": "置顶"
   }
 }
