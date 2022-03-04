@@ -50,12 +50,9 @@ class Popup {
           <span class="action_item delete_item" title="${i18n(
             "delete"
           )}" dindex="${index}"></span>
-          <span class="action_item stick_item" title="${i18n(
-            "stick"
-          )}" dindex="${index}"></span>
         </span>`;
       })
-      .join("") + `<span class="privacy">${i18n("privacy")}</span>`;
+      .join("") + `<div class="privacy">${i18n("privacy")}</div>`;
   }
   /**
    * @desc 复制

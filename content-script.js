@@ -10,11 +10,13 @@ class AutoClipboard {
     // message宽高
     this.MESSAGE_WIDTH = 100;
     this.MESSAGE_HEIGHT = 30;
+    this.MESSAGE_MARGING = 20;
     this.selectedText = "";
     this.timer = null;
     this.message = null;
     this._init();
   }
+
   /**
    * @desc 初始化提示语颜色
    */
@@ -25,13 +27,20 @@ class AutoClipboard {
     this._addActionListener();
   }
 
+  _getMessageBoundaryPosition(){
+    return {
+      left: document.documentElement.clientWidth - this.MESSAGE_WIDTH,
+      top: document.documentElement.clientHeight - this.MESSAGE_HEIGHT
+    }
+  }
+
   /**
    * @desc 获取配置
    * @returns Promise
    */
   _getStorage() {
     return new Promise((resolve, reject) => {
-      chrome.storage.local.get(["background", "color", "messagePosition"], (config) => {
+      chrome.storage.sync.get(["background", "color", "messagePosition"], (config) => {
         config ? resolve(config) : reject({});
       });
     });
@@ -60,11 +69,12 @@ class AutoClipboard {
    * @returns {HTMLElement} HTMLElement
    */
   _createMessage(background = "#51b362", fontColor = "white", position = {
-    left: document.documentElement.clientWidth - this.MESSAGE_WIDTH - 20,
-    top: document.documentElement.clientHeight - this.MESSAGE_HEIGHT - 20,
+    left: this._getMessageBoundaryPosition().left - this.MESSAGE_MARGING,
+    top: this._getMessageBoundaryPosition().top - this.MESSAGE_MARGING,
   }) {
     const message = document.createElement("div");
     message.id = "autoClipboardMessage";
+
     message.setAttribute(
       "style",
       `
@@ -123,10 +133,19 @@ class AutoClipboard {
         this.selectedText = window.getSelection().toString();
         this._setMessageHistory(this.selectedText);
 
-        chrome.storage.local.get(["background", "color"], (historyStorage) => {
+        chrome.storage.sync.get(["background", "color", "messagePosition"], (historyStorage) => {
+          const boundaryPosition = this._getMessageBoundaryPosition();
+          historyStorage.messagePosition = historyStorage.messagePosition || {
+            // 给个默认值
+            left: boundaryPosition.left,
+            top: boundaryPosition.top,
+          };
           this._updateMessageStyle({
-            ...historyStorage,
+            background: historyStorage.background,
+            color: historyStorage.color,
             display: "block",
+            left: Math.min(boundaryPosition.left, historyStorage.messagePosition.left) + 'px',
+            top: Math.min(boundaryPosition.top, historyStorage.messagePosition.top) + 'px',
           });
           clearTimeout(this.timer);
           this._hideMessageSync()
@@ -242,7 +261,7 @@ class AutoClipboard {
       }
       const handleMouseUp = () => {
         // 存储当前位置
-        chrome.storage.local.set({
+        chrome.storage.sync.set({
           messagePosition: {
             left: endLeft,
             top: endTop,

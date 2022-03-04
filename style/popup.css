@@ -51,7 +51,7 @@ body{
 }
 .copy_history{
   width: calc(100% - 20px);
-  max-height: 520px;
+  max-height: 480px;
   box-sizing: border-box;
   gap: 10px 10px;
   margin: 10px 10px 0;
@@ -68,10 +68,11 @@ body{
   font-size: 12px;
   line-height: 36px;
   color: #ccc;
+  text-align: center;
 }
 .copy_history .copy_item{
   display: grid;
-  grid-template-columns: auto 30px 30px;
+  grid-template-columns: auto 30px;
   font-size: 14px;
   line-height: 36px;
   text-align: left;
