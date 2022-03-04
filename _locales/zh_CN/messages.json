@@ -43,5 +43,11 @@
   },
   "stick": {
     "message": "置顶"
+  },
+  "popupTitle": {
+    "message": "剪切板"
+  },
+  "privacy": {
+    "message": "剪切板数据仅保存在您的浏览器本地"
   }
 }

@@ -19,20 +19,20 @@ body{
 }
 .popup{
   width: 400px;
-  padding: 10px;
   max-height: 600px;
   /* overflow-y: auto; */
   box-sizing: border-box;
   background-color: white;
 }
 .search_history{
-  width: 100%;
+  width: calc(100% - 20px);
   display: block;
   border: 1px solid #ccc;
   border-radius: 4px;
   height: 36px;
   padding: 8px;
   box-sizing: border-box;
+  margin: 10px 10px 0;
 }
 .copy_success{
   position: fixed;
@@ -50,16 +50,24 @@ body{
   display: none;
 }
 .copy_history{
-  width: 100%;
+  width: calc(100% - 20px);
   max-height: 520px;
   box-sizing: border-box;
   gap: 10px 10px;
-  margin-top: 10px;
+  margin: 10px 10px 0;
   font-size: 14px;
-  text-align: center;
   color: #333;
   overflow-y: auto;
   padding: 2px;
+}
+.copy_history .empty{
+  color: #ccc;
+  padding-bottom: 10px;
+}
+.copy_history .privacy{
+  font-size: 12px;
+  line-height: 36px;
+  color: #ccc;
 }
 .copy_history .copy_item{
   display: grid;
@@ -69,6 +77,7 @@ body{
   text-align: left;
   color: rgba(0,0,0,0.85);
   text-decoration: none;
+  padding: 0 0 0 10px;
 }
 .copy_history .copy_item.stick .stick_item{
   visibility: visible;
@@ -112,4 +121,15 @@ body{
 .copy_history .stick_item{
   background: url('chrome-extension://__MSG_@@extension_id__/images/stick.svg')
     center center no-repeat;
+}
+
+.popup_title{
+  font-size: 16px;
+  font-weight: normal;
+  color: #333;
+  text-align: center;
+  line-height: 40px;
+  padding: 0;
+  margin: 0;
+  background-color: #eff1f2;
 }

@@ -58,5 +58,13 @@
   "stick": {
     "description": "stick",
     "message": "置顶"
+  },
+  "popupTitle": {
+    "description": "Clipboard",
+    "message": "剪切板"
+  },
+  "privacy": {
+    "description": "Clipboard data is only stored locally in your browser",
+    "message": "剪切板数据仅保存在您的浏览器本地"
   }
 }

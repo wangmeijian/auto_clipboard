@@ -17,6 +17,7 @@ class Popup {
     const historyHTML = this._buildHistoryHTML();
     const optionsHTML = `
       <div class="popup">
+        <h1 class="popup_title">${i18n("popupTitle")}</h1>
         <input class="search_history" placeholder="${i18n("searchHistory")}" />
         <div class="copy_history">
           ${historyHTML}
@@ -34,7 +35,7 @@ class Popup {
    * @returns HTMLElement
    */
   _buildHistoryHTML(filterString = "") {
-    if (this._history.length === 0) return i18n("historyEmpty");
+    if (this._history.length === 0) return `<div class="empty">${i18n("historyEmpty")}</div>`;
     filterString = filterString.trim().toLowerCase();
 
     return this._history
@@ -54,7 +55,7 @@ class Popup {
           )}" dindex="${index}"></span>
         </span>`;
       })
-      .join("");
+      .join("") + `<span class="privacy">${i18n("privacy")}</span>`;
   }
   /**
    * @desc 复制
@@ -92,7 +93,7 @@ class Popup {
     window.addEventListener(
       "click",
       (e) => {
-        if (e.target.className === "delete_item") {
+        if (e.target.className.split(/\s+/).indexOf("delete_item") > -1) {
           const index = e.target.getAttribute("dindex");
           if (typeof index === undefined) return;
           this._history.splice(index, 1);
@@ -109,7 +110,7 @@ class Popup {
     window.addEventListener("keyup", (e) => {
       const code = e.code || e.key;
       
-      if (code === "Enter" && e.target.className.includes("copy_item")) {
+      if (code === "Enter" && e.className.split(/\s+/).indexOf("copy_item") > -1) {
         this._selectText(e.target.querySelector(".click_target"));
         this._copy();
       }
