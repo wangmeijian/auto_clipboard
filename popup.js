@@ -106,8 +106,7 @@ class Popup {
     // 回车自动复制
     window.addEventListener("keyup", (e) => {
       const code = e.code || e.key;
-      
-      if (code === "Enter" && e.className.split(/\s+/).indexOf("copy_item") > -1) {
+      if (code === "Enter" && e.target.className.split(/\s+/).indexOf("copy_item") > -1) {
         this._selectText(e.target.querySelector(".click_target"));
         this._copy();
       }
