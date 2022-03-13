@@ -80,6 +80,12 @@ body{
   text-decoration: none;
   padding: 0 0 0 10px;
 }
+.copy_history .copy_item pre,.copy_history .copy_item code{
+  margin: 0;
+  white-space: nowrap;
+  width: calc(100% - 10px);
+  overflow : hidden;
+}
 .copy_history .copy_item.stick .stick_item{
   visibility: visible;
   opacity: 1;

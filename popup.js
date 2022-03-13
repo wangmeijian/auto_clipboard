@@ -37,7 +37,8 @@ class Popup {
   _buildHistoryHTML(filterString = "") {
     if (this._history.length === 0) return `<div class="empty">${i18n("historyEmpty")}</div>`;
     filterString = filterString.trim().toLowerCase();
-
+    let div = document.createElement('div');
+    
     return this._history
       .filter((item) => {
         return filterString.length > 0
@@ -45,8 +46,13 @@ class Popup {
           : true;
       })
       .map((item, index) => {
+        let textNode = document.createTextNode(item);
+        div.innerHTML = '';
+        div.append(textNode);
         return `<span class="copy_item stick">
-          <a class="click_target" title="${item}" href="#">${item}</a>
+          <pre>
+            <code><a class="click_target" title=${div.innerHTML} href="#">${div.innerHTML}</a></code>
+          </pre>
           <span class="action_item delete_item" title="${i18n(
             "delete"
           )}" dindex="${index}"></span>
