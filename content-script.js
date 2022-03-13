@@ -52,7 +52,7 @@ class AutoClipboard {
   static copySelectedText() {
     const selectedText = window.getSelection().toString();
 
-    if (!selectedText || selectedText?.length === 0) return Promise.reject();
+    if (!selectedText || selectedText?.trim().length === 0) return Promise.reject();
     // 仅在https下可用
     if (navigator.clipboard && window.isSecureContext) {
       return navigator.clipboard.writeText(selectedText);
