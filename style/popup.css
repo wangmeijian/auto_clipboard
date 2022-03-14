@@ -39,7 +39,7 @@ body{
   left: 50%;
   margin-left: -50px;
   top: 52px;
-  border: 1px solid #ccc;
+  border: 1px solid #eee;
   border-radius: 4px;
   width: 100px;
   height: 36px;
@@ -48,6 +48,7 @@ body{
   background-color: white;
   font-size: 14px;
   display: none;
+  box-shadow: rgba(0,0,0,0.17) 0 5px 15px;
 }
 .copy_history{
   width: calc(100% - 20px);
@@ -85,6 +86,7 @@ body{
   white-space: nowrap;
   width: calc(100% - 10px);
   overflow : hidden;
+  display: grid;
 }
 .copy_history .copy_item.stick .stick_item{
   visibility: visible;
@@ -92,6 +94,7 @@ body{
 }
 .copy_history .copy_item .click_target{
   width: calc(100% - 10px);
+  display: inline-block;
   overflow : hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

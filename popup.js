@@ -64,7 +64,7 @@ class Popup {
     div.append(textNode);
 
     return `
-      <pre  title=${div.innerHTML}>
+      <pre title=${div.innerHTML.replace(/\s/g, '&nbsp;')}>
         <code><a class="click_target" href="#">${div.innerHTML}</a></code>
       </pre>
     `
