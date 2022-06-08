@@ -72,34 +72,43 @@ class AutoClipboard {
     left: this._getMessageBoundaryPosition().left - this.MESSAGE_MARGING,
     top: this._getMessageBoundaryPosition().top - this.MESSAGE_MARGING,
   }) {
-    const message = document.createElement("div");
-    message.id = "autoClipboardMessage";
+    // 创建影子DOM
+    const message = document.createElement("ac-message").attachShadow({ mode: 'closed' });
+    const content = document.createElement('div');
+    const contentStyle = document.createElement('style');
+    content.id = "autoClipboardMessage";
+    content.className = "ac-message";
+    content.innerText = i18n("copySuccess");
 
-    message.setAttribute(
-      "style",
-      `
-      width: ${this.MESSAGE_WIDTH}px;
-      height: ${this.MESSAGE_HEIGHT}px;
-      text-align: center;
-      position: fixed;
-      left: ${position.left}px;
-      top: ${position.top}px;
-      z-index: 9999999;
-      border-radius: 4px;
-      font-size: 14px;
-      line-height: ${this.MESSAGE_HEIGHT}px;
-      margin: 0;
-      padding: 0;
-      cursor: move;
-      box-shadow: rgba(0,0,0,0.2) 0 5px 15px;
-      background: ${background};
-      color: ${fontColor};
-    `
-    );
-    message.innerText = i18n("copySuccess");
-    message.style.display = "none";
-    document.body && document.body.appendChild(message);
-    this.message = message;
+    contentStyle.innerText = `
+      .ac-message{
+        width: ${this.MESSAGE_WIDTH}px;
+        height: ${this.MESSAGE_HEIGHT}px;
+        text-align: center;
+        position: fixed;
+        left: ${position.left}px;
+        top: ${position.top}px;
+        z-index: 9999999;
+        border-radius: 4px;
+        font-size: 14px;
+        line-height: ${this.MESSAGE_HEIGHT}px;
+        margin: 0;
+        padding: 0;
+        cursor: move;
+        box-shadow: rgba(0,0,0,0.2) 0 5px 15px;
+        background: ${background};
+        color: ${fontColor};
+        display: none;
+      }
+      .ac-message:hover{
+        box-shadow: rgba(0,0,0,0.4) 0 5px 15px;
+      }
+    `;
+    
+    message.appendChild(content);
+    message.appendChild(contentStyle);
+    document.body && document.body.appendChild(message.host);
+    this.message = content;
     this._addDragListener();
     return message;
   }
@@ -203,18 +212,7 @@ class AutoClipboard {
    * @arg {Event} event 事件对象
    */
   _combinationKey(event) {
-    const keys = [
-      "ArrowUp",
-      "ArrowDown",
-      "ArrowLeft",
-      "ArrowRight",
-      "Home",
-      "End",
-    ];
-    const actionKey = event.key;
-
-    // 按住shift组合键和上下左右或Home或End键，来选择文本
-    if (event.shiftKey && keys.includes(actionKey)) {
+    if (event.key === 'Shift') {
       this._handleAction(event);
     }
   }
