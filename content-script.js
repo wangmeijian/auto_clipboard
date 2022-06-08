@@ -22,16 +22,20 @@ class AutoClipboard {
    */
   _init() {
     this._getStorage().then((config) => {
-      this._createMessage(config.background, config.color, config.messagePosition);
+      this._createMessage(
+        config.background,
+        config.color,
+        config.messagePosition
+      );
     });
     this._addActionListener();
   }
 
-  _getMessageBoundaryPosition(){
+  _getMessageBoundaryPosition() {
     return {
       left: document.documentElement.clientWidth - this.MESSAGE_WIDTH,
-      top: document.documentElement.clientHeight - this.MESSAGE_HEIGHT
-    }
+      top: document.documentElement.clientHeight - this.MESSAGE_HEIGHT,
+    };
   }
 
   /**
@@ -40,9 +44,12 @@ class AutoClipboard {
    */
   _getStorage() {
     return new Promise((resolve, reject) => {
-      chrome.storage.sync.get(["background", "color", "messagePosition"], (config) => {
-        config ? resolve(config) : reject({});
-      });
+      chrome.storage.sync.get(
+        ["background", "color", "messagePosition"],
+        (config) => {
+          config ? resolve(config) : reject({});
+        }
+      );
     });
   }
   /**
@@ -52,7 +59,8 @@ class AutoClipboard {
   static copySelectedText() {
     const selectedText = window.getSelection().toString();
 
-    if (!selectedText || selectedText?.trim().length === 0) return Promise.reject();
+    if (!selectedText || selectedText?.trim().length === 0)
+      return Promise.reject();
     // 仅在https下可用
     if (navigator.clipboard && window.isSecureContext) {
       return navigator.clipboard.writeText(selectedText);
@@ -68,14 +76,20 @@ class AutoClipboard {
    * @arg {string} color 字体颜色
    * @returns {HTMLElement} HTMLElement
    */
-  _createMessage(background = "#51b362", fontColor = "white", position = {
-    left: this._getMessageBoundaryPosition().left - this.MESSAGE_MARGING,
-    top: this._getMessageBoundaryPosition().top - this.MESSAGE_MARGING,
-  }) {
+  _createMessage(
+    background = "#51b362",
+    fontColor = "white",
+    position = {
+      left: this._getMessageBoundaryPosition().left - this.MESSAGE_MARGING,
+      top: this._getMessageBoundaryPosition().top - this.MESSAGE_MARGING,
+    }
+  ) {
     // 创建影子DOM
-    const message = document.createElement("ac-message").attachShadow({ mode: 'closed' });
-    const content = document.createElement('div');
-    const contentStyle = document.createElement('style');
+    const message = document
+      .createElement("ac-message")
+      .attachShadow({ mode: "closed" });
+    const content = document.createElement("div");
+    const contentStyle = document.createElement("style");
     content.id = "autoClipboardMessage";
     content.className = "ac-message";
     content.innerText = i18n("copySuccess");
@@ -104,7 +118,7 @@ class AutoClipboard {
         box-shadow: rgba(0,0,0,0.4) 0 5px 15px;
       }
     `;
-    
+
     message.appendChild(content);
     message.appendChild(contentStyle);
     document.body && document.body.appendChild(message.host);
@@ -128,7 +142,7 @@ class AutoClipboard {
    * @desc 监听事件回调
    */
   _handleAction(e) {
-    // 要复制输入框内容，需按下ctrl键（Mac上为command键）
+    // 如果是输入框内容，但没有按下ctrl键（Mac上为command键），不复制
     if (
       e &&
       !e.metaKey &&
@@ -137,32 +151,53 @@ class AutoClipboard {
       )
     )
       return;
+
+    // 判断是否意外地选中了文本
+    // 是没选中文本，或者选中的文本父元素并不是触发双击事件的元素
+    const { focusNode } = window.getSelection();
+    if (
+      ["dblclick","mouseup"].indexOf(e.type) > -1 &&
+      !(focusNode.nodeType === 3 && e.target === focusNode.parentElement)
+    ) {
+      return;
+    }
     AutoClipboard.copySelectedText()
       .then(() => {
         this.selectedText = window.getSelection().toString();
         this._setMessageHistory(this.selectedText);
 
-        chrome.storage.sync.get(["background", "color", "messagePosition"], (historyStorage) => {
-          const boundaryPosition = this._getMessageBoundaryPosition();
-          historyStorage.messagePosition = historyStorage.messagePosition || {
-            // 给个默认值
-            left: boundaryPosition.left,
-            top: boundaryPosition.top,
-          };
-          this._updateMessageStyle({
-            background: historyStorage.background,
-            color: historyStorage.color,
-            display: "block",
-            left: Math.min(boundaryPosition.left, historyStorage.messagePosition.left) + 'px',
-            top: Math.min(boundaryPosition.top, historyStorage.messagePosition.top) + 'px',
-          });
-          clearTimeout(this.timer);
-          this._hideMessageSync()
-        });
+        chrome.storage.sync.get(
+          ["background", "color", "messagePosition"],
+          (historyStorage) => {
+            const boundaryPosition = this._getMessageBoundaryPosition();
+            historyStorage.messagePosition = historyStorage.messagePosition || {
+              // 给个默认值
+              left: boundaryPosition.left,
+              top: boundaryPosition.top,
+            };
+            this._updateMessageStyle({
+              background: historyStorage.background,
+              color: historyStorage.color,
+              display: "block",
+              left:
+                Math.min(
+                  boundaryPosition.left,
+                  historyStorage.messagePosition.left
+                ) + "px",
+              top:
+                Math.min(
+                  boundaryPosition.top,
+                  historyStorage.messagePosition.top
+                ) + "px",
+            });
+            clearTimeout(this.timer);
+            this._hideMessageSync();
+          }
+        );
       })
       .catch(() => {});
   }
-  _hideMessageSync(){
+  _hideMessageSync() {
     this.timer = setTimeout(() => {
       this._updateMessageStyle({
         display: "none",
@@ -212,7 +247,7 @@ class AutoClipboard {
    * @arg {Event} event 事件对象
    */
   _combinationKey(event) {
-    if (event.key === 'Shift') {
+    if (event.key === "Shift") {
       this._handleAction(event);
     }
   }
@@ -239,46 +274,52 @@ class AutoClipboard {
       let endLeft = position.left;
       let endTop = position.top;
 
-      const handleMouseMove = e => {
+      const handleMouseMove = (e) => {
         endLeft = position.left + e.clientX - startLeft;
         endTop = position.top + e.clientY - startTop;
 
         // 限制范围
         endLeft = Math.max(endLeft, 0);
-        endLeft = Math.min(endLeft, document.documentElement.clientWidth - this.MESSAGE_WIDTH);
-        endTop = Math.min(endTop, document.documentElement.clientHeight - this.MESSAGE_HEIGHT);
+        endLeft = Math.min(
+          endLeft,
+          document.documentElement.clientWidth - this.MESSAGE_WIDTH
+        );
+        endTop = Math.min(
+          endTop,
+          document.documentElement.clientHeight - this.MESSAGE_HEIGHT
+        );
         endTop = Math.max(endTop, 0);
 
         this._updateMessageStyle({
           left: `${endLeft}px`,
           top: `${endTop}px`,
-          right: 'none',
-          bottom: 'none'
+          right: "none",
+          bottom: "none",
         });
         e.preventDefault();
-      }
+      };
       const handleMouseUp = () => {
         // 存储当前位置
         chrome.storage.sync.set({
           messagePosition: {
             left: endLeft,
             top: endTop,
-          }
-        })
-        document.removeEventListener('mousemove', handleMouseMove)
-        document.removeEventListener('mouseup', handleMouseUp)
-      }
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
+          },
+        });
+        document.removeEventListener("mousemove", handleMouseMove);
+        document.removeEventListener("mouseup", handleMouseUp);
+      };
+      document.addEventListener("mousemove", handleMouseMove);
+      document.addEventListener("mouseup", handleMouseUp);
     });
 
-    this.message.addEventListener('mouseover', () => {
+    this.message.addEventListener("mouseover", () => {
       clearTimeout(this.timer);
-    })
+    });
 
-    this.message.addEventListener('mouseleave', () => {
-      this._hideMessageSync()
-    })
+    this.message.addEventListener("mouseleave", () => {
+      this._hideMessageSync();
+    });
   }
 }
 
