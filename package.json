@@ -1,6 +1,6 @@
 {
   "name": "auto_clipboard",
-  "version": "0.4.3",
+  "version": "0.4.5",
   "description": "自动剪切板",
   "main": "content-script.js",
   "scripts": {

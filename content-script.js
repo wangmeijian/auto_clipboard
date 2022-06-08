@@ -157,6 +157,7 @@ class AutoClipboard {
     const { focusNode } = window.getSelection();
     if (
       ["dblclick","mouseup"].indexOf(e.type) > -1 &&
+      focusNode && 
       !(focusNode.nodeType === 3 && e.target === focusNode.parentElement)
     ) {
       return;
