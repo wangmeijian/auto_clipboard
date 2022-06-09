@@ -153,7 +153,7 @@ class AutoClipboard {
       return;
 
     // 判断是否意外地选中了文本
-    // 是没选中文本，或者选中的文本父元素并不是触发双击事件的元素
+    // 没选中文本，或者选中的文本父元素并不是触发事件的元素
     const { focusNode } = window.getSelection();
     if (
       ["dblclick","mouseup"].indexOf(e.type) > -1 &&
