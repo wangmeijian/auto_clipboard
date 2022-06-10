@@ -142,22 +142,20 @@ class AutoClipboard {
    * @desc 监听事件回调
    */
   _handleAction(e) {
-    // 如果是输入框内容，但没有按下ctrl键（Mac上为command键），不复制
-    if (
-      e &&
-      !e.metaKey &&
-      ["input", "textarea"].includes(
-        document.activeElement.nodeName.toLowerCase()
-      )
-    )
-      return;
+    const isInputActive = ["input", "textarea"].includes(
+      document.activeElement.nodeName.toLowerCase()
+    );
 
+    // 如果是输入框内容，但没有按下ctrl键（Mac上为command键），不复制
+    if ( e && !e.metaKey && isInputActive )return;
     // 判断是否意外地选中了文本
     // 没选中文本，或者选中的文本父元素并不是触发事件的元素
     const { focusNode } = window.getSelection();
     if (
       ["dblclick","mouseup"].indexOf(e.type) > -1 &&
       focusNode && 
+      !isInputActive && 
+      // #Text Node
       !(focusNode.nodeType === 3 && e.target === focusNode.parentElement)
     ) {
       return;
