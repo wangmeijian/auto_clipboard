@@ -1,6 +1,6 @@
 # Auto Clipboard
 
-选中文字，自动复制到剪切板，已发布到chrome应用商店，[立即体验](https://chrome.google.com/webstore/detail/auto-clipboard/inhnhgihdkbalmmojcbpalkkmhkmcdjm)
+选中文本即复制的插件，已发布到chrome应用商店，[立即体验](https://chrome.google.com/webstore/detail/auto-clipboard/inhnhgihdkbalmmojcbpalkkmhkmcdjm)
 
 ## 更新日志：  
 
