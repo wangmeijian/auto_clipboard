@@ -130,8 +130,17 @@ class AutoClipboard {
    * @desc 更新Message样式
    * @style CSSStyleDeclaration
    */
-  _updateMessageStyle(style) {
-    if (!this.message) return;
+  async _updateMessageStyle(style) {
+    // 不存在则重新创建
+    if (!document.querySelector('ac-message')) {
+      await this._getStorage().then((config) => {
+        this._createMessage(
+          config.background,
+          config.color,
+          config.messagePosition
+        );
+      });
+    };
     Object.keys(style).forEach((key) => {
       if (key in this.message.style) {
         this.message.style[key] = style[key];
