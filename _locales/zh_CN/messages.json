@@ -6,7 +6,7 @@
     "message": "自动剪切板"
   },
   "description": {
-    "message": "选中文本自动复制到剪切板，节省你的时间"
+    "message": "选中即复制"
   },
   "copyError": {
     "message": "复制失败: "

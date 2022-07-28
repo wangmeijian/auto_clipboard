@@ -142,22 +142,33 @@ class AutoClipboard {
    * @desc 监听事件回调
    */
   _handleAction(e) {
+    // 是否普通输入框
+    const isInputActive = ["input", "textarea"].includes(
+      document.activeElement.nodeName.toLowerCase()
+    );
+    // 是否富文本编辑器
+    const isRichTextEditor = () => {
+      const activeElement = document.activeElement;
+      const isElementContenteditable = (element) => {
+        if(!element || element.parentElement === null)return false;
+        
+        return element.getAttribute('contenteditable') === 'true' || isElementContenteditable(element.parentElement);
+      }
+      return isElementContenteditable(activeElement);
+    }
+    // 当前聚焦的元素是否属于富文本编辑器的一部分
+    const activeElementIsRichTextEditor = isRichTextEditor();
     // 如果是输入框内容，但没有按下ctrl键（Mac上为command键），不复制
-    if (
-      e &&
-      !e.metaKey &&
-      ["input", "textarea"].includes(
-        document.activeElement.nodeName.toLowerCase()
-      )
-    )
-      return;
-
+    if ( e && !e.metaKey && (isInputActive || activeElementIsRichTextEditor) )return;
     // 判断是否意外地选中了文本
     // 没选中文本，或者选中的文本父元素并不是触发事件的元素
     const { focusNode } = window.getSelection();
     if (
       ["dblclick","mouseup"].indexOf(e.type) > -1 &&
       focusNode && 
+      !isInputActive && 
+      !activeElementIsRichTextEditor && 
+      // #Text Node
       !(focusNode.nodeType === 3 && e.target === focusNode.parentElement)
     ) {
       return;

@@ -8,7 +8,7 @@
     "description": "鼠标滑过插件图标时的提示语"
   },
   "description": {
-    "message": "Selected text is automatically copied to the clipboard, saving you time",
+    "message": "Copy when selected",
     "description": "插件描述"
   },
   "copyError": {
