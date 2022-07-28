@@ -3,6 +3,9 @@
 选中文本即复制的插件，已发布到chrome应用商店，[立即体验](https://chrome.google.com/webstore/detail/auto-clipboard/inhnhgihdkbalmmojcbpalkkmhkmcdjm)
 
 ## 更新日志：  
+### 0.5.0
+```2022-07-28```
+* 在富文本编辑器内部，优化为选中文本需按下Ctrl才会复制，和输入框的交互逻辑保持一致
 
 ### 0.4.6
 ```2022-06-10```
