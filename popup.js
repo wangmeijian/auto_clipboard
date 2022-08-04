@@ -37,7 +37,7 @@ class Popup {
   _buildHistoryHTML(filterString = "") {
     if (this._history.length === 0) return `<div class="empty">${i18n("historyEmpty")}</div>`;
     filterString = filterString.trim().toLowerCase();
-    const includeCode = /\<[^>]+\>/;
+    const includeCode = /<[^>]+>/;
 
     return this._history
       .filter((item) => {
@@ -83,7 +83,7 @@ class Popup {
           messageEle.style.display = "none";
         }, 1500);
       })
-      .catch((error) => {});
+      .catch(() => {});
   }
 
   /**
@@ -107,7 +107,7 @@ class Popup {
       (e) => {
         if (e.target.className.split(/\s+/).indexOf("delete_item") > -1) {
           const index = e.target.getAttribute("dindex");
-          if (typeof index === undefined) return;
+          if (typeof index === "undefined") return;
           this._history.splice(index, 1);
           chrome.storage.local.set({
             [this._STORAGE_KEY]: this._history,
