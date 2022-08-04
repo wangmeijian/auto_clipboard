@@ -140,7 +140,7 @@ class AutoClipboard {
           config.messagePosition
         );
       });
-    };
+    }
     Object.keys(style).forEach((key) => {
       if (key in this.message.style) {
         this.message.style[key] = style[key];

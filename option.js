@@ -2,9 +2,9 @@ const i18n = key => chrome.i18n.getMessage(key);
 
 // 默认颜色
 const DEFAULT_COLOR = {
-  background: '#51b362',
+  background: "#51b362",
   color: "#FFFFFF",
-}
+};
 
 const optionsHTML = `
   <div class="auto_clipboard_options">
@@ -29,10 +29,7 @@ document.body.appendChild(optionsDOM)
 
 const dq = selector => document.querySelector(selector);
 const optionForm = dq('#optionForm');
-const saveButton = dq('#submit');
-const resetButton = dq('#recover');
-const backgroundFormItem = dq('input[name="background"]');
-const colorFormItem = dq('input[name="color"]');
+const saveButton = dq("#submit");
 const prview = dq('#prview');
 const tips = dq('.option_tips');
 
