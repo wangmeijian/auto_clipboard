@@ -197,8 +197,8 @@ class AutoClipboard {
             const boundaryPosition = this._getMessageBoundaryPosition();
             historyStorage.messagePosition = historyStorage.messagePosition || {
               // 给个默认值
-              left: boundaryPosition.left,
-              top: boundaryPosition.top,
+              left: boundaryPosition.left - this.MESSAGE_MARGING,
+              top: boundaryPosition.top - this.MESSAGE_MARGING,
             };
             this._updateMessageStyle({
               background: historyStorage.background,
