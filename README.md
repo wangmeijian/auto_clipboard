@@ -1,4 +1,4 @@
-![logo](/images/icon@128.png)
+![logo](/extension/images/icon@128.png)
 # Auto Clipboard
 
 选中文本自动复制的插件，已发布到chrome应用商店，[立即体验](https://chrome.google.com/webstore/detail/auto-clipboard/inhnhgihdkbalmmojcbpalkkmhkmcdjm)
