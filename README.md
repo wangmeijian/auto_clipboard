@@ -1,7 +1,10 @@
 ![logo](/extension/images/icon@128.png)
 # Auto Clipboard
 
-选中文本自动复制的插件，已发布到chrome应用商店，[立即体验](https://chrome.google.com/webstore/detail/auto-clipboard/inhnhgihdkbalmmojcbpalkkmhkmcdjm)
+浏览器插件，选中文本自动复制，已经发布到：
+
+* Chrome应用商店，[立即体验](https://chrome.google.com/webstore/detail/auto-clipboard/inhnhgihdkbalmmojcbpalkkmhkmcdjm)
+* Edge扩展商店，[立即体验](https://microsoftedge.microsoft.com/addons/detail/%E8%87%AA%E5%8A%A8%E5%89%AA%E5%88%87%E6%9D%BF/oecjpmpbghigjifackhbapkamgaemnkj)
 
 ## 更新日志：  
 
