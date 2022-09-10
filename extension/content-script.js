@@ -11,16 +11,43 @@ class AutoClipboard {
     this.MESSAGE_WIDTH = 100;
     this.MESSAGE_HEIGHT = 30;
     this.MESSAGE_MARGING = 20;
-    this.selectedText = "";
     this.timer = null;
     this.message = null;
+    // 默认值
+    this.websiteIndex = this.websites.length - 1;
     this._init();
   }
 
+  websites = [
+    {
+      regexp: /^https:\/\/wenku\.baidu\.com\/view\//,
+      copySelectedText: () => {
+        let text = AutoClipboard.defaultCopySelectedText();
+        return new Promise((resolve) => {
+          if (!text || text.length === 0) {
+            var matchText = /查看全部包含“([\w\W]*?)”的文档/.exec(
+              document.body.innerHTML
+            );
+            return matchText ? resolve(matchText[1]) : resolve();
+          }
+          return resolve(text);
+        });
+      },
+    },
+    {
+      regexp: /^.+/,
+      copySelectedText: () => {
+        return Promise.resolve(AutoClipboard.defaultCopySelectedText());
+      },
+    },
+  ];
+
   /**
-   * @desc 初始化提示语颜色
+   * @desc 初始化
    */
   _init() {
+    this._detectWebsites();
+    // 初始化提示语颜色
     this._getStorage().then((config) => {
       this._createMessage(
         config.background,
@@ -29,6 +56,20 @@ class AutoClipboard {
       );
     });
     this._addActionListener();
+  }
+
+  /**
+   * @desc 识别特定站点
+   */
+  _detectWebsites() {
+    const self = this;
+    this.websites.find((site, index) => {
+      if (site.regexp.test(location.href)) {
+        self.websiteIndex = index;
+
+        return true;
+      }
+    });
   }
 
   _getMessageBoundaryPosition() {
@@ -52,24 +93,26 @@ class AutoClipboard {
       );
     });
   }
+
   /**
-   * @desc 复制选中的文本
-   * @returns Promise
+   * @desc 默认的复制选中文本的方法
+   * @returns string
    */
-  static copySelectedText() {
+  static defaultCopySelectedText() {
     const selectedText = window.getSelection().toString();
 
-    if (!selectedText || selectedText?.trim().length === 0)
-      return Promise.reject();
-    // 仅在https下可用
-    if (navigator.clipboard && window.isSecureContext) {
-      return navigator.clipboard.writeText(selectedText);
-    } else {
-      return new Promise((resolve, reject) => {
-        document.execCommand("copy") ? resolve() : reject();
-      });
-    }
+    if (!selectedText || selectedText?.trim().length === 0) return "";
+    return selectedText;
   }
+
+  /**
+   * @desc 复制选中的文本
+   * @returns Promise<string | undefined>
+   */
+  copySelectedText() {
+    return this.websites[this.websiteIndex].copySelectedText();
+  }
+
   /**
    * @desc 提示框
    * @arg {string} background 背景色
@@ -177,6 +220,7 @@ class AutoClipboard {
     // 没选中文本，或者选中的文本父元素并不是触发事件的元素
     const { focusNode } = window.getSelection();
     if (
+      window.getSelection().toString().length > 0 &&
       ["mouseup"].indexOf(e.type) > -1 &&
       focusNode &&
       !isInputActive &&
@@ -186,10 +230,18 @@ class AutoClipboard {
     ) {
       return;
     }
-    AutoClipboard.copySelectedText()
-      .then(() => {
-        this.selectedText = window.getSelection().toString();
-        this._setMessageHistory(this.selectedText);
+
+    this.copySelectedText()
+      .then((selectedText) => {
+        if (!selectedText || selectedText.length === 0) return;
+        this._setMessageHistory(selectedText);
+        // 复制到剪切板
+        // 仅在https下可用
+        if (navigator.clipboard && window.isSecureContext) {
+          navigator.clipboard.writeText(selectedText);
+        } else {
+          document.execCommand("copy");
+        }
 
         chrome.storage.sync.get(
           ["background", "color", "messagePosition"],
@@ -220,7 +272,9 @@ class AutoClipboard {
           }
         );
       })
-      .catch(() => {});
+      .catch((e) => {
+        console.log(e);
+      });
   }
   _hideMessageSync() {
     this.timer = setTimeout(() => {
