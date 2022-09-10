@@ -272,9 +272,7 @@ class AutoClipboard {
           }
         );
       })
-      .catch((e) => {
-        console.log(e);
-      });
+      .catch(() => {});
   }
   _hideMessageSync() {
     this.timer = setTimeout(() => {
@@ -338,7 +336,7 @@ class AutoClipboard {
 
     document.addEventListener("keyup", this._combinationKey.bind(this));
     document.addEventListener("mouseup", (e) => {
-      handleActionDebounce(this, e);
+      handleActionDebounce(e);
     });
   }
   /**
