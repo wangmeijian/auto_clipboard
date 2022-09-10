@@ -7,11 +7,12 @@
         -webkit-user-select: auto !important;
       }
     `;
-    document.head.appendChild(globalStyle);
+    document.head && document.head.appendChild(globalStyle);
   };
 
   // 监听DOM变化，移除指定属性
   const removeAttribute = () => {
+    if (!document.body) return;
     const attributes = [
       "oncopy",
       "unselectable",

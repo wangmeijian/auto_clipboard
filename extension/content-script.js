@@ -128,9 +128,9 @@ class AutoClipboard {
     }
   ) {
     // 创建影子DOM
-    const message = document
-      .createElement("ac-message")
-      .attachShadow({ mode: "closed" });
+    const newElement = document.createElement("div");
+    newElement.id = "acMessage";
+    const message = newElement.attachShadow({ mode: "closed" });
     const content = document.createElement("div");
     const contentStyle = document.createElement("style");
     content.id = "autoClipboardMessage";
@@ -175,7 +175,8 @@ class AutoClipboard {
    */
   async _updateMessageStyle(style) {
     // 不存在则重新创建
-    if (!document.querySelector("ac-message")) {
+    if (!document.querySelector("#acMessage")) {
+      // if (!document.querySelector("ac-message")) {
       await this._getStorage().then((config) => {
         this._createMessage(
           config.background,
@@ -218,15 +219,16 @@ class AutoClipboard {
       return;
     // 判断是否意外地选中了文本
     // 没选中文本，或者选中的文本父元素并不是触发事件的元素
-    const { focusNode } = window.getSelection();
+    const { anchorNode } = window.getSelection();
+
     if (
       window.getSelection().toString().length > 0 &&
       ["mouseup"].indexOf(e.type) > -1 &&
-      focusNode &&
+      anchorNode &&
       !isInputActive &&
       !activeElementIsRichTextEditor &&
       // #Text Node
-      !(focusNode.nodeType === 3 && e.target === focusNode.parentElement)
+      !(anchorNode.nodeType === 3 && e.target === anchorNode.parentElement)
     ) {
       return;
     }
