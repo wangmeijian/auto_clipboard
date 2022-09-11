@@ -6,7 +6,7 @@
 * Chrome应用商店，[立即体验](https://chrome.google.com/webstore/detail/auto-clipboard/inhnhgihdkbalmmojcbpalkkmhkmcdjm)
 * Edge扩展商店，[立即体验](https://microsoftedge.microsoft.com/addons/detail/%E8%87%AA%E5%8A%A8%E5%89%AA%E5%88%87%E6%9D%BF/oecjpmpbghigjifackhbapkamgaemnkj)
 
-<img width="491" alt="auto-clipboard" src="https://user-images.githubusercontent.com/9384140/189491631-1161220d-4233-48b2-a611-b50fa2fd089d.png">
+<img src="https://user-images.githubusercontent.com/9384140/189511984-dec5b737-dfbd-4f10-97b3-4586048b57be.png" width="700" />
 
 ## 更新日志：  
 
