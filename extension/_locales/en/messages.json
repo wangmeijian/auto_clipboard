@@ -8,7 +8,7 @@
     "description": "鼠标滑过插件图标时的提示语"
   },
   "description": {
-    "message": "Copy when selected",
+    "message": "Select automatic copy of text, crack selection prohibition and copy prohibition, support various libraries and websites, and support viewing the history of clipboard",
     "description": "插件描述"
   },
   "copyError": {
