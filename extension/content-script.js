@@ -217,24 +217,6 @@ class AutoClipboard {
     // 如果是输入框内容，但没有按下ctrl键（Mac上为command键），不复制
     if (e && !e.metaKey && (isInputActive || activeElementIsRichTextEditor))
       return;
-    // 判断是否意外地选中了文本
-    // 没选中文本，或者选中的文本父元素并不是触发事件的元素
-    const { anchorNode } = window.getSelection();
-    if (
-      window.getSelection().toString().length > 0 &&
-      ["mouseup"].indexOf(e.type) > -1 &&
-      anchorNode &&
-      !isInputActive &&
-      !activeElementIsRichTextEditor &&
-      // #Text Node
-      !(
-        anchorNode.nodeType === 3 &&
-        (e.target === anchorNode.parentElement ||
-          anchorNode.parentElement.contains(e.target))
-      )
-    ) {
-      return;
-    }
 
     this.copySelectedText()
       .then((selectedText) => {
