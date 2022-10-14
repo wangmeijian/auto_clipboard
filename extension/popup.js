@@ -29,7 +29,9 @@ class Popup {
     const optionsHTML = `
       <div class="popup">
         <h1 class="popup_title">${i18n("popupTitle")}</h1>
-        <input class="search_history" placeholder="${i18n("searchHistory")}" />
+        <input class="search_history" id="searchHistory" placeholder="${i18n(
+          "searchHistory"
+        )}" />
         <div class="copy_history">
           ${historyHTML}
         </div>
@@ -52,13 +54,17 @@ class Popup {
 
     return (
       this._history
+        .map((item, index) => {
+          // 固定index，即使过滤后也不会变
+          item.index = index;
+          return item;
+        })
         .filter((item) => {
           return filterString.length > 0
             ? item.value.toLowerCase().includes(filterString)
             : true;
         })
-        .sort((a) => (a.value ? 1 : -1))
-        .map((item, index) => {
+        .map((item) => {
           const result = includeCode.test(item.value)
             ? this._renderCode(item.value)
             : `<a class="click_target" title="${item.value}" href="#">${item.value}</a>`;
@@ -68,11 +74,11 @@ class Popup {
             item.topping ? "topping" : ""
           }" title="${
             item.topping ? i18n("cancelStick") : i18n("stick")
-          }" dindex="${index}"></span>
+          }" dindex="${item.index}"></span>
           ${result}
           <span class="action_item delete_item" title="${i18n(
             "delete"
-          )}" dindex="${index}"></span>
+          )}" dindex="${item.index}"></span>
         </span>`;
         })
         .join("") + `<div class="privacy">${i18n("privacy")}</div>`
@@ -127,6 +133,8 @@ class Popup {
       "click",
       (e) => {
         const classList = e.target.className.split(/\s+/);
+        const filterString = document.querySelector("#searchHistory").value;
+
         // 删除记录
         const handleDelete = (e) => {
           const index = e.target.getAttribute("dindex");
@@ -136,7 +144,7 @@ class Popup {
             [this._STORAGE_KEY]: this._history,
           });
           // 刷新页面
-          this._reload();
+          this._reload(filterString);
         };
         // 置顶
         const handleTopping = (e) => {
@@ -158,7 +166,7 @@ class Popup {
             [this._STORAGE_KEY]: this._history,
           });
           // 刷新页面
-          this._reload();
+          this._reload(filterString);
         };
 
         if (classList.indexOf("delete_item") > -1) {
