@@ -59,6 +59,10 @@
     "description": "stick",
     "message": "置顶"
   },
+  "cancelStick": {
+    "description": "cancel stick",
+    "message": "取消置顶"
+  },
   "popupTitle": {
     "description": "Clipboard",
     "message": "剪切板"

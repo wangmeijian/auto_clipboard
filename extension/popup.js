@@ -66,7 +66,9 @@ class Popup {
           return `<span class="copy_item stick">
           <span class="action_item stick_item ${
             item.topping ? "topping" : ""
-          }" title="${i18n("stick")}" dindex="${index}"></span>
+          }" title="${
+            item.topping ? i18n("cancelStick") : i18n("stick")
+          }" dindex="${index}"></span>
           ${result}
           <span class="action_item delete_item" title="${i18n(
             "delete"

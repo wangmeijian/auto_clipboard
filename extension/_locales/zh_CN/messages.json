@@ -44,6 +44,9 @@
   "stick": {
     "message": "置顶"
   },
+  "cancelStick": {
+    "message": "取消置顶"
+  },
   "popupTitle": {
     "message": "剪切板"
   },
