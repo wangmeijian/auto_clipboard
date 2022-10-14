@@ -9,18 +9,29 @@ const DEFAULT_COLOR = {
 const optionsHTML = `
   <div class="auto_clipboard_options">
     <form id="optionForm" name="optionForm">
-      <div class="form_item">${i18n("messageBackground")}<label><input type="color" name="background" value="${DEFAULT_COLOR.background}" /></label></div>
-      <div class="form_item">${i18n("messageColor")}<label><input type="color" name="color" value="${DEFAULT_COLOR.color}" /></label></div>
+      <div class="form_item">${i18n(
+        "messageBackground"
+      )}<label><input type="color" name="background" value="${
+  DEFAULT_COLOR.background
+}" /></label></div>
+      <div class="form_item">${i18n(
+        "messageColor"
+      )}<label><input type="color" name="color" value="${
+  DEFAULT_COLOR.color
+}" /></label></div>
+      <div class="prview_wrap">
+        <span class="preview_desc">${i18n("prview")}：</span>
+        <span class="prview rightBottom" id="prview">${i18n(
+          "copySuccess"
+        )}</span>
+      </div>
       <div class="form_submit">
         <button id="submit" type="button">${i18n("save")}</button>
         <button id="recover" type="reset">${i18n("reset")}</button>
         <span class="option_tips">${i18n("saveSuccess")}</span>
       </div>
     </form>
-    <div class="prview_wrap">
-      <div class="preview_desc">${i18n("prview")}</div>
-      <div class="prview rightBottom" id="prview">${i18n("copySuccess")}</div>
-    </div>
+    
   </div>
 `;
 const optionsDOM = document.createElement('div')

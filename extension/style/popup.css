@@ -73,13 +73,12 @@ body{
 }
 .copy_history .copy_item{
   display: grid;
-  grid-template-columns: auto 30px;
+  grid-template-columns: 40px auto 30px;
   font-size: 14px;
   line-height: 36px;
   text-align: left;
   color: rgba(0,0,0,0.85);
   text-decoration: none;
-  padding: 0 0 0 10px;
 }
 .copy_history .copy_item pre,.copy_history .copy_item code{
   margin: 0;
@@ -90,6 +89,9 @@ body{
 }
 .copy_history .copy_item.stick .stick_item{
   visibility: visible;
+  opacity: 0.1;
+}
+.copy_history .copy_item.stick .stick_item.topping {
   opacity: 1;
 }
 .copy_history .copy_item .click_target{

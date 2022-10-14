@@ -279,19 +279,30 @@ class AutoClipboard {
       text = text.slice(0, this._MAX_ITEM_LENGTH);
     }
     const STORAGE_KEY = "auto_clipboard_history";
-    let historyStorage = (await chrome.storage?.local.get([STORAGE_KEY])) ?? {};
+    let historyStorage = ((await chrome.storage?.local.get([STORAGE_KEY])) ??
+      {})[STORAGE_KEY];
     let historysMerge = [];
     // 更新
     const updateMessageHistory = () => {
       // 复制的内容和历史记录中某条重复，将其位置放到第一位
-      if (historyStorage[STORAGE_KEY].includes(text)) {
-        const index = historyStorage[STORAGE_KEY].findIndex(
-          (item) => item === text
-        );
-        historyStorage[STORAGE_KEY].splice(index, 1);
+      const repeatIndex = historyStorage.findIndex(
+        (item) => item.value === text
+      );
+      const toppingCount = historyStorage.filter((item) => item.topping).length;
+
+      let isCurrentTopping = false;
+      let insertIndex = toppingCount || 0;
+
+      if (repeatIndex > -1) {
+        isCurrentTopping = historyStorage[repeatIndex].topping;
+        historyStorage.splice(repeatIndex, 1);
+        insertIndex = isCurrentTopping ? 0 : toppingCount;
       }
-      historyStorage[STORAGE_KEY].splice(0, 0, text);
-      historysMerge = historyStorage[STORAGE_KEY];
+      historyStorage.splice(insertIndex, 0, {
+        value: text,
+        topping: isCurrentTopping,
+      });
+      historysMerge = historyStorage;
       // 限制容量为this._MAX_HISTORY_LENGTH
       if (historysMerge.length > this._MAX_HISTORY_LENGTH) {
         historysMerge.length = this._MAX_HISTORY_LENGTH;
@@ -299,13 +310,19 @@ class AutoClipboard {
     };
 
     // 已有历史记录 ? 更新历史记录 : 设置历史记录
-    historyStorage[STORAGE_KEY]
+    historyStorage
       ? updateMessageHistory()
-      : (historysMerge = [text]);
+      : (historysMerge = [
+          {
+            topping: false,
+            value: text,
+          },
+        ]);
     chrome.storage.local.set({
       [STORAGE_KEY]: historysMerge,
     });
   }
+
   /**
    * @desc 组合键
    * @arg {Event} event 事件对象

@@ -13,7 +13,18 @@ class Popup {
   async _initPage() {
     const storageKey = this._STORAGE_KEY;
     const historyStorage = await chrome.storage.local.get([storageKey]);
-    this._history = historyStorage[storageKey] || [];
+    // 后续操作的都是this._history
+    this._history = (historyStorage[storageKey] || []).map((item) =>
+      // 增加置顶功能，将存储的数据格式从string改为object
+      // string => { value: string, topping: boolean }
+      typeof item === "string"
+        ? {
+            value: item,
+            topping: false,
+          }
+        : item
+    );
+
     const historyHTML = this._buildHistoryHTML();
     const optionsHTML = `
       <div class="popup">
@@ -39,23 +50,31 @@ class Popup {
     filterString = filterString.trim().toLowerCase();
     const includeCode = /<[^>]+>/;
 
-    return this._history
-      .filter((item) => {
-        return filterString.length > 0
-          ? item.toLowerCase().includes(filterString)
-          : true;
-      })
-      .map((item, index) => {
-        const result = includeCode.test(item) ? this._renderCode(item) : `<a class="click_target" title="${item}" href="#">${item}</a>`;
-        
-        return `<span class="copy_item stick">
+    return (
+      this._history
+        .filter((item) => {
+          return filterString.length > 0
+            ? item.value.toLowerCase().includes(filterString)
+            : true;
+        })
+        .sort((a) => (a.value ? 1 : -1))
+        .map((item, index) => {
+          const result = includeCode.test(item.value)
+            ? this._renderCode(item.value)
+            : `<a class="click_target" title="${item.value}" href="#">${item.value}</a>`;
+
+          return `<span class="copy_item stick">
+          <span class="action_item stick_item ${
+            item.topping ? "topping" : ""
+          }" title="${i18n("stick")}" dindex="${index}"></span>
           ${result}
           <span class="action_item delete_item" title="${i18n(
             "delete"
           )}" dindex="${index}"></span>
         </span>`;
-      })
-      .join("") + `<div class="privacy">${i18n("privacy")}</div>`;
+        })
+        .join("") + `<div class="privacy">${i18n("privacy")}</div>`
+    );
   }
 
   _renderCode(str = ''){
@@ -101,11 +120,13 @@ class Popup {
       },
       false
     );
-    // 删除记录
+
     window.addEventListener(
       "click",
       (e) => {
-        if (e.target.className.split(/\s+/).indexOf("delete_item") > -1) {
+        const classList = e.target.className.split(/\s+/);
+        // 删除记录
+        const handleDelete = (e) => {
           const index = e.target.getAttribute("dindex");
           if (typeof index === "undefined") return;
           this._history.splice(index, 1);
@@ -114,6 +135,34 @@ class Popup {
           });
           // 刷新页面
           this._reload();
+        };
+        // 置顶
+        const handleTopping = (e) => {
+          const index = e.target.getAttribute("dindex");
+          if (typeof index === "undefined") return;
+
+          // 置顶数据数量
+          const toppingCount = this._history.filter(
+            (item) => item.topping
+          ).length;
+          const isCurrentTopping = this._history[index].topping;
+          const activeItem = this._history.splice(index, 1)[0];
+          const insertIndex = isCurrentTopping ? toppingCount - 1 : 0;
+
+          activeItem.topping = !activeItem.topping;
+          this._history.splice(insertIndex, 0, activeItem);
+
+          chrome.storage.local.set({
+            [this._STORAGE_KEY]: this._history,
+          });
+          // 刷新页面
+          this._reload();
+        };
+
+        if (classList.indexOf("delete_item") > -1) {
+          handleDelete(e);
+        } else if (classList.indexOf("stick_item") > -1) {
+          handleTopping(e);
         }
       },
       false
@@ -121,7 +170,10 @@ class Popup {
     // 回车自动复制
     window.addEventListener("keyup", (e) => {
       const code = e.code || e.key;
-      if (code === "Enter" && e.target.className.split(/\s+/).indexOf("copy_item") > -1) {
+      if (
+        code === "Enter" &&
+        e.target.className.split(/\s+/).indexOf("copy_item") > -1
+      ) {
         this._selectText(e.target.querySelector(".click_target"));
         this._copy();
       }
