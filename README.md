@@ -8,7 +8,9 @@
 
 <img src="https://user-images.githubusercontent.com/9384140/189513314-5258a8d9-28a8-49b3-b4f5-9d43bc85fe7f.png" width="400" />
 
-
+## 里程碑
+* 2022-10-25 全网用户突破1000人
+  
 ## 更新日志：  
 
 ### 0.6.0
