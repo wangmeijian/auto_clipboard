@@ -70,5 +70,13 @@
   "privacy": {
     "description": "Clipboard data is only stored locally in your browser",
     "message": "剪切板数据仅保存在您的浏览器本地"
+  },
+  "setting": {
+    "description": "Setting",
+    "message": "设置"
+  },
+  "back": {
+    "description": "Back",
+    "message": "返回"
   }
 }

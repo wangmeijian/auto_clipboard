@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "__MSG_extName__",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "action": {
     "default_icon": {              
       "16": "images/icon@128.png",   
@@ -35,8 +35,9 @@
   "default_locale": "zh_CN",
   "description": "__MSG_description__",
   "author": "wangmeijian",
-  "options_ui": {
-    "page": "option.html"
-  },
-  "permissions": ["clipboardWrite","storage"]
+  "permissions": [
+    "clipboardWrite",
+    "storage",
+    "management"
+  ]
 }

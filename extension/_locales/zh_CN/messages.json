@@ -52,5 +52,11 @@
   },
   "privacy": {
     "message": "剪切板数据仅保存在您的浏览器本地"
+  },
+  "setting": {
+    "message": "设置"
+  },
+  "back": {
+    "message": "返回"
   }
 }
