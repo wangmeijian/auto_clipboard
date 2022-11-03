@@ -78,5 +78,9 @@
   "back": {
     "description": "Back",
     "message": "返回"
+  },
+  "nostyle": {
+    "description": "Copy Without Formatting",
+    "message": "无格式复制"
   }
 }

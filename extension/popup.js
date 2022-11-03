@@ -61,9 +61,7 @@ class Popup {
       <div class="auto_clipboard_options">
         <h1 class="popup_title"><span class="back" title="${i18n(
           "back"
-        )}"></span>${i18n(
-          "setting"
-        )}</h1>
+        )}"></span>${i18n("setting")}</h1>
         <form id="optionForm" name="optionForm">
           <h3>一. 提示语颜色</h3>
           <div class="setting-color">
@@ -71,13 +69,13 @@ class Popup {
               <div class="form_item">${i18n(
                 "messageBackground"
               )}<label><input type="color" name="background" value="${
-          DEFAULT_COLOR.background
-        }" /></label></div>
+      DEFAULT_COLOR.background
+    }" /></label></div>
               <div class="form_item">${i18n(
                 "messageColor"
               )}<label><input type="color" name="color" value="${
-          DEFAULT_COLOR.color
-        }" /></label></div>
+      DEFAULT_COLOR.color
+    }" /></label></div>
             </div>
             <div class="prview_wrap">
               <span class="preview_desc">${i18n("prview")}：</span>
@@ -96,7 +94,7 @@ class Popup {
     `;
     const optionsDOM = document.createElement("div");
     optionsDOM.className = "options_wrapper";
-    optionsDOM.setAttribute('tabindex', '-1');
+    optionsDOM.setAttribute("tabindex", "-1");
     optionsDOM.innerHTML = optionsHTML;
     document.body.appendChild(optionsDOM);
 
@@ -290,9 +288,11 @@ class Popup {
         };
         // 显示配置项
         const openOptions = (open = true) => {
-          const optionsWrap = document.querySelector('.options_wrapper');
-          open ? (optionsWrap.classList.add('open'), optionsWrap.focus()) : optionsWrap.classList.remove('open');
-        }
+          const optionsWrap = document.querySelector(".options_wrapper");
+          open
+            ? (optionsWrap.classList.add("open"), optionsWrap.focus())
+            : optionsWrap.classList.remove("open");
+        };
 
         if (classList.indexOf("delete_item") > -1) {
           handleDelete(e);
@@ -350,8 +350,9 @@ class Popup {
    * @returns Promise
    */
   static copySelectedText() {
-    const selectedText = window.getSelection().toString();
+    const selectedText = window.getSelection().toString().replaceAll(/\u00a0/g, ' ');
     if (!selectedText || selectedText?.length === 0) return Promise.reject();
+    console.log(navigator.clipboard);
     // 仅在https下可用
     if (navigator.clipboard && window.isSecureContext) {
       return navigator.clipboard.writeText(selectedText);

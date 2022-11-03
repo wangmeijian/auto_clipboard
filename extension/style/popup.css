@@ -169,7 +169,6 @@ body{
   position: absolute;
   width: 100%;
   height: 100vh;
-  overflow-y: auto;
   left: -110%;
   top: 0px;
   opacity: 0;
@@ -189,11 +188,15 @@ body{
 }
 form[name="optionForm"]{
   padding: 20px;
+  overflow-y: auto;
 }
 .auto_clipboard_options .form_item{
   line-height: 32px;
   font-size: 14px;
   vertical-align: text-top;
+}
+.auto_clipboard_options .form_item .label, .auto_clipboard_options .form_item input[type="checkbox"]{
+  cursor: pointer;
 }
 .auto_clipboard_options .form_submit{
   line-height: 32px;

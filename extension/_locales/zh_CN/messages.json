@@ -58,5 +58,8 @@
   },
   "back": {
     "message": "返回"
+  },
+  "nostyle": {
+    "message": "无格式复制"
   }
 }
