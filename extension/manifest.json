@@ -37,7 +37,6 @@
   "author": "wangmeijian",
   "permissions": [
     "clipboardWrite",
-    "storage",
-    "management"
+    "storage"
   ]
 }
