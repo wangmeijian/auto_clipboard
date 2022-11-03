@@ -28,7 +28,7 @@ class AutoClipboard {
             var matchText = /查看全部包含“([\w\W]*?)”的文档/.exec(
               document.body.innerHTML
             );
-            return matchText ? resolve(matchText[1]) : resolve();
+            return matchText ? resolve(matchText[1]) : resolve('');
           }
           return resolve(text);
         });
@@ -109,8 +109,11 @@ class AutoClipboard {
    * @desc 复制选中的文本
    * @returns Promise<string | undefined>
    */
-  copySelectedText() {
-    return this.websites[this.websiteIndex].copySelectedText();
+  async copySelectedText() {
+    const result = await this.websites[this.websiteIndex].copySelectedText();
+    return new Promise((resolve) => {
+      return result && result.length ? resolve(result.replaceAll(/\u00a0/g, ' ')) : resolve("");
+    })
   }
 
   /**
