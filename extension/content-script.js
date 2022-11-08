@@ -282,7 +282,7 @@ class AutoClipboard {
       text = text.slice(0, this._MAX_ITEM_LENGTH);
     }
     const STORAGE_KEY = "auto_clipboard_history";
-    let historyStorage = ((await chrome.storage?.local.get([STORAGE_KEY])) ??
+    let historyStorage = ((await chrome.storage?.local?.get([STORAGE_KEY])) ??
       {})[STORAGE_KEY];
     let historysMerge = [];
     // 更新
