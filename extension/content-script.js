@@ -221,7 +221,7 @@ class AutoClipboard {
     const activeElementIsRichTextEditor = isRichTextEditor();
     // 如果没打开自动复制开关 || 当前站点在不自动复制的白名单列表
     // 如果选择的是输入框内容，但没有按下ctrl键（Mac上为command键），不复制
-    if (storage.copy === false || (storage.whitelist && storage.whitelist[currenthost]) || e && !e.metaKey && (isInputActive || activeElementIsRichTextEditor))
+    if (!storage.copy || (storage.whitelist && storage.whitelist[currenthost]) || e && !e.metaKey && (isInputActive || activeElementIsRichTextEditor))
       return;
 
     this.copySelectedText()
