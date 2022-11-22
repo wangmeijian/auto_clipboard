@@ -59,7 +59,10 @@
   "back": {
     "message": "返回"
   },
-  "nostyle": {
-    "message": "无格式复制"
+  "dissolve": {
+    "message": "自动破解网页，允许选中和复制"
+  },
+  "copy" : {
+    "message": "选择文本自动复制"
   }
 }

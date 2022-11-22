@@ -197,7 +197,7 @@ class AutoClipboard {
   /**
    * @desc 监听事件回调
    */
-  _handleAction(e) {
+  async _handleAction(e) {
     // 是否普通输入框
     const isInputActive = ["input", "textarea"].includes(
       document.activeElement.nodeName.toLowerCase()
@@ -215,10 +215,13 @@ class AutoClipboard {
       };
       return isElementContenteditable(activeElement);
     };
+    const storage = await chrome.storage.sync.get(['copy', 'whitelist']);
+    const currenthost = new URL(location.href).origin;
     // 当前聚焦的元素是否属于富文本编辑器的一部分
     const activeElementIsRichTextEditor = isRichTextEditor();
-    // 如果是输入框内容，但没有按下ctrl键（Mac上为command键），不复制
-    if (e && !e.metaKey && (isInputActive || activeElementIsRichTextEditor))
+    // 如果没打开自动复制开关 || 当前站点在不自动复制的白名单列表
+    // 如果选择的是输入框内容，但没有按下ctrl键（Mac上为command键），不复制
+    if (storage.copy === false || (storage.whitelist && storage.whitelist[currenthost]) || e && !e.metaKey && (isInputActive || activeElementIsRichTextEditor))
       return;
 
     this.copySelectedText()
@@ -321,7 +324,7 @@ class AutoClipboard {
             value: text,
           },
         ]);
-    chrome.storage.local.set({
+    chrome.storage.local?.set({
       [STORAGE_KEY]: historysMerge,
     });
   }

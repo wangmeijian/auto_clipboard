@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "__MSG_extName__",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "action": {
     "default_icon": {              
       "16": "images/icon@128.png",   
@@ -12,6 +12,9 @@
     },
     "default_title": "__MSG_defaultTitle__",
     "default_popup": "popup.html"
+  },
+  "background": {
+    "service_worker": "background.js"
   },
   "icons": {     
     "16": "images/icon@128.png",   
@@ -37,6 +40,7 @@
   "author": "wangmeijian",
   "permissions": [
     "clipboardWrite",
-    "storage"
+    "storage",
+    "contextMenus"
   ]
 }

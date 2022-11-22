@@ -52,7 +52,8 @@ class Popup {
     const i18n = (key) => chrome.i18n.getMessage(key);
 
     // 默认颜色
-    const DEFAULT_COLOR = {
+    const DEFAULT_VALUE = {
+      copy: true,
       background: "#51b362",
       color: "#FFFFFF",
     };
@@ -63,18 +64,23 @@ class Popup {
           "back"
         )}"></span>${i18n("setting")}</h1>
         <form id="optionForm" name="optionForm">
-          <h3>一. 提示语颜色</h3>
+          <h3>一. 操作配置</h3>
+          <div class="form_item"><label class="label"><input type="checkbox" name="copy" checked="${
+            DEFAULT_VALUE.copy
+          }" />${i18n("copy")}</label>
+          </div>
+          <h3>二. 提示语颜色</h3>
           <div class="setting-color">
             <div class="setting-item">
               <div class="form_item">${i18n(
                 "messageBackground"
               )}<label><input type="color" name="background" value="${
-      DEFAULT_COLOR.background
+      DEFAULT_VALUE.background
     }" /></label></div>
               <div class="form_item">${i18n(
                 "messageColor"
               )}<label><input type="color" name="color" value="${
-      DEFAULT_COLOR.color
+      DEFAULT_VALUE.color
     }" /></label></div>
             </div>
             <div class="prview_wrap">
@@ -112,16 +118,21 @@ class Popup {
     };
 
     // 初始化
-    const init = (colorConfig = DEFAULT_COLOR) => {
+    const init = (config = DEFAULT_VALUE) => {
       // 数据回填表单
-      document.optionForm.background.value = colorConfig.background;
-      document.optionForm.color.value = colorConfig.color;
+      document.optionForm.background.value = config.background;
+      document.optionForm.color.value = config.color;
+      document.optionForm.copy.checked = config.copy;
       // 更新预览
-      updatePrviewStyle(colorConfig);
+      updatePrviewStyle({
+        background: config.background,
+        color: config.color,
+      });
     };
-    chrome.storage.sync.get(["background", "color"], (results) => {
+
+    chrome.storage.sync.get(["background", "color", "copy"], (results) => {
       init({
-        ...DEFAULT_COLOR,
+        ...DEFAULT_VALUE,
         ...(results || {}),
       });
     });
@@ -134,6 +145,7 @@ class Popup {
         {
           background: data.get("background"),
           color: data.get("color"),
+          copy: data.get("copy"),
         },
         () => {
           tips.style.display = "inline-block";
@@ -145,10 +157,14 @@ class Popup {
     });
 
     optionForm.addEventListener("reset", () => {
-      updatePrviewStyle(DEFAULT_COLOR);
+      updatePrviewStyle({
+        background: DEFAULT_VALUE.background,
+        color: DEFAULT_VALUE.color,
+      });
 
-      document.optionForm.background.value = DEFAULT_COLOR.background;
-      document.optionForm.color.value = DEFAULT_COLOR.color;
+      document.optionForm.background.value = DEFAULT_VALUE.background;
+      document.optionForm.color.value = DEFAULT_VALUE.color;
+      document.optionForm.copy.checked = DEFAULT_VALUE.copy;
     });
 
     optionForm.addEventListener("change", (e) => {

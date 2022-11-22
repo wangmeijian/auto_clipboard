@@ -79,8 +79,12 @@
     "description": "Back",
     "message": "返回"
   },
-  "nostyle": {
-    "description": "Copy Without Formatting",
-    "message": "无格式复制"
+  "dissolve": {
+    "description": "Automatically crack web pages, allowing selection and copying",
+    "message": "自动破解网页，允许选中和复制"
+  },
+  "copy" : {
+    "description": "Select Automatic Copy of Text",
+    "message": "选择文本自动复制"
   }
 }
