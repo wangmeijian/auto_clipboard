@@ -64,12 +64,12 @@ class Popup {
           "back"
         )}"></span>${i18n("setting")}</h1>
         <form id="optionForm" name="optionForm">
-          <h3>一. 操作配置</h3>
+          <h3>${i18n("operation")}</h3>
           <div class="form_item"><label class="label"><input type="checkbox" name="copy" checked="${
             DEFAULT_VALUE.copy
           }" />${i18n("copy")}</label>
           </div>
-          <h3>二. 提示语颜色</h3>
+          <h3>${i18n("color")}</h3>
           <div class="setting-color">
             <div class="setting-item">
               <div class="form_item">${i18n(

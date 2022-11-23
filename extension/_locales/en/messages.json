@@ -86,5 +86,21 @@
   "copy" : {
     "description": "Select Automatic Copy of Text",
     "message": "选择文本自动复制"
+  },
+  "operation": {
+    "description": "Operation configuration",
+    "message": "一. 操作配置"
+  },
+  "color": {
+    "description": "Prompt color",
+    "message": "二. 提示语颜色"
+  },
+  "auto_copy": {
+    "description": "Automatically copy the content of this site",
+    "message": "自动复制本站内容"
+  },
+  "disable_copy": {
+    "description": "Do not copy the content of this site automatically",
+    "message": "不要自动复制本站内容"
   }
 }

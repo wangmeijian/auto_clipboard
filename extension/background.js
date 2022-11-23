@@ -1,13 +1,15 @@
+const i18n = (key) => chrome.i18n.getMessage(key);
+
 chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.create({
     id: "auto_copy",
-    title: "自动复制本站内容",
+    title: i18n("auto_copy"),
     contexts: ["all"],
   });
 
   chrome.contextMenus.create({
     id: "disable_copy",
-    title: "不要自动复制本站内容",
+    title: i18n("disable_copy"),
     contexts: ["all"],
   });
 });

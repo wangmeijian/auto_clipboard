@@ -64,5 +64,17 @@
   },
   "copy" : {
     "message": "选择文本自动复制"
+  },
+  "operation": {
+    "message": "一. 操作配置"
+  },
+  "color": {
+    "message": "二. 提示语颜色"
+  },
+  "auto_copy": {
+    "message": "自动复制本站内容"
+  },
+  "disable_copy": {
+    "message": "不要自动复制本站内容"
   }
 }
