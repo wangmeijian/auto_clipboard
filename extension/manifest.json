@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "__MSG_extName__",
-  "version": "0.8.2",
+  "version": "0.9.0",
   "action": {
     "default_icon": {              
       "16": "images/icon@128.png",   

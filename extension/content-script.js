@@ -179,7 +179,6 @@ class AutoClipboard {
   async _updateMessageStyle(style) {
     // 不存在则重新创建
     if (!document.querySelector("#acMessage")) {
-      // if (!document.querySelector("ac-message")) {
       await this._getStorage().then((config) => {
         this._createMessage(
           config.background,
@@ -235,10 +234,12 @@ class AutoClipboard {
         } else {
           document.execCommand("copy");
         }
-
+        // 查询tooltip的样式配置并提示
         chrome.storage.sync.get(
-          ["background", "color", "messagePosition"],
+          ["background", "color", "messagePosition", "tooltip"],
           (historyStorage) => {
+            // 配置为不提示
+            if(historyStorage.tooltip === null)return;
             const boundaryPosition = this._getMessageBoundaryPosition();
             historyStorage.messagePosition = historyStorage.messagePosition || {
               // 给个默认值

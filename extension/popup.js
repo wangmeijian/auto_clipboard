@@ -54,6 +54,7 @@ class Popup {
     // 默认颜色
     const DEFAULT_VALUE = {
       copy: true,
+      tooltip: true,
       background: "#51b362",
       color: "#FFFFFF",
     };
@@ -68,6 +69,10 @@ class Popup {
           <div class="form_item"><label class="label"><input type="checkbox" name="copy" checked="${
             DEFAULT_VALUE.copy
           }" />${i18n("copy")}</label>
+          </div>
+          <div class="form_item"><label class="label"><input type="checkbox" name="tooltip" checked="${
+            DEFAULT_VALUE.tooltip
+          }" />${i18n("tooltip")}</label>
           </div>
           <h3>${i18n("color")}</h3>
           <div class="setting-color">
@@ -123,6 +128,7 @@ class Popup {
       document.optionForm.background.value = config.background;
       document.optionForm.color.value = config.color;
       document.optionForm.copy.checked = config.copy;
+      document.optionForm.tooltip.checked = config.tooltip;
       // 更新预览
       updatePrviewStyle({
         background: config.background,
@@ -130,7 +136,7 @@ class Popup {
       });
     };
 
-    chrome.storage.sync.get(["background", "color", "copy"], (results) => {
+    chrome.storage.sync.get(["background", "color", "copy", "tooltip"], (results) => {
       init({
         ...DEFAULT_VALUE,
         ...(results || {}),
@@ -146,6 +152,7 @@ class Popup {
           background: data.get("background"),
           color: data.get("color"),
           copy: data.get("copy"),
+          tooltip: data.get("tooltip"),
         },
         () => {
           tips.style.display = "inline-block";
@@ -165,6 +172,7 @@ class Popup {
       document.optionForm.background.value = DEFAULT_VALUE.background;
       document.optionForm.color.value = DEFAULT_VALUE.color;
       document.optionForm.copy.checked = DEFAULT_VALUE.copy;
+      document.optionForm.tooltip.checked = DEFAULT_VALUE.tooltip;
     });
 
     optionForm.addEventListener("change", (e) => {
