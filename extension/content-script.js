@@ -349,6 +349,7 @@ class AutoClipboard {
     document.addEventListener("mouseup", (e) => {
       handleActionDebounce(e);
     });
+    document.addEventListener('selectstart', (e) => e.stopPropagation(), true);
   }
   /**
    * @desc 防抖
