@@ -1,4 +1,5 @@
 (() => {
+  // 设置全局样式
   const setGlobalStylesheet = () => {
     const globalStyle = document.createElement("style");
     globalStyle.innerText = `
@@ -9,6 +10,5 @@
     `;
     document.head && document.head.appendChild(globalStyle);
   };
-
   setGlobalStylesheet();
 })();

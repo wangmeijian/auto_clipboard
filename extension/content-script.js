@@ -104,15 +104,22 @@ class AutoClipboard {
     if (!selectedText || selectedText?.trim().length === 0) return "";
     return selectedText;
   }
+  /**
+   * @desc 替换异常空格
+   * @returns string
+   */
+  replaceAbnormalSpace(value) {
+    return value.replaceAll(/\u00a0/g, ' ');
+  }
 
   /**
    * @desc 复制选中的文本
    * @returns Promise<string | undefined>
    */
-  async copySelectedText() {
+  async getSelectedText() {
     const result = await this.websites[this.websiteIndex].copySelectedText();
     return new Promise((resolve) => {
-      return result && result.length ? resolve(result.replaceAll(/\u00a0/g, ' ')) : resolve("");
+      return result && result.length ? resolve(this.replaceAbnormalSpace(result)) : resolve("");
     })
   }
 
@@ -223,7 +230,7 @@ class AutoClipboard {
     if (storage.copy === null || (storage.whitelist && storage.whitelist[currenthost]) || e && !e.metaKey && (isInputActive || activeElementIsRichTextEditor))
       return;
 
-    this.copySelectedText()
+    this.getSelectedText()
       .then((selectedText) => {
         if (!selectedText || selectedText.length === 0) return;
         this._setMessageHistory(selectedText);
@@ -350,6 +357,11 @@ class AutoClipboard {
       handleActionDebounce(e);
     });
     document.addEventListener('selectstart', (e) => e.stopPropagation(), true);
+    // document.execCommand("copy") 会触发copy事件，某些站点针对oncopy事件return false，因此需手动setData
+    document.addEventListener('copy', (e) => {
+      const selectedText = this.replaceAbnormalSpace(window.getSelection().toString().trim());
+      selectedText.length > 0 && e.clipboardData.setData('text/plain', selectedText )
+    }, true);
   }
   /**
    * @desc 防抖
