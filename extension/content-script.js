@@ -211,15 +211,16 @@ class AutoClipboard {
     // 是否富文本编辑器
     const isRichTextEditor = () => {
       const activeElement = document.activeElement;
+      const isBodyContentEditable = document.body.isContentEditable || document.designMode === 'on';
       const isElementContenteditable = (element) => {
         if (!element || element.parentElement === null) return false;
 
         return (
-          element.getAttribute("contenteditable") === "true" ||
+          element.isContentEditable ||
           isElementContenteditable(element.parentElement)
         );
       };
-      return isElementContenteditable(activeElement);
+      return isBodyContentEditable || isElementContenteditable(activeElement);
     };
     const storage = await chrome.storage.sync.get(['copy', 'whitelist']);
     const currenthost = new URL(location.href).origin;
