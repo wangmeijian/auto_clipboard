@@ -51,7 +51,8 @@ body{
 }
 .copy_history{
   width: calc(100% - 20px);
-  max-height: 480px;
+  min-height: 230px;
+    max-height: 400px;
   box-sizing: border-box;
   gap: 10px 10px;
   margin: 10px 10px 0;
@@ -146,7 +147,9 @@ body{
   margin: 0;
   background-color: #eff1f2;
 }
-.popup_title .setting,.popup_title .back{
+.popup_title .setting,
+.popup_title .back,
+.popup_title .qrcode_back {
   position: absolute;
   top: 8px;
   width: 22px;
@@ -159,13 +162,15 @@ body{
   right: 10px;
   background: url('chrome-extension://__MSG_@@extension_id__/images/setting.svg') center center no-repeat;
 }
-.popup_title .back{
+.popup_title .back,
+.popup_title .qrcode_back {
   left: 10px;
   background: url('chrome-extension://__MSG_@@extension_id__/images/arrow-left.svg') center center no-repeat;
 }
 
 /* 配置项 */
-.options_wrapper{
+.options_wrapper,
+.qrcode_wrapper {
   position: absolute;
   width: 100%;
   height: 100vh;
@@ -178,9 +183,18 @@ body{
   border-right: 1px solid #ccc;
   outline: none;
 }
-.options_wrapper.open{
+.options_wrapper.open,
+.qrcode_wrapper.open {
   left: 0;
   opacity: 1;
+}
+/* 赞赏码 */
+.qrcode_content .qrcode {
+  width: 300px;
+  height: 300px;
+  margin: 0 auto;
+  background: url('chrome-extension://__MSG_@@extension_id__/images/qrcode.jpg') center center no-repeat;
+  background-size: cover;
 }
 .auto_clipboard_options{
   width: 100%;
@@ -209,7 +223,7 @@ form[name="optionForm"]{
   line-height: 32px;
 }
 
-.auto_clipboard_options .prview{
+.auto_clipboard_options .preview {
   width: 100px;
   height: 30px;
   display: inline-block;
@@ -230,4 +244,38 @@ form[name="optionForm"]{
 .setting-color{
   display: grid;
   grid-template-columns: 1fr 1fr;
+}
+.footer {
+  display: flex;
+  font-size: 14px;
+  border-top: 1px solid #e9e6e6;
+  text-align: right;
+  height: 30px;
+  line-height: 30px;
+  justify-content: right;
+}
+
+.footer .donate-wrap,
+.footer .github-wrap {
+  display: flex;
+  align-items: center;
+  margin: 0 8px;
+  color: #999;
+  text-decoration: none;
+}
+
+.footer .donate {
+  width: 24px;
+  height: 24px;
+  display: inline-block;
+  background: url('chrome-extension://__MSG_@@extension_id__/images/coffee-icon.svg') center center no-repeat;
+  background-size: auto 24px;
+}
+
+.footer .github {
+  width: 24px;
+  height: 24px;
+  display: inline-block;
+  background: url('chrome-extension://__MSG_@@extension_id__/images/github-mark.svg') center center no-repeat;
+  background-size: auto 20px;
 }

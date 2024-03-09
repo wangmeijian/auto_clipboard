@@ -28,14 +28,23 @@ class Popup {
     const historyHTML = this._buildHistoryHTML();
     const popupPageHTML = `
       <div class="popup">
-        <h1 class="popup_title">${i18n(
-          "popupTitle"
-        )}<span class="setting"></span></h1>
+        <h1 class="popup_title">
+          ${i18n("popupTitle")}
+          <span class="setting"></span>
+        </h1>
         <input class="search_history" id="searchHistory" placeholder="${i18n(
           "searchHistory"
         )}" />
         <div class="copy_history">
           ${historyHTML}
+        </div>
+        <div class="footer">
+          <div class="donate-wrap"><span class="donate"></span> ${i18n(
+            "donate"
+          )}</div> | 
+          <a class="github-wrap" href="https://github.com/wangmeijian/auto_clipboard" target="_blank"><span class="github"></span> ${i18n(
+            "contribute"
+          )}</a>
         </div>
         <div class="copy_success">${i18n("copySuccess")}</div>
       </div>
@@ -46,6 +55,22 @@ class Popup {
 
     this._initOptionsPage();
     this._addEventListener();
+    this._initQrcode();
+  }
+  // 初始化打赏二维码
+  _initQrcode() {
+    const i18n = (key) => chrome.i18n.getMessage(key);
+    const html = `
+      <div class="qrcode_content">
+        <h1 class="popup_title"><span class="qrcode_back"></span>${i18n("thank_you")}</h1>
+        <div class="qrcode"></div>
+      </div>
+    `
+    const qrcodeDom = document.createElement("div");
+    qrcodeDom.className = "qrcode_wrapper";
+    qrcodeDom.setAttribute("tabindex", "-1");
+    qrcodeDom.innerHTML = html;
+    document.body.appendChild(qrcodeDom);
   }
   // 初始化配置页面
   _initOptionsPage() {
@@ -88,9 +113,9 @@ class Popup {
       DEFAULT_VALUE.color
     }" /></label></div>
             </div>
-            <div class="prview_wrap">
-              <span class="preview_desc">${i18n("prview")}：</span>
-              <span class="prview rightBottom" id="prview">${i18n(
+            <div class="preview_wrap">
+              <span class="preview_desc">${i18n("preview")}：</span>
+              <span class="preview rightBottom" id="preview">${i18n(
                 "copySuccess"
               )}</span>
             </div>
@@ -112,13 +137,13 @@ class Popup {
     const dq = (selector) => document.querySelector(selector);
     const optionForm = dq("#optionForm");
     const saveButton = dq("#submit");
-    const prview = dq("#prview");
+    const preview = dq("#preview");
     const tips = dq(".option_tips");
 
     // 更新预览
-    const updatePrviewStyle = (style) => {
+    const updatePreviewStyle = (style) => {
       Object.keys(style).forEach((key) => {
-        prview.style[key] = style[key];
+        preview.style[key] = style[key];
       });
     };
 
@@ -130,18 +155,21 @@ class Popup {
       document.optionForm.copy.checked = config.copy;
       document.optionForm.tooltip.checked = config.tooltip;
       // 更新预览
-      updatePrviewStyle({
+      updatePreviewStyle({
         background: config.background,
         color: config.color,
       });
     };
 
-    chrome.storage.sync.get(["background", "color", "copy", "tooltip"], (results) => {
-      init({
-        ...DEFAULT_VALUE,
-        ...(results || {}),
-      });
-    });
+    chrome.storage.sync.get(
+      ["background", "color", "copy", "tooltip"],
+      (results) => {
+        init({
+          ...DEFAULT_VALUE,
+          ...(results || {}),
+        });
+      }
+    );
 
     // 监听事件
     saveButton.addEventListener("click", () => {
@@ -164,7 +192,7 @@ class Popup {
     });
 
     optionForm.addEventListener("reset", () => {
-      updatePrviewStyle({
+      updatePreviewStyle({
         background: DEFAULT_VALUE.background,
         color: DEFAULT_VALUE.color,
       });
@@ -178,7 +206,7 @@ class Popup {
     optionForm.addEventListener("change", (e) => {
       const name = e.target.name;
       if (["background", "color"].includes(name)) {
-        updatePrviewStyle({
+        updatePreviewStyle({
           [name]: e.target.value,
         });
       }
@@ -317,6 +345,13 @@ class Popup {
             ? (optionsWrap.classList.add("open"), optionsWrap.focus())
             : optionsWrap.classList.remove("open");
         };
+        // 显示赞赏码
+        const openQrcode = (open = true) => {
+          const optionsWrap = document.querySelector(".qrcode_wrapper");
+          open
+            ? (optionsWrap.classList.add("open"), optionsWrap.focus())
+            : optionsWrap.classList.remove("open");
+        };
 
         if (classList.indexOf("delete_item") > -1) {
           handleDelete(e);
@@ -326,6 +361,13 @@ class Popup {
           openOptions(true);
         } else if (classList.indexOf("back") > -1) {
           openOptions(false);
+        } else if (
+          classList.indexOf("donate-wrap") > -1 ||
+          classList.indexOf("donate") > -1
+        ) {
+          openQrcode(true);
+        } else if (classList.indexOf("qrcode_back") > -1) {
+          openQrcode(false);
         }
       },
       false
@@ -374,9 +416,12 @@ class Popup {
    * @returns Promise
    */
   static copySelectedText() {
-    const selectedText = window.getSelection().toString().replaceAll(/\u00a0/g, ' ');
+    const selectedText = window
+      .getSelection()
+      .toString()
+      .replaceAll(/\u00a0/g, " ");
     if (!selectedText || selectedText?.length === 0) return Promise.reject();
-    console.log(navigator.clipboard);
+
     // 仅在https下可用
     if (navigator.clipboard && window.isSecureContext) {
       return navigator.clipboard.writeText(selectedText);

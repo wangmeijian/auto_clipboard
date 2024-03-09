@@ -19,8 +19,8 @@
     "message": "Copied",
     "description": "复制成功提示"
   },
-  "prview": {
-    "message": "prview",
+  "preview": {
+    "message": "preview",
     "description": "预览"
   },
   "messageBackground": {
@@ -106,5 +106,17 @@
   "tooltip": {
     "description": "Prompt for successful copying",
     "message": "复制成功提示"
+  },
+  "thank_you": {
+    "description": "Thank you for your donation",
+    "message": "感谢您的捐助"
+  },
+  "donate": {
+    "description": "Donate",
+    "message": "捐助"
+  },
+  "contribute": {
+    "description": "Contribute",
+    "message": "贡献"
   }
 }

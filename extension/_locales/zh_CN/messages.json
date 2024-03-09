@@ -14,7 +14,7 @@
   "copySuccess": {
     "message": "复制成功"
   },
-  "prview": {
+  "preview": {
     "message": "预览"
   },
   "messageBackground": {
@@ -79,5 +79,14 @@
   },
   "tooltip": {
     "message": "复制成功提示"
+  },
+  "thank_you": {
+    "message": "感谢您的捐助"
+  },
+  "donate": {
+    "message": "捐助"
+  },
+  "contribute": {
+    "message": "贡献"
   }
 }
