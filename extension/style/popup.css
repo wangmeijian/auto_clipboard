@@ -261,7 +261,13 @@ form[name="optionForm"]{
   align-items: center;
   margin: 0 8px;
   color: #999;
-  text-decoration: none;
+  text-decoration: underline;
+    cursor: pointer;
+  }
+  
+  .footer .donate-wrap:hover,
+  .footer .github-wrap:hover {
+    color: blue;
 }
 
 .footer .donate {
@@ -270,6 +276,7 @@ form[name="optionForm"]{
   display: inline-block;
   background: url('chrome-extension://__MSG_@@extension_id__/images/coffee-icon.svg') center center no-repeat;
   background-size: auto 24px;
+  
 }
 
 .footer .github {
