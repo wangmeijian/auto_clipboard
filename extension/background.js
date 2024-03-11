@@ -1,17 +1,21 @@
 const i18n = (key) => chrome.i18n.getMessage(key);
 
-chrome.runtime.onInstalled.addListener(() => {
-  chrome.contextMenus.create({
-    id: "auto_copy",
-    title: i18n("auto_copy"),
-    contexts: ["all"],
-  });
+chrome.runtime.onInstalled.addListener(async () => {
+  const results = await chrome.storage.sync.get(["contextMenu"]);
 
-  chrome.contextMenus.create({
-    id: "disable_copy",
-    title: i18n("disable_copy"),
-    contexts: ["all"],
-  });
+  if (results.contextMenu === "on") {
+    chrome.contextMenus.create({
+      id: "auto_copy",
+      title: i18n("auto_copy"),
+      contexts: ["all"],
+    });
+
+    chrome.contextMenus.create({
+      id: "disable_copy",
+      title: i18n("disable_copy"),
+      contexts: ["all"],
+    });
+  }
 });
 
 chrome.contextMenus.onClicked.addListener(async ({ menuItemId, pageUrl }) => {

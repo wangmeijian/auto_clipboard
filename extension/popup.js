@@ -82,6 +82,7 @@ class Popup {
       tooltip: true,
       background: "#51b362",
       color: "#FFFFFF",
+      contextMenu: true,
     };
 
     const optionsHTML = `
@@ -98,6 +99,9 @@ class Popup {
           <div class="form_item"><label class="label"><input type="checkbox" name="tooltip" checked="${
             DEFAULT_VALUE.tooltip
           }" />${i18n("tooltip")}</label>
+          <div class="form_item"><label class="label"><input type="checkbox" name="contextMenu" checked="${
+            DEFAULT_VALUE.contextMenu
+          }" />${i18n("contextMenu")}</label>
           </div>
           <h3>${i18n("color")}</h3>
           <div class="setting-color">
@@ -154,6 +158,7 @@ class Popup {
       document.optionForm.color.value = config.color;
       document.optionForm.copy.checked = config.copy;
       document.optionForm.tooltip.checked = config.tooltip;
+      document.optionForm.contextMenu.checked = config.contextMenu;
       // 更新预览
       updatePreviewStyle({
         background: config.background,
@@ -162,8 +167,9 @@ class Popup {
     };
 
     chrome.storage.sync.get(
-      ["background", "color", "copy", "tooltip"],
+      ["background", "color", "copy", "tooltip", "contextMenu"],
       (results) => {
+        console.log("popup results", results);
         init({
           ...DEFAULT_VALUE,
           ...(results || {}),
@@ -181,6 +187,7 @@ class Popup {
           color: data.get("color"),
           copy: data.get("copy"),
           tooltip: data.get("tooltip"),
+          contextMenu: data.get("contextMenu"),
         },
         () => {
           tips.style.display = "inline-block";
@@ -189,6 +196,21 @@ class Popup {
           }, 1500);
         }
       );
+      if (!data.get("contextMenu")) {
+        chrome.contextMenus.removeAll();
+      } else {
+        chrome.contextMenus.create({
+          id: "auto_copy",
+          title: i18n("auto_copy"),
+          contexts: ["all"],
+        });
+
+        chrome.contextMenus.create({
+          id: "disable_copy",
+          title: i18n("disable_copy"),
+          contexts: ["all"],
+        });
+      }
     });
 
     optionForm.addEventListener("reset", () => {
@@ -201,6 +223,7 @@ class Popup {
       document.optionForm.color.value = DEFAULT_VALUE.color;
       document.optionForm.copy.checked = DEFAULT_VALUE.copy;
       document.optionForm.tooltip.checked = DEFAULT_VALUE.tooltip;
+      document.optionForm.contextMenu.checked = DEFAULT_VALUE.contextMenu;
     });
 
     optionForm.addEventListener("change", (e) => {

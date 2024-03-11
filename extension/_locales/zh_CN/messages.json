@@ -88,5 +88,8 @@
   },
   "contribute": {
     "message": "贡献"
+  },
+  "contextMenu": {
+    "message": "鼠标右键菜单快捷键"
   }
 }

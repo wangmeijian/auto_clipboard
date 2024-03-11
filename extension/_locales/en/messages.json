@@ -118,5 +118,9 @@
   "contribute": {
     "description": "Contribute",
     "message": "贡献"
+  },
+  "contextMenu": {
+    "description": "Right mouse button menu shortcut keys",
+    "message": "鼠标右键菜单快捷键"
   }
 }
