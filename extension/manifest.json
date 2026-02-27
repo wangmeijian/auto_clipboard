@@ -27,6 +27,12 @@
     {
       "matches": ["<all_urls>"],
       "all_frames": true,
+      "js": ["bypass.js"],
+      "run_at": "document_start"
+    },
+    {
+      "matches": ["<all_urls>"],
+      "all_frames": true,
       "js": [
         "content-script.js",
         "initialization.js"

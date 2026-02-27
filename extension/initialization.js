@@ -4,8 +4,8 @@
     const globalStyle = document.createElement("style");
     globalStyle.innerText = `
       * {
-        user-select: auto !important;
-        -webkit-user-select: auto !important;
+        user-select: text !important;
+        -webkit-user-select: text !important;
       }
     `;
     document.head && document.head.appendChild(globalStyle);

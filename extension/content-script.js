@@ -364,16 +364,18 @@ class AutoClipboard {
     let ctrlAtMousedown = false;
 
     document.addEventListener("keyup", this._combinationKey.bind(this));
+    // 使用捕获阶段，防止页面调用 stopPropagation 导致扩展收不到事件
     document.addEventListener("mousedown", (e) => {
       ctrlAtMousedown = e.ctrlKey;
-    });
+    }, true);
     document.addEventListener("mouseup", (e) => {
       // 用户可能在松开鼠标前就已经释放了 Ctrl 键，需综合 mousedown 时的状态判断
       const ctrlActive = e.ctrlKey || ctrlAtMousedown;
       ctrlAtMousedown = false;
       handleActionDebounce(e, ctrlActive);
-    });
-    document.addEventListener('selectstart', (e) => e.stopPropagation(), true);
+    }, true);
+    // stopImmediatePropagation 阻止同阶段其他监听器，防止页面脚本在捕获阶段调用 preventDefault
+    document.addEventListener('selectstart', (e) => e.stopImmediatePropagation(), true);
     // document.execCommand("copy") 会触发copy事件，某些站点针对oncopy事件return false，因此需手动setData
     document.addEventListener('copy', (e) => {
       const selectedText = this.replaceAbnormalSpace(window.getSelection().toString().trim());
