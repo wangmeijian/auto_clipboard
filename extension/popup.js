@@ -123,9 +123,12 @@ class Popup {
             </div>
             <div class="preview_wrap">
               <span class="preview_desc">${i18n("preview")}：</span>
-              <span class="preview rightBottom" id="preview">${i18n(
-                "copySuccess"
-              )}</span>
+              <span class="preview rightBottom" id="preview">
+                <svg class="preview-check" viewBox="0 0 13 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M1.5 5L5 8.5L11.5 1.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                ${i18n("copySuccess")}
+              </span>
             </div>
           </div>
           <div class="form_submit">

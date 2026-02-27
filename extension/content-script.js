@@ -8,8 +8,8 @@ class AutoClipboard {
     // 单条数据最大字符数
     this._MAX_ITEM_LENGTH = 10000;
     // message宽高
-    this.MESSAGE_WIDTH = 100;
-    this.MESSAGE_HEIGHT = 30;
+    this.MESSAGE_WIDTH = 110;
+    this.MESSAGE_HEIGHT = 36;
     this.MESSAGE_MARGING = 20;
     this.timer = null;
     this.message = null;
@@ -145,30 +145,77 @@ class AutoClipboard {
     const contentStyle = document.createElement("style");
     content.id = "autoClipboardMessage";
     content.className = "ac-message";
-    content.innerText = i18n("copySuccess");
+    content.innerHTML = `
+      <svg class="ac-check" viewBox="0 0 13 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M1.5 5L5 8.5L11.5 1.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="ac-label">${i18n("copySuccess")}</span>
+    `;
 
     contentStyle.innerText = `
-      .ac-message{
-        width: ${this.MESSAGE_WIDTH}px;
+      @keyframes ac-in {
+        0%   { opacity: 0; transform: scale(0.82) translateY(10px); }
+        60%  { opacity: 1; transform: scale(1.04) translateY(-2px); }
+        100% { opacity: 1; transform: scale(1) translateY(0); }
+      }
+      @keyframes ac-out {
+        0%   { opacity: 1; transform: scale(1); }
+        100% { opacity: 0; transform: scale(0.88) translateY(6px); }
+      }
+      @keyframes ac-check-draw {
+        from { stroke-dashoffset: 16; }
+        to   { stroke-dashoffset: 0; }
+      }
+      .ac-message {
+        display: none;
+        flex-direction: row;
+        align-items: center;
+        gap: 6px;
+        padding: 0 14px;
         height: ${this.MESSAGE_HEIGHT}px;
-        text-align: center;
         position: fixed;
         left: ${position.left}px;
         top: ${position.top}px;
         z-index: 9999999;
-        border-radius: 4px;
-        font-size: 14px;
-        line-height: ${this.MESSAGE_HEIGHT}px;
+        border-radius: ${this.MESSAGE_HEIGHT / 2}px;
+        font-size: 13px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+        font-weight: 500;
+        letter-spacing: 0.01em;
+        white-space: nowrap;
         margin: 0;
-        padding: 0;
         cursor: move;
-        box-shadow: rgba(0,0,0,0.2) 0 5px 15px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.18), 0 1px 4px rgba(0,0,0,0.08);
         background: ${background};
         color: ${fontColor};
-        display: none;
+        -webkit-user-select: none;
+        user-select: none;
       }
-      .ac-message:hover{
-        box-shadow: rgba(0,0,0,0.4) 0 5px 15px;
+      .ac-message.ac-visible {
+        display: flex;
+        animation: ac-in 0.32s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+      }
+      .ac-message.ac-hiding {
+        animation: ac-out 0.2s ease both;
+      }
+      .ac-message:hover {
+        box-shadow: 0 6px 24px rgba(0,0,0,0.26), 0 2px 8px rgba(0,0,0,0.1);
+      }
+      .ac-check {
+        width: 14px;
+        height: 11px;
+        flex-shrink: 0;
+        overflow: visible;
+      }
+      .ac-check path {
+        stroke-dasharray: 16;
+        stroke-dashoffset: 16;
+      }
+      .ac-message.ac-visible .ac-check path {
+        animation: ac-check-draw 0.3s cubic-bezier(0.22, 1, 0.36, 1) 0.18s both;
+      }
+      .ac-label {
+        line-height: 1;
       }
     `;
 
@@ -195,7 +242,16 @@ class AutoClipboard {
       });
     }
     Object.keys(style).forEach((key) => {
-      if (key in this.message.style) {
+      if (key === 'display') {
+        if (style[key] === 'block') {
+          // 重置动画（先移除再添加，强制 reflow 重新触发入场动画）
+          this.message.classList.remove('ac-hiding', 'ac-visible');
+          void this.message.offsetWidth;
+          this.message.classList.add('ac-visible');
+        } else if (style[key] === 'none') {
+          this.message.classList.remove('ac-visible', 'ac-hiding');
+        }
+      } else if (key in this.message.style) {
         this.message.style[key] = style[key];
       }
     });
@@ -284,9 +340,13 @@ class AutoClipboard {
   }
   _hideMessageSync() {
     this.timer = setTimeout(() => {
-      this._updateMessageStyle({
-        display: "none",
-      });
+      if (this.message) {
+        // 播放淡出动画，结束后移除 visible 类（恢复 display: none）
+        this.message.classList.add('ac-hiding');
+        this.message.addEventListener('animationend', () => {
+          this.message.classList.remove('ac-visible', 'ac-hiding');
+        }, { once: true });
+      }
       this.timer = null;
     }, 2000);
   }
@@ -405,7 +465,7 @@ class AutoClipboard {
     this.message.addEventListener("mousedown", (e) => {
       const startLeft = e.clientX;
       const startTop = e.clientY;
-      const position = e.target.getBoundingClientRect();
+      const position = this.message.getBoundingClientRect();
       let endLeft = position.left;
       let endTop = position.top;
 
@@ -450,6 +510,9 @@ class AutoClipboard {
 
     this.message.addEventListener("mouseover", () => {
       clearTimeout(this.timer);
+      this.timer = null;
+      // 若正在播放消失动画，立即停止，防止 animationend 回调把浮层隐藏
+      this.message.classList.remove('ac-hiding');
     });
 
     this.message.addEventListener("mouseleave", () => {
