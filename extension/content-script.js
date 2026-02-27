@@ -203,7 +203,7 @@ class AutoClipboard {
   /**
    * @desc 监听事件回调
    */
-  async _handleAction(e) {
+  async _handleAction(e, ctrlKeyOverride) {
     // 是否普通输入框
     const isInputActive = ["input", "textarea"].includes(
       document.activeElement.nodeName.toLowerCase()
@@ -222,13 +222,19 @@ class AutoClipboard {
       };
       return isBodyContentEditable || isElementContenteditable(activeElement);
     };
-    const storage = await chrome.storage.sync.get(['copy', 'whitelist']);
+    const storage = await chrome.storage.sync.get(['whitelist', 'pluginEnabled', 'ctrlCopy']);
     const currenthost = new URL(location.href).origin;
     // 当前聚焦的元素是否属于富文本编辑器的一部分
     const activeElementIsRichTextEditor = isRichTextEditor();
+    // 插件被全局禁用
+    if (storage.pluginEnabled === 'off') return;
+    // 开启了"按住 Ctrl 键才复制"，但未按下 Ctrl 键
+    // ctrlKeyOverride 用于捕获 mousedown 时的 Ctrl 状态，避免用户在松开鼠标前已释放 Ctrl 导致误判
+    const hasCtrlKey = ctrlKeyOverride !== undefined ? ctrlKeyOverride : e?.ctrlKey;
+    if (storage.ctrlCopy === 'on' && !hasCtrlKey) return;
     // 如果没打开自动复制开关 || 当前站点在不自动复制的白名单列表
     // 如果选择的是输入框内容，但没有按下ctrl键（Mac上为command键），不复制
-    if (storage.copy === null || (storage.whitelist && storage.whitelist[currenthost]) || e && !e.metaKey && (isInputActive || activeElementIsRichTextEditor))
+    if ((storage.whitelist && storage.whitelist[currenthost]) || e && !e.metaKey && (isInputActive || activeElementIsRichTextEditor))
       return;
 
     this.getSelectedText()
@@ -345,6 +351,9 @@ class AutoClipboard {
   _combinationKey(event) {
     if (event.key === "Shift") {
       this._handleAction(event);
+    } else if (event.key === "Control") {
+      // Ctrl 键松开时触发（此时 e.ctrlKey 已为 false，需显式传 true）
+      this._handleAction(event, true);
     }
   }
   /**
@@ -352,10 +361,17 @@ class AutoClipboard {
    */
   _addActionListener() {
     const handleActionDebounce = this._debounce(this._handleAction);
+    let ctrlAtMousedown = false;
 
     document.addEventListener("keyup", this._combinationKey.bind(this));
+    document.addEventListener("mousedown", (e) => {
+      ctrlAtMousedown = e.ctrlKey;
+    });
     document.addEventListener("mouseup", (e) => {
-      handleActionDebounce(e);
+      // 用户可能在松开鼠标前就已经释放了 Ctrl 键，需综合 mousedown 时的状态判断
+      const ctrlActive = e.ctrlKey || ctrlAtMousedown;
+      ctrlAtMousedown = false;
+      handleActionDebounce(e, ctrlActive);
     });
     document.addEventListener('selectstart', (e) => e.stopPropagation(), true);
     // document.execCommand("copy") 会触发copy事件，某些站点针对oncopy事件return false，因此需手动setData

@@ -91,5 +91,11 @@
   },
   "contextMenu": {
     "message": "鼠标右键菜单快捷键"
+  },
+  "togglePlugin": {
+    "message": "启用/禁用插件"
+  },
+  "ctrlCopy": {
+    "message": "按住 Ctrl 键才自动复制文本"
   }
 }

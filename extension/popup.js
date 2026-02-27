@@ -12,7 +12,10 @@ class Popup {
    */
   async _initPage() {
     const storageKey = this._STORAGE_KEY;
-    const historyStorage = await chrome.storage.local.get([storageKey]);
+    const [historyStorage, syncStorage] = await Promise.all([
+      chrome.storage.local.get([storageKey]),
+      chrome.storage.sync.get(["pluginEnabled"]),
+    ]);
     // 后续操作的都是this._history
     this._history = (historyStorage[storageKey] || []).map((item) =>
       // 增加置顶功能，将存储的数据格式从string改为object
@@ -25,12 +28,14 @@ class Popup {
         : item
     );
 
+    const isPluginEnabled = syncStorage.pluginEnabled !== "off";
     const historyHTML = this._buildHistoryHTML();
     const popupPageHTML = `
       <div class="popup">
         <h1 class="popup_title">
           ${i18n("popupTitle")}
           <span class="setting"></span>
+          <span class="plugin-toggle${isPluginEnabled ? " on" : ""}" title="${i18n("togglePlugin")}"></span>
         </h1>
         <input class="search_history" id="searchHistory" placeholder="${i18n(
           "searchHistory"
@@ -50,6 +55,7 @@ class Popup {
       </div>
     `;
     const popupPageDOM = document.createElement("div");
+    popupPageDOM.classList = 'wrapper'
     popupPageDOM.innerHTML = popupPageHTML;
     document.body.appendChild(popupPageDOM);
 
@@ -78,11 +84,11 @@ class Popup {
 
     // 默认颜色
     const DEFAULT_VALUE = {
-      copy: true,
       tooltip: true,
       background: "#51b362",
       color: "#FFFFFF",
       contextMenu: true,
+      ctrlCopy: false,
     };
 
     const optionsHTML = `
@@ -92,9 +98,7 @@ class Popup {
         )}"></span>${i18n("setting")}</h1>
         <form id="optionForm" name="optionForm">
           <h3>${i18n("operation")}</h3>
-          <div class="form_item"><label class="label"><input type="checkbox" name="copy" checked="${
-            DEFAULT_VALUE.copy
-          }" />${i18n("copy")}</label>
+          <div class="form_item"><label class="label"><input type="checkbox" name="ctrlCopy" />${i18n("ctrlCopy")}</label>
           </div>
           <div class="form_item"><label class="label"><input type="checkbox" name="tooltip" checked="${
             DEFAULT_VALUE.tooltip
@@ -156,7 +160,7 @@ class Popup {
       // 数据回填表单
       document.optionForm.background.value = config.background;
       document.optionForm.color.value = config.color;
-      document.optionForm.copy.checked = config.copy;
+      document.optionForm.ctrlCopy.checked = config.ctrlCopy;
       document.optionForm.tooltip.checked = config.tooltip;
       document.optionForm.contextMenu.checked = config.contextMenu;
       // 更新预览
@@ -167,7 +171,7 @@ class Popup {
     };
 
     chrome.storage.sync.get(
-      ["background", "color", "copy", "tooltip", "contextMenu"],
+      ["background", "color", "ctrlCopy", "tooltip", "contextMenu"],
       (results) => {
         console.log("popup results", results);
         init({
@@ -185,7 +189,7 @@ class Popup {
         {
           background: data.get("background"),
           color: data.get("color"),
-          copy: data.get("copy"),
+          ctrlCopy: data.get("ctrlCopy"),
           tooltip: data.get("tooltip"),
           contextMenu: data.get("contextMenu"),
         },
@@ -221,7 +225,7 @@ class Popup {
 
       document.optionForm.background.value = DEFAULT_VALUE.background;
       document.optionForm.color.value = DEFAULT_VALUE.color;
-      document.optionForm.copy.checked = DEFAULT_VALUE.copy;
+      document.optionForm.ctrlCopy.checked = DEFAULT_VALUE.ctrlCopy;
       document.optionForm.tooltip.checked = DEFAULT_VALUE.tooltip;
       document.optionForm.contextMenu.checked = DEFAULT_VALUE.contextMenu;
     });
@@ -391,6 +395,9 @@ class Popup {
           openQrcode(true);
         } else if (classList.indexOf("qrcode_back") > -1) {
           openQrcode(false);
+        } else if (classList.indexOf("plugin-toggle") > -1) {
+          const isOn = e.target.classList.toggle("on");
+          chrome.storage.sync.set({ pluginEnabled: isOn ? "on" : "off" });
         }
       },
       false

@@ -122,5 +122,13 @@
   "contextMenu": {
     "description": "Right mouse button menu shortcut keys",
     "message": "鼠标右键菜单快捷键"
+  },
+  "togglePlugin": {
+    "description": "Enable/Disable plugin",
+    "message": "启用/禁用插件"
+  },
+  "ctrlCopy": {
+    "description": "Hold Ctrl key to auto-copy text",
+    "message": "按住 Ctrl 键才自动复制文本"
   }
 }

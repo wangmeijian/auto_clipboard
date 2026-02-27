@@ -1,6 +1,10 @@
+html{
+  height: 100%;
+}
 body{
   margin: 0;
   position: relative;
+  height: 100%;
 }
 /* 设置滚动条的样式 */
 ::-webkit-scrollbar {
@@ -18,10 +22,15 @@ body{
   background: #b1b1b1;
   box-shadow: inset 0 0 6px rgba(0,0,0,0.25);
 }
+.wrapper{
+  height: 100%;
+}
 .popup{
   width: 400px;
-  max-height: 600px;
   background-color: white;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 .search_history{
   width: calc(100% - 20px);
@@ -51,8 +60,8 @@ body{
 }
 .copy_history{
   width: calc(100% - 20px);
+  flex: 1;
   min-height: 230px;
-    max-height: 400px;
   box-sizing: border-box;
   gap: 10px 10px;
   margin: 10px 10px 0;
@@ -143,6 +152,7 @@ body{
   color: #333;
   text-align: center;
   line-height: 40px;
+  height: 40px;
   padding: 0;
   margin: 0;
   background-color: #eff1f2;
@@ -159,8 +169,42 @@ body{
 }
 
 .popup_title .setting{
+  right: 60px;
+    background: url('chrome-extension://__MSG_@@extension_id__/images/setting.svg') center center no-repeat;
+  }
+  
+  .popup_title .plugin-toggle {
+    position: absolute;
   right: 10px;
-  background: url('chrome-extension://__MSG_@@extension_id__/images/setting.svg') center center no-repeat;
+  top: 50%;
+    transform: translateY(-50%);
+    width: 34px;
+    height: 18px;
+    background: #ccc;
+    border-radius: 9px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  
+  .popup_title .plugin-toggle::after {
+    content: '';
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    background: white;
+    border-radius: 50%;
+    top: 2px;
+    left: 2px;
+    transition: left 0.2s;
+    pointer-events: none;
+  }
+  
+  .popup_title .plugin-toggle.on {
+    background: #51b362;
+  }
+  
+  .popup_title .plugin-toggle.on::after {
+    left: 18px;
 }
 .popup_title .back,
 .popup_title .qrcode_back {
