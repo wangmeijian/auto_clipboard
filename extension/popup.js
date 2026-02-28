@@ -51,7 +51,12 @@ class Popup {
             "contribute"
           )}</a>
         </div>
-        <div class="copy_success">${i18n("copySuccess")}</div>
+        <div class="copy_success">
+          <svg class="cs-check" viewBox="0 0 13 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M1.5 5L5 8.5L11.5 1.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>${i18n("copySuccess")}</span>
+        </div>
       </div>
     `;
     const popupPageDOM = document.createElement("div");
@@ -87,6 +92,8 @@ class Popup {
       tooltip: true,
       background: "#51b362",
       color: "#FFFFFF",
+      selectionBgColor: "#51b362",
+      selectionTextColor: "#ffffff",
       contextMenu: true,
       ctrlCopy: false,
     };
@@ -131,6 +138,18 @@ class Popup {
               </span>
             </div>
           </div>
+          <div class="setting-color">
+            <div class="setting-item">
+              <div class="form_item">${i18n("selectionBgColor")}<label><input type="color" name="selectionBgColor" value="${DEFAULT_VALUE.selectionBgColor
+      }" /></label></div>
+              <div class="form_item">${i18n("selectionTextColor")}<label><input type="color" name="selectionTextColor" value="${DEFAULT_VALUE.selectionTextColor
+      }" /></label></div>
+            </div>
+            <div class="preview_wrap">
+              <span class="preview_desc">${i18n("preview")}：</span>
+              <span class="preview" id="selectionPreview">${i18n("selectionTextExample")}</span>
+            </div>
+          </div>
           <div class="form_submit">
             <button id="submit" type="button">${i18n("save")}</button>
             <button id="recover" type="reset">${i18n("reset")}</button>
@@ -149,6 +168,7 @@ class Popup {
     const optionForm = dq("#optionForm");
     const saveButton = dq("#submit");
     const preview = dq("#preview");
+    const selectionPreview = dq("#selectionPreview");
     const tips = dq(".option_tips");
 
     // 更新预览
@@ -158,11 +178,19 @@ class Popup {
       });
     };
 
+    // 更新选中预览
+    const updateSelectionPreviewStyle = (bgColor, textColor) => {
+      selectionPreview.style.background = bgColor;
+      selectionPreview.style.color = textColor;
+    };
+
     // 初始化
     const init = (config = DEFAULT_VALUE) => {
       // 数据回填表单
       document.optionForm.background.value = config.background;
       document.optionForm.color.value = config.color;
+      document.optionForm.selectionBgColor.value = config.selectionBgColor;
+      document.optionForm.selectionTextColor.value = config.selectionTextColor;
       document.optionForm.ctrlCopy.checked = config.ctrlCopy;
       document.optionForm.tooltip.checked = config.tooltip;
       document.optionForm.contextMenu.checked = config.contextMenu;
@@ -171,10 +199,11 @@ class Popup {
         background: config.background,
         color: config.color,
       });
+      updateSelectionPreviewStyle(config.selectionBgColor, config.selectionTextColor);
     };
 
     chrome.storage.sync.get(
-      ["background", "color", "ctrlCopy", "tooltip", "contextMenu"],
+      ["background", "color", "selectionBgColor", "selectionTextColor", "ctrlCopy", "tooltip", "contextMenu"],
       (results) => {
         console.log("popup results", results);
         init({
@@ -192,6 +221,8 @@ class Popup {
         {
           background: data.get("background"),
           color: data.get("color"),
+          selectionBgColor: data.get("selectionBgColor"),
+          selectionTextColor: data.get("selectionTextColor"),
           ctrlCopy: data.get("ctrlCopy"),
           tooltip: data.get("tooltip"),
           contextMenu: data.get("contextMenu"),
@@ -225,9 +256,12 @@ class Popup {
         background: DEFAULT_VALUE.background,
         color: DEFAULT_VALUE.color,
       });
+      updateSelectionPreviewStyle(DEFAULT_VALUE.selectionBgColor, DEFAULT_VALUE.selectionTextColor);
 
       document.optionForm.background.value = DEFAULT_VALUE.background;
       document.optionForm.color.value = DEFAULT_VALUE.color;
+      document.optionForm.selectionBgColor.value = DEFAULT_VALUE.selectionBgColor;
+      document.optionForm.selectionTextColor.value = DEFAULT_VALUE.selectionTextColor;
       document.optionForm.ctrlCopy.checked = DEFAULT_VALUE.ctrlCopy;
       document.optionForm.tooltip.checked = DEFAULT_VALUE.tooltip;
       document.optionForm.contextMenu.checked = DEFAULT_VALUE.contextMenu;
@@ -239,6 +273,11 @@ class Popup {
         updatePreviewStyle({
           [name]: e.target.value,
         });
+      } else if (["selectionBgColor", "selectionTextColor"].includes(name)) {
+        updateSelectionPreviewStyle(
+          document.optionForm.selectionBgColor.value,
+          document.optionForm.selectionTextColor.value
+        );
       }
     });
   }
@@ -304,11 +343,21 @@ class Popup {
       .then(() => {
         const messageEle = document.querySelector(".copy_success");
         window.getSelection().removeAllRanges();
-        messageEle.style.display = "block";
-        clearTimeout(this._timer);
-        this._timer = setTimeout(() => {
-          messageEle.style.display = "none";
-        }, 1500);
+        chrome.storage.sync.get(["background", "color"], (config) => {
+          messageEle.style.background = config.background || "#51b362";
+          messageEle.style.color = config.color || "#ffffff";
+          messageEle.classList.remove('cs-hiding', 'cs-visible');
+          void messageEle.offsetWidth;
+          messageEle.classList.add('cs-visible');
+          clearTimeout(this._timer);
+          this._timer = setTimeout(() => {
+            messageEle.classList.add('cs-hiding');
+            messageEle.addEventListener('animationend', () => {
+              messageEle.classList.remove('cs-visible', 'cs-hiding');
+            }, { once: true });
+            this._timer = null;
+          }, 1500);
+        });
       })
       .catch(() => {});
   }

@@ -9,7 +9,7 @@ class AutoClipboard {
     this._MAX_ITEM_LENGTH = 10000;
     // message宽高
     this.MESSAGE_WIDTH = 110;
-    this.MESSAGE_HEIGHT = 36;
+    this.MESSAGE_HEIGHT = 32;
     this.MESSAGE_MARGING = 20;
     this.timer = null;
     this.message = null;
@@ -47,15 +47,22 @@ class AutoClipboard {
    */
   _init() {
     this._detectWebsites();
-    // 初始化提示语颜色
+    // 初始化提示语颜色及选中样式
     this._getStorage().then((config) => {
       this._createMessage(
         config.background,
         config.color,
         config.messagePosition
       );
+      if (config.pluginEnabled !== 'off' && (config.selectionBgColor || config.selectionTextColor)) {
+        this._applySelectionStyle(
+          config.selectionBgColor || "#4a90e2",
+          config.selectionTextColor || "#ffffff"
+        );
+      }
     });
     this._addActionListener();
+    this._addStorageChangeListener();
   }
 
   /**
@@ -86,11 +93,56 @@ class AutoClipboard {
   _getStorage() {
     return new Promise((resolve, reject) => {
       chrome.storage.sync.get(
-        ["background", "color", "messagePosition"],
+        ["background", "color", "messagePosition", "selectionBgColor", "selectionTextColor", "pluginEnabled"],
         (config) => {
           config ? resolve(config) : reject({});
         }
       );
+    });
+  }
+
+  /**
+   * @desc 注入选中文本样式
+   */
+  _applySelectionStyle(bgColor, textColor) {
+    const STYLE_ID = "ac-selection-style";
+    let styleEl = document.getElementById(STYLE_ID);
+    if (!styleEl) {
+      styleEl = document.createElement("style");
+      styleEl.id = STYLE_ID;
+      document.head && document.head.appendChild(styleEl);
+    }
+    styleEl.textContent = `*::selection { background: ${bgColor} !important; color: ${textColor} !important; }`;
+  }
+
+  /**
+   * @desc 移除选中文本样式
+   */
+  _removeSelectionStyle() {
+    const styleEl = document.getElementById("ac-selection-style");
+    if (styleEl) styleEl.remove();
+  }
+
+  /**
+   * @desc 监听 storage 变化，响应插件开关
+   */
+  _addStorageChangeListener() {
+    chrome.storage.onChanged.addListener((changes, area) => {
+      if (area !== 'sync') return;
+      if ('pluginEnabled' in changes) {
+        if (changes.pluginEnabled.newValue === 'off') {
+          this._removeSelectionStyle();
+        } else {
+          chrome.storage.sync.get(['selectionBgColor', 'selectionTextColor'], (config) => {
+            if (config.selectionBgColor || config.selectionTextColor) {
+              this._applySelectionStyle(
+                config.selectionBgColor || "#4a90e2",
+                config.selectionTextColor || "#ffffff"
+              );
+            }
+          });
+        }
+      }
     });
   }
 
@@ -306,8 +358,14 @@ class AutoClipboard {
         }
         // 查询tooltip的样式配置并提示
         chrome.storage.sync.get(
-          ["background", "color", "messagePosition", "tooltip"],
+          ["background", "color", "messagePosition", "tooltip", "selectionBgColor", "selectionTextColor"],
           (historyStorage) => {
+            if (historyStorage.selectionBgColor || historyStorage.selectionTextColor) {
+              this._applySelectionStyle(
+                historyStorage.selectionBgColor || "#4a90e2",
+                historyStorage.selectionTextColor || "#ffffff"
+              );
+            }
             // 配置为不提示
             if(historyStorage.tooltip === null)return;
             const boundaryPosition = this._getMessageBoundaryPosition();

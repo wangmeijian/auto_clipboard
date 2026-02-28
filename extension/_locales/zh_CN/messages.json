@@ -69,7 +69,16 @@
     "message": "一. 操作配置"
   },
   "color": {
-    "message": "二. 提示语颜色"
+    "message": "二. 颜色配置"
+  },
+  "selectionTextColor": {
+    "message": "选中文字颜色："
+  },
+  "selectionBgColor": {
+    "message": "选中区域颜色："
+  },
+  "selectionTextExample": {
+    "message": "选中的文字"
   },
   "auto_copy": {
     "message": "自动复制本站内容"
@@ -87,7 +96,7 @@
     "message": "捐助"
   },
   "contribute": {
-    "message": "贡献"
+    "message": "建议/贡献"
   },
   "contextMenu": {
     "message": "鼠标右键菜单快捷键"
@@ -96,6 +105,6 @@
     "message": "启用/禁用插件"
   },
   "ctrlCopy": {
-    "message": "按住 Ctrl 键才自动复制文本"
+    "message": "按住 Ctrl 键才触发复制"
   }
 }

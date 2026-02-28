@@ -92,8 +92,20 @@
     "message": "一. 操作配置"
   },
   "color": {
-    "description": "Prompt color",
-    "message": "二. 提示语颜色"
+    "description": "Color configuration",
+    "message": "二. 颜色配置"
+  },
+  "selectionTextColor": {
+    "description": "Selection text color",
+    "message": "Selection text color:"
+  },
+  "selectionBgColor": {
+    "description": "Selection background color",
+    "message": "Selection background color:"
+  },
+  "selectionTextExample": {
+    "description": "Selection text",
+    "message": "选中的文字"
   },
   "auto_copy": {
     "description": "Automatically copy the content of this site",
@@ -116,7 +128,7 @@
     "message": "捐助"
   },
   "contribute": {
-    "description": "Contribute",
+    "description": "Issue/Contribute",
     "message": "贡献"
   },
   "contextMenu": {
@@ -129,6 +141,6 @@
   },
   "ctrlCopy": {
     "description": "Hold Ctrl key to auto-copy text",
-    "message": "按住 Ctrl 键才自动复制文本"
+    "message": "按住 Ctrl 键才触发复制"
   }
 }
