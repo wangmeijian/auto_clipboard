@@ -312,6 +312,9 @@ class AutoClipboard {
    * @desc 监听事件回调
    */
   async _handleAction(e, ctrlKeyOverride) {
+    // 扩展重载后上下文失效，chrome.runtime.id 变为 undefined，直接退出避免后续 API 调用报错
+    if (!chrome.runtime?.id) return;
+
     // 是否普通输入框
     const isInputActive = ["input", "textarea"].includes(
       document.activeElement.nodeName.toLowerCase()
@@ -330,7 +333,12 @@ class AutoClipboard {
       };
       return isBodyContentEditable || isElementContenteditable(activeElement);
     };
-    const storage = await chrome.storage.sync.get(['whitelist', 'pluginEnabled', 'ctrlCopy']);
+    let storage;
+    try {
+      storage = await chrome.storage.sync.get(['whitelist', 'pluginEnabled', 'ctrlCopy']);
+    } catch (err) {
+      return; // 上下文失效的竞态情况
+    }
     const currenthost = new URL(location.href).origin;
     // 当前聚焦的元素是否属于富文本编辑器的一部分
     const activeElementIsRichTextEditor = isRichTextEditor();
