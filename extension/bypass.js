@@ -6,7 +6,7 @@
 (function() {
   var noop = function() {};
   // 需要突破的事件：阻止页面通过 preventDefault 来禁止这些操作
-  var bypassEvents = ['selectstart', 'contextmenu', 'copy', 'cut', 'dragstart'];
+  var bypassEvents = ['selectstart', 'copy', 'cut', 'dragstart'];
 
   // 1. 劫持 addEventListener：包裹 handler，使 preventDefault 失效
   var _origAEL = EventTarget.prototype.addEventListener;
@@ -33,7 +33,7 @@
     return _origREL.call(this, type, fn, options);
   };
 
-  // 2. 劫持 on* 属性赋值（如 document.onselectstart = fn、element.oncontextmenu = fn）
+  // 2. 劫持 on* 属性赋值（如 document.onselectstart = fn）
   function patchOnHandler(proto, eventName) {
     var prop = 'on' + eventName;
     var desc = Object.getOwnPropertyDescriptor(proto, prop);
