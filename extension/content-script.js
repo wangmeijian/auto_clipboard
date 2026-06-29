@@ -133,7 +133,7 @@ class AutoClipboard {
     if (document.getElementById(STYLE_ID)) return;
     const style = document.createElement("style");
     style.id = STYLE_ID;
-    style.textContent = `* { user-select: text !important; -webkit-user-select: text !important; }`;
+    style.textContent = `*:not(video):not(audio) { user-select: text !important; -webkit-user-select: text !important; }`;
     (document.head || document.documentElement).appendChild(style);
   }
 

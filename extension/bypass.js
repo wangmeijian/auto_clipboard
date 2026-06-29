@@ -14,6 +14,11 @@
     if (bypassEvents.indexOf(type) !== -1 && typeof fn === 'function') {
       var _fn = fn;
       fn = function(e) {
+        // 视频/音频元素上的事件不劫持 preventDefault，避免影响浏览器原生功能（如画中画）
+        var t = e && e.target;
+        if (t && (t.tagName === 'VIDEO' || t.tagName === 'AUDIO' || (t.closest && (t.closest('video') || t.closest('audio'))))) {
+          return _fn.call(this, e);
+        }
         var _pd = e.preventDefault;
         e.preventDefault = noop;
         try { _fn.call(this, e); } finally { e.preventDefault = _pd; }
@@ -45,6 +50,11 @@
         if (typeof fn === 'function') {
           var _fn = fn;
           fn = function(e) {
+            // 视频/音频元素上的事件不劫持 preventDefault，避免影响浏览器原生功能（如画中画）
+            var t = e && e.target;
+            if (t && (t.tagName === 'VIDEO' || t.tagName === 'AUDIO' || (t.closest && (t.closest('video') || t.closest('audio'))))) {
+              return _fn.call(this, e);
+            }
             var _pd = e.preventDefault;
             e.preventDefault = noop;
             try { _fn.call(this, e); } finally { e.preventDefault = _pd; }
