@@ -657,3 +657,202 @@ body{
   background: url('chrome-extension://__MSG_@@extension_id__/images/github-mark.svg') center center no-repeat;
   background-size: auto 20px;
 }
+
+/* ===================== 暗色模式（跟随系统） ===================== */
+@media (prefers-color-scheme: dark) {
+  /* 滚动条 */
+  ::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 6px rgba(255, 255, 255, 0.06);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #4b5260;
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.45);
+  }
+
+  /* 主容器 */
+  .popup {
+    background-color: #1c1f24;
+    color: #d1d5db;
+  }
+
+  /* 标题栏 */
+  .popup_title {
+    background-color: #262a31;
+    color: #e5e7eb;
+  }
+  .popup_title .plugin-toggle {
+    background: #4b5260;
+  }
+  .popup_title .plugin-toggle::after {
+    background: #e5e7eb;
+  }
+  .popup_title .plugin-toggle.on {
+    background: #51b362;
+  }
+  .popup_title .plugin-toggle.on::after {
+    background: #ffffff;
+  }
+
+  /* 搜索框 */
+  .search_history {
+    background: #262a31;
+    color: #e5e7eb;
+    border-color: #3a3f47;
+  }
+  .search_history::placeholder {
+    color: #6b7280;
+  }
+  .search_history:focus {
+    border-color: #51b362;
+    box-shadow: 0 0 0 3px rgba(81, 179, 98, 0.2);
+  }
+
+  /* 历史记录 */
+  .copy_history {
+    color: #d1d5db;
+  }
+  .copy_history .empty {
+    color: #6b7280;
+  }
+  .copy_history .empty::before {
+    background-image: linear-gradient(135deg, #2b2f36 0%, #353a42 100%);
+  }
+  .copy_history .privacy {
+    color: #6b7280;
+  }
+  .copy_history .copy_item {
+    background: #242830;
+    border-color: #2f343c;
+    color: #d1d5db;
+  }
+  .copy_history .copy_item pre,
+  .copy_history .copy_item code {
+    color: #d1d5db;
+  }
+  .copy_history .copy_item:hover {
+    background-color: #2a2f37;
+    border-color: #3a3f47;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+  }
+  .copy_history .copy_item:has(.stick_item.topping) {
+    background: #1f2e23;
+    border-color: #2d4a36;
+  }
+  .copy_history .copy_item:has(.stick_item.topping):hover {
+    background: #243a2b;
+    border-color: #386049;
+  }
+  .copy_history .copy_item:has(.stick_item.topping)::before {
+    background: #51b362;
+  }
+  .copy_history .copy_item:hover .action_item:hover {
+    background-color: #353a42;
+  }
+  .copy_history .copy_item:hover .delete_item:hover {
+    background-color: #4a2424;
+  }
+
+  /* 复制成功提示 */
+  .copy_success {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), 0 1px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  /* 设置 / 二维码侧滑面板 */
+  .options_wrapper,
+  .qrcode_wrapper {
+    background-color: #1c1f24;
+    border-right-color: #3a3f47;
+  }
+
+  /* 设置页 */
+  .auto_clipboard_options {
+    background: #15171b;
+  }
+  .settings-section {
+    background: #242830;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+  }
+  .settings-section__title {
+    color: #e5e7eb;
+  }
+  .settings-row {
+    border-top-color: #2f343c;
+    color: #d1d5db;
+  }
+  .settings-toggle__slider {
+    background: #4b5260;
+  }
+  .settings-toggle__slider::after {
+    background: #e5e7eb;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  }
+  .settings-toggle input:checked + .settings-toggle__slider {
+    background: #51b362;
+  }
+  .settings-toggle input:checked + .settings-toggle__slider::after {
+    background: #ffffff;
+  }
+
+  /* 颜色配置 */
+  .color-group {
+    border-top-color: #2f343c;
+  }
+  .color-field {
+    color: #9ca3af;
+  }
+  .color-field__picker {
+    background: #1c1f24;
+    border-color: #3a3f47;
+  }
+  .color-field__picker:hover {
+    border-color: #51b362;
+  }
+  .color-field input[type="color"]::-webkit-color-swatch {
+    border-color: rgba(255, 255, 255, 0.12);
+  }
+
+  /* 预览块 */
+  .color-group__preview {
+    background: #1c1f24;
+    color: #9ca3af;
+  }
+
+  /* 底部按钮栏 */
+  .auto_clipboard_options .form_submit {
+    background: rgba(28, 31, 36, 0.96);
+    border-top-color: #2f343c;
+  }
+  .btn--ghost {
+    background: #2a2f37;
+    color: #d1d5db;
+    border-color: #3a3f47;
+  }
+  .btn--ghost:hover {
+    background: #353a42;
+    border-color: #4b5260;
+    color: #f3f4f6;
+  }
+
+  /* 页脚 */
+  .footer {
+    border-top-color: #2f343c;
+  }
+  .footer .donate-wrap,
+  .footer .github-wrap {
+    color: #6b7280;
+  }
+  .footer .donate-wrap:hover,
+  .footer .github-wrap:hover {
+    color: #93c5fd;
+  }
+
+  /* 暗色下提亮深色 SVG 图标（设置、返回、删除、置顶、github） */
+  .popup_title .setting,
+  .popup_title .back,
+  .popup_title .qrcode_back,
+  .copy_history .delete_item,
+  .copy_history .stick_item,
+  .footer .github {
+    filter: invert(0.78) hue-rotate(180deg) brightness(1.1);
+  }
+}

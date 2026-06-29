@@ -723,10 +723,8 @@ class AutoClipboard {
 class PasswordHelper {
   constructor(autoClipboard) {
     this.autoClipboard = autoClipboard;
-    this.ICON_SIZE = 22;
+    this.ICON_SIZE = 24;
     this.ICON_SIZE_MIN = 18;
-    this.ICON_IMG_RATIO = 14 / 22;
-    this.ICON_IMG_MIN = 12;
     // input -> { icon, host, originalType, listeners }
     this.bindings = new WeakMap();
     // 维护已绑定 input 的强引用集合，便于卸载时清理
@@ -841,27 +839,65 @@ class PasswordHelper {
         align-items: center;
         justify-content: center;
         background: #ffffff;
-        border: 1px solid rgba(0,0,0,0.12);
+        border: 1px solid rgba(0,0,0,0.14);
         border-radius: 6px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+        box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.06);
         cursor: pointer;
         pointer-events: auto;
-        transition: background 0.15s ease, transform 0.15s ease;
+        color: #4b5563;
+        transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
       }
       .ac-pwd-icon:hover {
-        transform: scale(1.05);
+        background: #eff6ff;
+        color: #2563eb;
+        border-color: #93c5fd;
+        transform: scale(1.06);
+        box-shadow: 0 2px 6px rgba(37,99,235,0.18), 0 4px 12px rgba(37,99,235,0.12);
       }
-      .ac-pwd-icon img {
-        width: 14px;
-        height: 14px;
+      .ac-pwd-icon:active {
+        transform: scale(0.96);
+      }
+      .ac-pwd-icon svg {
+        width: 64%;
+        height: 64%;
         display: block;
         pointer-events: none;
+        overflow: visible;
+      }
+      .ac-pwd-icon .ac-pwd-eye {
+        stroke: currentColor;
+        stroke-width: 1.6;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        fill: none;
+      }
+      .ac-pwd-icon .ac-pwd-pupil {
+        fill: currentColor;
+      }
+      .ac-pwd-icon .ac-pwd-copy-bg {
+        fill: #ffffff;
+      }
+      .ac-pwd-icon .ac-pwd-copy {
+        stroke: currentColor;
+        stroke-width: 1.4;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        fill: none;
       }
       @media (prefers-color-scheme: dark) {
         .ac-pwd-icon {
           background: #2b2f36;
           border-color: rgba(255,255,255,0.15);
+          color: #d1d5db;
           box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+        }
+        .ac-pwd-icon:hover {
+          background: #1e3a5f;
+          color: #93c5fd;
+          border-color: rgba(147,197,253,0.45);
+        }
+        .ac-pwd-icon .ac-pwd-copy-bg {
+          fill: #2b2f36;
         }
       }
       .ac-pwd-tip {
@@ -903,11 +939,15 @@ class PasswordHelper {
     const button = document.createElement("div");
     button.className = "ac-pwd-icon";
     button.title = chrome.i18n.getMessage("copyPassword") || "Copy password";
-    const iconImg = document.createElement("img");
-    iconImg.src = chrome.runtime.getURL("images/icon@128.png");
-    iconImg.alt = "";
-    iconImg.draggable = false;
-    button.appendChild(iconImg);
+    button.innerHTML = `
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path class="ac-pwd-eye" d="M2.5 12C4.5 7.5 8 5.5 12 5.5C16 5.5 19.5 7.5 21.5 12C19.5 16.5 16 18.5 12 18.5C8 18.5 4.5 16.5 2.5 12Z"/>
+        <circle class="ac-pwd-pupil" cx="12" cy="12" r="2.6"/>
+        <rect class="ac-pwd-copy-bg" x="13" y="13" width="11" height="11" rx="2.5"/>
+        <rect class="ac-pwd-copy" x="14.5" y="14.5" width="6.5" height="7.5" rx="1.2"/>
+        <path class="ac-pwd-copy" d="M16.5 14.5V13.2C16.5 12.5 17 12 17.7 12H22.3C23 12 23.5 12.5 23.5 13.2V18.5"/>
+      </svg>
+    `;
     const tip = document.createElement("div");
     tip.className = "ac-pwd-tip";
     shadow.appendChild(style);
@@ -918,7 +958,6 @@ class PasswordHelper {
     const binding = {
       icon: host,
       button,
-      iconImg,
       tip,
     };
 
@@ -1059,13 +1098,8 @@ class PasswordHelper {
     button.style.display = "flex";
     const iconSize = this._calcIconSize(rect.height);
     if (binding._lastIconSize !== iconSize) {
-      const imgSize = Math.max(this.ICON_IMG_MIN, Math.round(iconSize * this.ICON_IMG_RATIO));
       button.style.width = `${iconSize}px`;
       button.style.height = `${iconSize}px`;
-      if (binding.iconImg) {
-        binding.iconImg.style.width = `${imgSize}px`;
-        binding.iconImg.style.height = `${imgSize}px`;
-      }
       binding._lastIconSize = iconSize;
     }
     // 严格按 input 垂直中心对齐：图标比 input 高时允许 top 为负，避免任何场景下偏离居中
