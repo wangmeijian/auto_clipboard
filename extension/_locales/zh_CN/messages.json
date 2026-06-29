@@ -80,11 +80,11 @@
   "selectionTextExample": {
     "message": "选中的文字"
   },
-  "auto_copy": {
-    "message": "自动复制本站内容"
+  "site_enable": {
+    "message": "本站启用"
   },
-  "disable_copy": {
-    "message": "不要自动复制本站内容"
+  "site_disable": {
+    "message": "本站禁用"
   },
   "tooltip": {
     "message": "复制成功提示"
@@ -106,5 +106,17 @@
   },
   "ctrlCopy": {
     "message": "按住 Ctrl 键才触发复制"
+  },
+  "passwordQuickView": {
+    "message": "快速查看与复制密码"
+  },
+  "copyPassword": {
+    "message": "复制密码"
+  },
+  "passwordCopied": {
+    "message": "密码复制成功！"
+  },
+  "passwordEmptyHint": {
+    "message": "密码为空"
   }
 }

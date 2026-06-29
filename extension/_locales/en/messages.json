@@ -107,13 +107,13 @@
     "description": "Selection text",
     "message": "选中的文字"
   },
-  "auto_copy": {
-    "description": "Automatically copy the content of this site",
-    "message": "自动复制本站内容"
+  "site_enable": {
+    "description": "Enable plugin on this site",
+    "message": "Enable on this site"
   },
-  "disable_copy": {
-    "description": "Do not copy the content of this site automatically",
-    "message": "不要自动复制本站内容"
+  "site_disable": {
+    "description": "Disable plugin on this site",
+    "message": "Disable on this site"
   },
   "tooltip": {
     "description": "Prompt for successful copying",
@@ -142,5 +142,21 @@
   "ctrlCopy": {
     "description": "Hold Ctrl key to auto-copy text",
     "message": "按住 Ctrl 键才触发复制"
+  },
+  "passwordQuickView": {
+    "description": "Quickly view and copy password",
+    "message": "Quickly view and copy password"
+  },
+  "copyPassword": {
+    "description": "Copy password",
+    "message": "Copy password"
+  },
+  "passwordCopied": {
+    "description": "Password copied successfully",
+    "message": "Password copied successfully!"
+  },
+  "passwordEmptyHint": {
+    "description": "Shown when the password field is empty",
+    "message": "Password is empty"
   }
 }

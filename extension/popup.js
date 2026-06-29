@@ -96,6 +96,7 @@ class Popup {
       selectionTextColor: "#ffffff",
       contextMenu: true,
       ctrlCopy: false,
+      passwordQuickView: true,
     };
 
     const optionsHTML = `
@@ -113,6 +114,10 @@ class Popup {
           <div class="form_item"><label class="label"><input type="checkbox" name="contextMenu" checked="${
             DEFAULT_VALUE.contextMenu
           }" />${i18n("contextMenu")}</label>
+          </div>
+          <div class="form_item"><label class="label"><input type="checkbox" name="passwordQuickView" checked="${
+            DEFAULT_VALUE.passwordQuickView
+          }" />${i18n("passwordQuickView")}</label>
           </div>
           <h3>${i18n("color")}</h3>
           <div class="setting-color">
@@ -194,6 +199,7 @@ class Popup {
       document.optionForm.ctrlCopy.checked = config.ctrlCopy;
       document.optionForm.tooltip.checked = config.tooltip;
       document.optionForm.contextMenu.checked = config.contextMenu;
+      document.optionForm.passwordQuickView.checked = config.passwordQuickView;
       // 更新预览
       updatePreviewStyle({
         background: config.background,
@@ -203,7 +209,7 @@ class Popup {
     };
 
     chrome.storage.sync.get(
-      ["background", "color", "selectionBgColor", "selectionTextColor", "ctrlCopy", "tooltip", "contextMenu"],
+      ["background", "color", "selectionBgColor", "selectionTextColor", "ctrlCopy", "tooltip", "contextMenu", "passwordQuickView"],
       (results) => {
         console.log("popup results", results);
         init({
@@ -226,6 +232,7 @@ class Popup {
           ctrlCopy: data.get("ctrlCopy"),
           tooltip: data.get("tooltip"),
           contextMenu: data.get("contextMenu"),
+          passwordQuickView: optionForm.passwordQuickView.checked,
         },
         () => {
           tips.style.display = "inline-block";
@@ -234,21 +241,8 @@ class Popup {
           }, 1500);
         }
       );
-      if (!data.get("contextMenu")) {
-        chrome.contextMenus.removeAll();
-      } else {
-        chrome.contextMenus.create({
-          id: "auto_copy",
-          title: i18n("auto_copy"),
-          contexts: ["all"],
-        });
-
-        chrome.contextMenus.create({
-          id: "disable_copy",
-          title: i18n("disable_copy"),
-          contexts: ["all"],
-        });
-      }
+      // contextMenu 的菜单同步交给 background.js 监听 storage.onChanged 处理
+      // popup 直接操作 contextMenus 会与 background 竞争，导致菜单闪烁
     });
 
     optionForm.addEventListener("reset", () => {
@@ -265,6 +259,7 @@ class Popup {
       document.optionForm.ctrlCopy.checked = DEFAULT_VALUE.ctrlCopy;
       document.optionForm.tooltip.checked = DEFAULT_VALUE.tooltip;
       document.optionForm.contextMenu.checked = DEFAULT_VALUE.contextMenu;
+      document.optionForm.passwordQuickView.checked = DEFAULT_VALUE.passwordQuickView;
     });
 
     optionForm.addEventListener("change", (e) => {
