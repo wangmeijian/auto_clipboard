@@ -18,10 +18,10 @@
     "message": "预览"
   },
   "messageBackground": {
-    "message": "提示语背景颜色："
+    "message": "提示语背景色"
   },
   "messageColor": {
-    "message": "提示语文字颜色："
+    "message": "提示语文字色"
   },
   "save": {
     "message": "保存"
@@ -66,16 +66,16 @@
     "message": "选择文本自动复制"
   },
   "operation": {
-    "message": "一. 操作配置"
+    "message": "操作"
   },
   "color": {
-    "message": "二. 颜色配置"
+    "message": "外观"
   },
   "selectionTextColor": {
-    "message": "选中文字颜色："
+    "message": "选中文字色"
   },
   "selectionBgColor": {
-    "message": "选中区域颜色："
+    "message": "选中背景色"
   },
   "selectionTextExample": {
     "message": "选中的文字"

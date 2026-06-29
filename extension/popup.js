@@ -99,66 +99,75 @@ class Popup {
       passwordQuickView: true,
     };
 
+    const toggleRow = (name, labelKey) => `
+      <label class="settings-row">
+        <span class="settings-row__label">${i18n(labelKey)}</span>
+        <span class="settings-toggle">
+          <input type="checkbox" name="${name}" />
+          <span class="settings-toggle__slider"></span>
+        </span>
+      </label>
+    `;
+
+    const colorField = (name, labelKey, defaultValue) => `
+      <label class="color-field">
+        <span class="color-field__label">${i18n(labelKey)}</span>
+        <span class="color-field__picker">
+          <input type="color" name="${name}" value="${defaultValue}" />
+        </span>
+      </label>
+    `;
+
     const optionsHTML = `
       <div class="auto_clipboard_options">
-        <h1 class="popup_title"><span class="back" title="${i18n(
-          "back"
-        )}"></span>${i18n("setting")}</h1>
-        <form id="optionForm" name="optionForm">
-          <h3>${i18n("operation")}</h3>
-          <div class="form_item"><label class="label"><input type="checkbox" name="ctrlCopy" />${i18n("ctrlCopy")}</label>
-          </div>
-          <div class="form_item"><label class="label"><input type="checkbox" name="tooltip" checked="${
-            DEFAULT_VALUE.tooltip
-          }" />${i18n("tooltip")}</label>
-          <div class="form_item"><label class="label"><input type="checkbox" name="contextMenu" checked="${
-            DEFAULT_VALUE.contextMenu
-          }" />${i18n("contextMenu")}</label>
-          </div>
-          <div class="form_item"><label class="label"><input type="checkbox" name="passwordQuickView" checked="${
-            DEFAULT_VALUE.passwordQuickView
-          }" />${i18n("passwordQuickView")}</label>
-          </div>
-          <h3>${i18n("color")}</h3>
-          <div class="setting-color">
-            <div class="setting-item">
-              <div class="form_item">${i18n(
-                "messageBackground"
-              )}<label><input type="color" name="background" value="${
-      DEFAULT_VALUE.background
-    }" /></label></div>
-              <div class="form_item">${i18n(
-                "messageColor"
-              )}<label><input type="color" name="color" value="${
-      DEFAULT_VALUE.color
-    }" /></label></div>
+        <h1 class="popup_title"><span class="back" title="${i18n("back")}"></span>${i18n("setting")}</h1>
+        <form id="optionForm" name="optionForm" class="settings-form">
+          <section class="settings-section">
+            <h3 class="settings-section__title">${i18n("operation")}</h3>
+            <div class="settings-section__body">
+              ${toggleRow("ctrlCopy", "ctrlCopy")}
+              ${toggleRow("tooltip", "tooltip")}
+              ${toggleRow("contextMenu", "contextMenu")}
+              ${toggleRow("passwordQuickView", "passwordQuickView")}
             </div>
-            <div class="preview_wrap">
-              <span class="preview_desc">${i18n("preview")}：</span>
-              <span class="preview rightBottom" id="preview">
-                <svg class="preview-check" viewBox="0 0 13 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M1.5 5L5 8.5L11.5 1.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                ${i18n("copySuccess")}
-              </span>
+          </section>
+
+          <section class="settings-section">
+            <h3 class="settings-section__title">${i18n("color")}</h3>
+            <div class="settings-section__body">
+              <div class="color-group">
+                <div class="color-group__fields">
+                  ${colorField("background", "messageBackground", DEFAULT_VALUE.background)}
+                  ${colorField("color", "messageColor", DEFAULT_VALUE.color)}
+                </div>
+                <div class="color-group__preview">
+                  <span class="color-group__preview-label">${i18n("preview")}</span>
+                  <span class="preview rightBottom" id="preview">
+                    <svg class="preview-check" viewBox="0 0 13 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M1.5 5L5 8.5L11.5 1.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    ${i18n("copySuccess")}
+                  </span>
+                </div>
+              </div>
+
+              <div class="color-group">
+                <div class="color-group__fields">
+                  ${colorField("selectionBgColor", "selectionBgColor", DEFAULT_VALUE.selectionBgColor)}
+                  ${colorField("selectionTextColor", "selectionTextColor", DEFAULT_VALUE.selectionTextColor)}
+                </div>
+                <div class="color-group__preview">
+                  <span class="color-group__preview-label">${i18n("preview")}</span>
+                  <span class="preview preview--selection" id="selectionPreview">${i18n("selectionTextExample")}</span>
+                </div>
+              </div>
             </div>
-          </div>
-          <div class="setting-color">
-            <div class="setting-item">
-              <div class="form_item">${i18n("selectionBgColor")}<label><input type="color" name="selectionBgColor" value="${DEFAULT_VALUE.selectionBgColor
-      }" /></label></div>
-              <div class="form_item">${i18n("selectionTextColor")}<label><input type="color" name="selectionTextColor" value="${DEFAULT_VALUE.selectionTextColor
-      }" /></label></div>
-            </div>
-            <div class="preview_wrap">
-              <span class="preview_desc">${i18n("preview")}：</span>
-              <span class="preview" id="selectionPreview">${i18n("selectionTextExample")}</span>
-            </div>
-          </div>
+          </section>
+
           <div class="form_submit">
-            <button id="submit" type="button">${i18n("save")}</button>
-            <button id="recover" type="reset">${i18n("reset")}</button>
             <span class="option_tips">${i18n("saveSuccess")}</span>
+            <button id="recover" type="reset" class="btn btn--ghost">${i18n("reset")}</button>
+            <button id="submit" type="button" class="btn btn--primary">${i18n("save")}</button>
           </div>
         </form>
       </div>

@@ -24,11 +24,11 @@
     "description": "预览"
   },
   "messageBackground": {
-    "message": "Prompt background color:",
+    "message": "Toast background",
     "description": "提示语背景色"
   },
   "messageColor": {
-    "message": "Prompt Language color:",
+    "message": "Toast text color",
     "description": "提示语文字色"
   },
   "save": {
@@ -89,19 +89,19 @@
   },
   "operation": {
     "description": "Operation configuration",
-    "message": "一. 操作配置"
+    "message": "Behavior"
   },
   "color": {
     "description": "Color configuration",
-    "message": "二. 颜色配置"
+    "message": "Appearance"
   },
   "selectionTextColor": {
     "description": "Selection text color",
-    "message": "Selection text color:"
+    "message": "Selection text"
   },
   "selectionBgColor": {
     "description": "Selection background color",
-    "message": "Selection background color:"
+    "message": "Selection background"
   },
   "selectionTextExample": {
     "description": "Selection text",
