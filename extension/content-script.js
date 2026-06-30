@@ -928,12 +928,11 @@ class PasswordHelper {
         content: "";
         position: absolute;
         left: 14px;
-        bottom: -6px;
-        width: 0;
-        height: 0;
-        border-left: 6px solid transparent;
-        border-right: 6px solid transparent;
-        border-top: 6px solid #1f2329;
+        bottom: -4px;
+        width: 8px;
+        height: 8px;
+        background: #1f2329;
+        transform: rotate(45deg);
       }
     `;
     const button = document.createElement("div");
