@@ -8,7 +8,7 @@
     "description": "鼠标滑过插件图标时的提示语"
   },
   "description": {
-    "message": "Selected text is automatically copied, resolving the issue of text not being copyable on some websites, and supports viewing clipboard history.",
+    "message": "Powerful copying of webpage text, with local caching of history; quick viewing and copying of passwords.",
     "description": "插件描述"
   },
   "copyError": {
