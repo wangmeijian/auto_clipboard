@@ -802,10 +802,12 @@ class PasswordHelper {
         } else if (m.type === "attributes" && m.attributeName === "type") {
           const target = m.target;
           if (target.tagName !== "INPUT") continue;
-          // 仅处理"出现新的 password input"场景；hover 时我们会临时把 type 切到 text，
-          // 不能据此 unbind（MutationObserver 异步触发，无法可靠通过同步标志位区分）。
-          if (target.type === "password" && !this.bindings.has(target)) {
+          // SPA 常复用同一个 input 节点切换 type（如密码登录 ↔ 验证码登录），
+          // 因此需按当前 type 实时绑定 / 解绑
+          if (target.type === "password") {
             this._bind(target);
+          } else {
+            this._unbind(target);
           }
         }
       }

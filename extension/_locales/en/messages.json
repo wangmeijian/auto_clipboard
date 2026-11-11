@@ -48,44 +48,44 @@
     "description": "搜索剪切板记录"
   },
   "historyEmpty": {
-    "description": "clipboard history is empty",
-    "message": "弹窗没有内容时的提示"
+    "message": "No records",
+    "description": "弹窗没有内容时的提示"
   },
   "delete": {
-    "description": "delete",
-    "message": "删除"
+    "message": "Delete",
+    "description": "删除"
   },
   "stick": {
-    "description": "stick",
-    "message": "置顶"
+    "message": "Pin",
+    "description": "置顶"
   },
   "cancelStick": {
-    "description": "cancel stick",
-    "message": "取消置顶"
+    "message": "Unpin",
+    "description": "取消置顶"
   },
   "popupTitle": {
-    "description": "Clipboard",
-    "message": "剪切板"
+    "message": "Clipboard",
+    "description": "剪切板"
   },
   "privacy": {
-    "description": "Clipboard data is only stored locally in your browser",
-    "message": "剪切板数据仅保存在您的浏览器本地"
+    "message": "Clipboard data is only stored locally in your browser",
+    "description": "剪切板数据仅保存在您的浏览器本地"
   },
   "setting": {
-    "description": "Setting",
-    "message": "设置"
+    "message": "Settings",
+    "description": "设置"
   },
   "back": {
-    "description": "Back",
-    "message": "返回"
+    "message": "Back",
+    "description": "返回"
   },
   "dissolve": {
-    "description": "Automatically crack web pages, allowing selection and copying",
-    "message": "自动破解网页，允许选中和复制"
+    "message": "Unlock text selection and copying on restricted pages",
+    "description": "自动破解网页，允许选中和复制"
   },
-  "copy" : {
-    "description": "Select Automatic Copy of Text",
-    "message": "选择文本自动复制"
+  "copy": {
+    "message": "Auto-copy selected text",
+    "description": "选择文本自动复制"
   },
   "operation": {
     "description": "Operation configuration",
@@ -104,8 +104,8 @@
     "message": "Selection background"
   },
   "selectionTextExample": {
-    "description": "Selection text",
-    "message": "选中的文字"
+    "message": "Selected text",
+    "description": "选中的文字"
   },
   "site_enable": {
     "description": "Enable plugin on this site",
@@ -116,32 +116,32 @@
     "message": "Disable on this site"
   },
   "tooltip": {
-    "description": "Prompt for successful copying",
-    "message": "复制成功提示"
+    "message": "Copy success toast",
+    "description": "复制成功提示"
   },
   "thank_you": {
-    "description": "Thank you for your donation",
-    "message": "感谢您的捐助"
+    "message": "Thank you for your donation",
+    "description": "感谢您的捐助"
   },
   "donate": {
-    "description": "Donate",
-    "message": "捐助"
+    "message": "Donate",
+    "description": "捐助"
   },
   "contribute": {
-    "description": "Issue/Contribute",
-    "message": "贡献"
+    "message": "Feedback/Contribute",
+    "description": "贡献"
   },
   "contextMenu": {
-    "description": "Right mouse button menu shortcut keys",
-    "message": "鼠标右键菜单快捷键"
+    "message": "Right-click menu shortcut",
+    "description": "鼠标右键菜单快捷键"
   },
   "togglePlugin": {
-    "description": "Enable/Disable plugin",
-    "message": "启用/禁用插件"
+    "message": "Enable/Disable plugin",
+    "description": "启用/禁用插件"
   },
   "ctrlCopy": {
-    "description": "Hold Ctrl key to auto-copy text",
-    "message": "按住 Ctrl 键才触发复制"
+    "message": "Copy only while holding Ctrl",
+    "description": "按住 Ctrl 键才触发复制"
   },
   "passwordQuickView": {
     "description": "Quickly view and copy password",

@@ -7,6 +7,8 @@ const COLOR_ICON_PATH = ICON_SIZES.reduce((acc, size) => {
   return acc;
 }, {});
 
+const OFF_BADGE_COLOR = "#FF8A00";
+
 let grayIconCache = null;
 
 /**
@@ -73,8 +75,15 @@ async function updateActionIcon(tabId, url, state) {
     if (disabled) {
       const grayIcon = await getGrayIcon();
       await chrome.action.setIcon({ tabId, imageData: grayIcon });
+      await chrome.action.setBadgeBackgroundColor({ tabId, color: OFF_BADGE_COLOR });
+      // setBadgeTextColor 需 Chrome 110+，低版本跳过
+      if (chrome.action.setBadgeTextColor) {
+        await chrome.action.setBadgeTextColor({ tabId, color: "#FFFFFF" });
+      }
+      await chrome.action.setBadgeText({ tabId, text: "off" });
     } else {
       await chrome.action.setIcon({ tabId, path: COLOR_ICON_PATH });
+      await chrome.action.setBadgeText({ tabId, text: "" });
     }
   } catch (e) {
     // tab 已关闭或权限不足，忽略
