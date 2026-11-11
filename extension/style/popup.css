@@ -151,6 +151,8 @@ body{
   letter-spacing: 0.02em;
 }
 .copy_history .copy_item{
+  /* 列表是可滚动的 flex 容器，记录多时子项默认会被压缩，导致第二行（来源/时间）贴底 */
+  flex-shrink: 0;
   display: grid;
   grid-template-columns: 28px 1fr 28px;
   min-height: 38px;
@@ -212,6 +214,62 @@ body{
   color: inherit;
   line-height: 36px;
   padding: 0 4px;
+}
+.copy_history .copy_item__main{
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.copy_history .copy_item__main:has(.copy_item__meta){
+  padding: 6px 0;
+}
+.copy_history .copy_item__main:has(.copy_item__meta) .click_target{
+  line-height: 20px;
+}
+.copy_history .copy_item__meta{
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 4px;
+  min-width: 0;
+  font-size: 11px;
+  line-height: 16px;
+  color: #9ca3af;
+}
+.copy_history .source_link{
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  color: inherit;
+  text-decoration: none;
+  border-radius: 4px;
+  transition: color 0.15s ease;
+}
+.copy_history .source_link:hover{
+  color: #2f8a41;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.copy_history .source_link:focus-visible{
+  outline: 2px solid #51b362;
+  outline-offset: 1px;
+}
+.copy_history .source_favicon{
+  flex-shrink: 0;
+  border-radius: 2px;
+}
+.copy_history .source_host{
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.copy_history .source_time{
+  flex-shrink: 0;
+}
+.copy_history .source_link + .source_time::before{
+  content: "·";
+  margin-right: 6px;
 }
 .copy_history .copy_item:hover{
   background-color: #fafbfc;
@@ -410,6 +468,37 @@ body{
 .settings-row__label {
   flex: 1;
   min-width: 0;
+}
+.settings-row--link {
+  width: 100%;
+  margin: 0;
+  background: none;
+  border-right: none;
+  border-bottom: none;
+  border-left: none;
+  font-family: inherit;
+  text-align: left;
+}
+.settings-row--link:focus-visible {
+  outline: 2px solid #51b362;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+.settings-shortcut {
+  flex-shrink: 0;
+  padding: 2px 6px;
+  border: 1px solid #e2e6ea;
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  background: #fafbfc;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 11px;
+  color: #4b5563;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+.settings-row--link:hover .settings-shortcut {
+  border-color: #51b362;
+  color: #2f8a41;
 }
 
 .settings-toggle {
@@ -778,6 +867,20 @@ body{
   .settings-row {
     border-top-color: #2f343c;
     color: #d1d5db;
+  }
+  .settings-shortcut {
+    background: #242830;
+    border-color: #3a3f47;
+    color: #d1d5db;
+  }
+  .settings-row--link:hover .settings-shortcut {
+    color: #7dd38c;
+  }
+  .copy_history .copy_item__meta {
+    color: #6b7280;
+  }
+  .copy_history .source_link:hover {
+    color: #7dd38c;
   }
   .settings-toggle__slider {
     background: #4b5260;

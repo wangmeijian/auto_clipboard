@@ -70,4 +70,36 @@
       try { patchOnHandler(proto, ev); } catch (err) {}
     });
   });
+
+  // 3. 防止页面在复制后用 Clipboard API 追加版权尾巴
+  //    典型做法：copy 事件后 setTimeout 调 navigator.clipboard.writeText(选中内容 + 尾巴)
+  //    仅在复制后很短的时间窗口内、写入内容以选中内容开头并更长时，改为只写入选中内容
+  //    复制后用户又点击了页面（如站点自带的「复制代码」「复制链接」按钮）则视为正常写入，不处理
+  var COPY_WINDOW_MS = 1000;
+  var lastCopy = { text: '', time: 0 };
+  _origAEL.call(window, 'copy', function() {
+    var selection = window.getSelection();
+    lastCopy = { text: selection ? selection.toString().trim() : '', time: Date.now() };
+  }, true);
+  _origAEL.call(window, 'pointerdown', function() {
+    lastCopy = { text: '', time: 0 };
+  }, true);
+
+  function stripAppended(text) {
+    if (typeof text !== 'string' || !lastCopy.text) return text;
+    if (Date.now() - lastCopy.time > COPY_WINDOW_MS) return text;
+    var appended = text.length > lastCopy.text.length && text.trim().indexOf(lastCopy.text) === 0;
+    if (!appended) return text;
+    var result = lastCopy.text;
+    // 只拦截一次
+    lastCopy = { text: '', time: 0 };
+    return result;
+  }
+
+  if (typeof Clipboard !== 'undefined' && Clipboard.prototype.writeText) {
+    var _origWriteText = Clipboard.prototype.writeText;
+    Clipboard.prototype.writeText = function(text) {
+      return _origWriteText.call(this, stripAppended(text));
+    };
+  }
 })();

@@ -1,4 +1,13 @@
-const i18n = (key) => chrome.i18n.getMessage(key);
+importScripts("i18n.js", "history-store.js");
+
+const i18n = (key) => I18n.t(key);
+// content script 通过 background 获取语言包，监听需在顶层同步注册
+I18n.serveMessages();
+// 各页面的新增历史统一由这里串行写入，避免多个标签页同时复制时互相覆盖
+HistoryStore.serveRecord();
+const i18nReady = I18n.init().catch(() => {});
+// 切换语言后同步右键菜单文案
+I18n.onChange(() => ensureContextMenus());
 
 const BYPASS_SCRIPT_ID = "bypass";
 const ICON_SIZES = [16, 24, 32, 48, 128];
@@ -171,9 +180,12 @@ async function syncBypassScript() {
 function createMenuIdempotent(id, title) {
   return new Promise((resolve) => {
     chrome.contextMenus.create({ id, title, contexts: ["all"] }, () => {
-      // 已存在等错误吞掉，避免污染日志
-      void chrome.runtime.lastError;
-      resolve();
+      if (!chrome.runtime.lastError) return resolve();
+      // 已存在：更新标题（语言可能已切换）
+      chrome.contextMenus.update(id, { title }, () => {
+        void chrome.runtime.lastError;
+        resolve();
+      });
     });
   });
 }
@@ -193,6 +205,7 @@ function removeMenuIfExists(id) {
  *   - 旧版本 ID（auto_copy/disable_copy）做一次清理，防止残留
  */
 async function ensureContextMenus() {
+  await i18nReady;
   const { contextMenu } = await chrome.storage.sync.get(["contextMenu"]);
   const enabled = contextMenu === "on" || contextMenu === undefined;
 
@@ -259,6 +272,24 @@ chrome.contextMenus.onClicked.addListener(async ({ menuItemId, pageUrl }) => {
   } else if (menuItemId === "site_disable") {
     whitelist[origin] = true;
     await chrome.storage.sync.set({ whitelist });
+  }
+});
+
+// 快捷键唤起页面内的历史面板，由持有焦点的 frame 自行响应
+chrome.commands.onCommand.addListener(async (command, tab) => {
+  if (command !== "toggle-history-panel") return;
+  const targetTab =
+    tab || (await chrome.tabs.query({ active: true, currentWindow: true }))[0];
+  if (!targetTab || typeof targetTab.id !== "number") return;
+  try {
+    await chrome.tabs.sendMessage(targetTab.id, { type: "toggleHistoryPanel" });
+  } catch (e) {
+    // 只有页面没有 content script（chrome:// 页面、插件安装前已打开的页面）时才退回打开 popup；
+    // 其他错误（如没有 frame 响应）下面板可能已打开，打开 popup 会抢走焦点把面板关掉
+    if (!/Receiving end does not exist/i.test(String(e && e.message))) return;
+    try {
+      await chrome.action.openPopup();
+    } catch (e2) {}
   }
 });
 

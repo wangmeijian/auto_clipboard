@@ -1,12 +1,7 @@
-const i18n = (key) => chrome.i18n.getMessage(key);
+const i18n = (key, substitutions) => I18n.t(key, substitutions);
 
 class AutoClipboard {
   constructor() {
-    // chrome.storage.local 最大容量为5M，即5242880字节
-    // 最多存储条数
-    this._MAX_HISTORY_LENGTH = 100;
-    // 单条数据最大字符数
-    this._MAX_ITEM_LENGTH = 10000;
     // message宽高
     this.MESSAGE_WIDTH = 110;
     this.MESSAGE_HEIGHT = 32;
@@ -15,6 +10,10 @@ class AutoClipboard {
     this.message = null;
     // 当前站点是否启用（pluginEnabled !== 'off' 且未被本站禁用）
     this._enabled = false;
+    // 非 https 页面自动复制时待写入的文本，见 _handleCopyEvent
+    this._pendingCopyText = null;
+    // 复制相关选项，随 storage 变化实时更新
+    this._copyOptions = { cleanText: true, plainTextCopy: false, copyFormat: CopyFormatter.DEFAULT_FORMAT };
     // 默认值
     this.websiteIndex = this.websites.length - 1;
     this._init();
@@ -53,10 +52,55 @@ class AutoClipboard {
     this._detectWebsites();
     this._addActionListener();
     this._addStorageChangeListener();
+    this._addMessageListener();
     this.passwordHelper = new PasswordHelper(this);
+    this.historyPanel = new HistoryPanel({
+      onCopied: () => this._showMessageWithText(i18n("copySuccess")),
+    });
 
-    this._getStorage().then((config) => {
+    // 语言包需在创建提示浮层、密码图标之前加载完
+    Promise.all([I18n.init().catch(() => {}), this._getStorage()]).then(([, config]) => {
+      this._updateCopyOptions(config);
       this._setEnabled(this._computeEnabled(config), config);
+    });
+    I18n.onChange(() => this._refreshTexts());
+  }
+
+  /**
+   * @desc 切换语言后刷新已渲染的文案（历史面板每次打开都会重新渲染，无需处理）
+   */
+  _refreshTexts() {
+    const label = this.message && this.message.querySelector(".ac-label");
+    // 提示浮层正在显示自定义文案时不打断，下次显示时会恢复为新的默认文案
+    if (label && !this.timer) label.textContent = i18n("copySuccess");
+    if (this.passwordHelper) this.passwordHelper.refreshTexts();
+  }
+
+  /**
+   * @desc 同步复制相关选项
+   */
+  _updateCopyOptions(config) {
+    this._copyOptions = {
+      cleanText: config.cleanText !== false,
+      plainTextCopy: config.plainTextCopy === true,
+      copyFormat: CopyFormatter.normalizeFormat(config.copyFormat),
+    };
+  }
+
+  /**
+   * @desc 监听 background 转发的快捷键命令
+   *   消息会发给所有 frame，只由真正持有焦点的那个 frame 打开面板：
+   *   焦点在 iframe 内时，父文档 hasFocus() 也为 true，但其 activeElement 是 iframe 元素
+   */
+  _addMessageListener() {
+    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+      if (!message || message.type !== "toggleHistoryPanel") return;
+      if (sender.id !== chrome.runtime.id) return;
+      if (!this._enabled || !document.hasFocus()) return;
+      const active = document.activeElement;
+      if (active && (active.tagName === "IFRAME" || active.tagName === "FRAME")) return;
+      this.historyPanel.toggle();
+      sendResponse(true);
     });
   }
 
@@ -118,6 +162,7 @@ class AutoClipboard {
     this._removeGlobalSelectStyle();
     this._removeSelectionStyle();
     if (this.passwordHelper) this.passwordHelper.disable();
+    if (this.historyPanel) this.historyPanel.close();
     const host = document.getElementById("acMessage");
     if (host && host.parentNode) host.parentNode.removeChild(host);
     this.message = null;
@@ -223,7 +268,7 @@ class AutoClipboard {
   _getStorage() {
     return new Promise((resolve, reject) => {
       chrome.storage.sync.get(
-        ["background", "color", "messagePosition", "selectionBgColor", "selectionTextColor", "pluginEnabled", "passwordQuickView", "whitelist"],
+        ["background", "color", "messagePosition", "selectionBgColor", "selectionTextColor", "pluginEnabled", "passwordQuickView", "whitelist", "cleanText", "plainTextCopy", "copyFormat"],
         (config) => {
           config ? resolve(config) : reject({});
         }
@@ -257,8 +302,11 @@ class AutoClipboard {
    * @desc 监听 storage 变化，响应插件开关与本站启用/禁用
    */
   _addStorageChangeListener() {
-    chrome.storage.onChanged.addListener((changes, area) => {
-      if (area !== 'sync') return;
+    // 只监听 sync：历史记录在 local 中，每次复制都会整份重写，监听全部区域会把整份历史推给每个 frame
+    chrome.storage.sync.onChanged.addListener((changes) => {
+      if ('cleanText' in changes || 'plainTextCopy' in changes || 'copyFormat' in changes) {
+        this._getStorage().then((config) => this._updateCopyOptions(config));
+      }
       // pluginEnabled 或 whitelist 变化，重新计算本站启用状态
       if ('pluginEnabled' in changes || 'whitelist' in changes) {
         this._getStorage().then((config) => {
@@ -295,14 +343,54 @@ class AutoClipboard {
   }
 
   /**
+   * @desc 按配置处理复制文本：开启净化时完整净化，否则只替换异常空格
+   */
+  _processText(text, options) {
+    if (!text) return "";
+    return this._copyOptions.cleanText ? TextCleaner.clean(text, options) : this.replaceAbnormalSpace(text);
+  }
+
+  /**
    * @desc 复制选中的文本
    * @returns Promise<string | undefined>
    */
   async getSelectedText() {
     const result = await this.websites[this.websiteIndex].copySelectedText();
-    return new Promise((resolve) => {
-      return result && result.length ? resolve(this.replaceAbnormalSpace(result)) : resolve("");
-    })
+    return this._processText(result);
+  }
+
+  /**
+   * @desc 按「复制格式」配置输出最终写入剪切板的文本
+   * @arg {string} text 已净化的纯文本
+   */
+  _formatForCopy(text) {
+    // 在编辑器里复制（⌘ 强制复制、Ctrl+C）保持纯文本，避免粘贴回编辑器时混入 Markdown / 引用语法
+    if (this._isSelectionEditable()) return text;
+    return CopyFormatter.format(text, {
+      format: this._copyOptions.copyFormat,
+      source: HistoryStore.sanitizeSource(this._getSource()),
+      postProcess: (markdown) => this._processText(markdown, { markdown: true }),
+    });
+  }
+
+  /**
+   * @desc 选区是否位于可编辑区域（以选区所在节点判断，而不是当前焦点元素）
+   */
+  _isSelectionEditable() {
+    // 输入框内的选区不会体现在 anchorNode 上，按焦点元素判断
+    const active = document.activeElement;
+    if (active && (active.tagName === "INPUT" || active.tagName === "TEXTAREA")) return true;
+    const selection = window.getSelection();
+    const node = selection && selection.anchorNode;
+    const el = node && (node.nodeType === 1 ? node : node.parentElement);
+    return !!(el && el.isContentEditable);
+  }
+
+  /**
+   * @desc 当前页面作为历史记录来源
+   */
+  _getSource() {
+    return { url: location.href, title: document.title || "" };
   }
 
   /**
@@ -446,6 +534,8 @@ class AutoClipboard {
     if (!chrome.runtime?.id) return;
     // 本站未启用（全局禁用或加入了本站禁用列表），完全不处理
     if (!this._enabled) return;
+    // 历史面板打开时，交互都属于面板
+    if (this.historyPanel.isOpen) return;
 
     // 是否普通输入框
     const isInputActive = ["input", "textarea"].includes(
@@ -484,13 +574,20 @@ class AutoClipboard {
     this.getSelectedText()
       .then((selectedText) => {
         if (!selectedText || selectedText.length === 0) return;
-        this._setMessageHistory(selectedText);
+        const copiedText = this._formatForCopy(selectedText);
+        HistoryStore.record(copiedText, this._getSource());
         // 复制到剪切板
         // 仅在https下可用
         if (navigator.clipboard && window.isSecureContext) {
-          navigator.clipboard.writeText(selectedText);
+          navigator.clipboard.writeText(copiedText);
         } else {
-          document.execCommand("copy");
+          // 会同步触发 copy 事件，由 _handleCopyEvent 写入处理后的文本，保证剪切板与历史记录一致
+          this._pendingCopyText = copiedText;
+          try {
+            document.execCommand("copy");
+          } finally {
+            this._pendingCopyText = null;
+          }
         }
         // 查询tooltip的样式配置并提示
         chrome.storage.sync.get(
@@ -545,60 +642,6 @@ class AutoClipboard {
     }, 2000);
   }
   /**
-   * @desc 设置历史记录
-   */
-  async _setMessageHistory(text = "") {
-    if (typeof text !== "string" || text.length === 0) return;
-    // 限制字符长度
-    if (text.length > this._MAX_ITEM_LENGTH) {
-      text = text.slice(0, this._MAX_ITEM_LENGTH);
-    }
-    const STORAGE_KEY = "auto_clipboard_history";
-    let historyStorage = ((await chrome.storage?.local?.get([STORAGE_KEY])) ??
-      {})[STORAGE_KEY];
-    let historysMerge = [];
-    // 更新
-    const updateMessageHistory = () => {
-      // 复制的内容和历史记录中某条重复，将其位置放到第一位
-      const repeatIndex = historyStorage.findIndex(
-        (item) => item.value === text
-      );
-      const toppingCount = historyStorage.filter((item) => item.topping).length;
-
-      let isCurrentTopping = false;
-      let insertIndex = toppingCount || 0;
-
-      if (repeatIndex > -1) {
-        isCurrentTopping = historyStorage[repeatIndex].topping;
-        historyStorage.splice(repeatIndex, 1);
-        insertIndex = isCurrentTopping ? 0 : toppingCount;
-      }
-      historyStorage.splice(insertIndex, 0, {
-        value: text,
-        topping: isCurrentTopping,
-      });
-      historysMerge = historyStorage;
-      // 限制容量为this._MAX_HISTORY_LENGTH
-      if (historysMerge.length > this._MAX_HISTORY_LENGTH) {
-        historysMerge.length = this._MAX_HISTORY_LENGTH;
-      }
-    };
-
-    // 已有历史记录 ? 更新历史记录 : 设置历史记录
-    historyStorage
-      ? updateMessageHistory()
-      : (historysMerge = [
-          {
-            topping: false,
-            value: text,
-          },
-        ]);
-    chrome.storage.local?.set({
-      [STORAGE_KEY]: historysMerge,
-    });
-  }
-
-  /**
    * @desc 组合键
    * @arg {Event} event 事件对象
    */
@@ -624,6 +667,11 @@ class AutoClipboard {
       ctrlAtMousedown = e.ctrlKey;
     }, true);
     document.addEventListener("mouseup", (e) => {
+      // 在历史面板内点击不触发自动复制（防抖执行时面板可能已关闭，需在此处判断）
+      if (this.historyPanel.containsEvent(e)) {
+        ctrlAtMousedown = false;
+        return;
+      }
       // 用户可能在松开鼠标前就已经释放了 Ctrl 键，需综合 mousedown 时的状态判断
       const ctrlActive = e.ctrlKey || ctrlAtMousedown;
       ctrlAtMousedown = false;
@@ -634,12 +682,42 @@ class AutoClipboard {
       if (!this._enabled) return;
       e.stopImmediatePropagation();
     }, true);
-    // document.execCommand("copy") 会触发copy事件，某些站点针对oncopy事件return false，因此需手动setData
-    document.addEventListener('copy', (e) => {
-      if (!this._enabled) return;
-      const selectedText = this.replaceAbnormalSpace(window.getSelection().toString().trim());
-      selectedText.length > 0 && e.clipboardData.setData('text/plain', selectedText )
-    }, true);
+    // 手动复制（Ctrl/⌘+C、document.execCommand("copy")）
+    window.addEventListener('copy', (e) => this._handleCopyEvent(e), true);
+  }
+
+  /**
+   * @desc 处理 copy 事件
+   *   默认保留浏览器原生复制（含富文本格式），仅在以下情况接管：
+   *   1. 开启了「只复制纯文本」
+   *   2. 开启了净化，且选中内容带有版权尾巴
+   *   3. 复制格式不是纯文本（富文本编辑器内除外，避免在编辑器里复制粘贴丢格式）
+   *   接管时在 window 捕获阶段写入并阻止后续监听器，避免页面再 setData 把尾巴加回去
+   */
+  _handleCopyEvent(e) {
+    if (!this._enabled || !e.clipboardData) return;
+    // 自动复制在非 https 页面通过 execCommand 触发，直接写入已处理好的文本
+    if (this._pendingCopyText) {
+      e.clipboardData.setData('text/plain', this._pendingCopyText);
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      return;
+    }
+    if (this.historyPanel.containsEvent(e)) return;
+    const active = document.activeElement;
+    // 输入框内的复制保持原生行为
+    if (active && ["INPUT", "TEXTAREA"].includes(active.tagName)) return;
+    const raw = window.getSelection().toString();
+    if (!raw.trim()) return;
+    const { cleanText, plainTextCopy, copyFormat } = this._copyOptions;
+    const hasTail = cleanText && TextCleaner.hasTail(raw);
+    const useFormat = copyFormat !== "plain" && !this._isSelectionEditable();
+    const text = this._processText(raw);
+    // 兜底：某些站点 oncopy 直接 return false，事件被取消后剪切板仍能拿到文本
+    e.clipboardData.setData('text/plain', useFormat ? this._formatForCopy(text) : text);
+    if (!plainTextCopy && !hasTail && !useFormat) return;
+    e.preventDefault();
+    e.stopImmediatePropagation();
   }
   /**
    * @desc 防抖
@@ -770,6 +848,14 @@ class PasswordHelper {
     window.removeEventListener("resize", this._onScrollOrResize);
     this.boundInputs.forEach((input) => this._unbind(input));
     this.boundInputs.clear();
+  }
+
+  refreshTexts() {
+    const title = i18n("copyPassword") || "Copy password";
+    this.boundInputs.forEach((input) => {
+      const binding = this.bindings.get(input);
+      if (binding && binding.button) binding.button.title = title;
+    });
   }
 
   _scan(root = document) {
@@ -939,7 +1025,7 @@ class PasswordHelper {
     `;
     const button = document.createElement("div");
     button.className = "ac-pwd-icon";
-    button.title = chrome.i18n.getMessage("copyPassword") || "Copy password";
+    button.title = i18n("copyPassword") || "Copy password";
     button.innerHTML = `
       <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <path class="ac-pwd-eye" d="M2.5 12C4.5 7.5 8 5.5 12 5.5C16 5.5 19.5 7.5 21.5 12C19.5 16.5 16 18.5 12 18.5C8 18.5 4.5 16.5 2.5 12Z"/>
@@ -993,7 +1079,7 @@ class PasswordHelper {
       // 这里在点击瞬间读 value：哪怕 hover 时还是空的，点击后通常已可用。
       const value = input.value || "";
       if (!value) {
-        const hint = chrome.i18n.getMessage("passwordEmptyHint") || "Password is empty";
+        const hint = i18n("passwordEmptyHint") || "Password is empty";
         if (this.autoClipboard && typeof this.autoClipboard._showMessageWithText === "function") {
           this.autoClipboard._showMessageWithText(hint, "error");
         }
@@ -1006,7 +1092,7 @@ class PasswordHelper {
       // 故意不写入剪切板历史：密码属于敏感数据，写入 chrome.storage.local 后会在 popup
       // 的历史记录中以明文长期驻留，存在泄露风险（共用设备、导出等）。
       const writeOk = () => {
-        const msg = chrome.i18n.getMessage("passwordCopied") || "Password copied!";
+        const msg = i18n("passwordCopied") || "Password copied!";
         if (this.autoClipboard && typeof this.autoClipboard._showMessageWithText === "function") {
           this.autoClipboard._showMessageWithText(msg);
         }

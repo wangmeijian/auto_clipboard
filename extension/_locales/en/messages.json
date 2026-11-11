@@ -158,5 +158,176 @@
   "passwordEmptyHint": {
     "description": "Shown when the password field is empty",
     "message": "Password is empty"
+  },
+  "cleanText": {
+    "description": "净化复制文本（去除版权尾巴、零宽字符、多余空行）",
+    "message": "Clean copied text (strip copyright footers, zero-width characters, extra blank lines)"
+  },
+  "plainTextCopy": {
+    "description": "手动复制（Ctrl/⌘+C）只保留纯文本",
+    "message": "Copy plain text only with Ctrl/⌘+C"
+  },
+  "openHistoryPanel": {
+    "description": "打开剪切板历史面板",
+    "message": "Open clipboard history panel"
+  },
+  "historyShortcut": {
+    "description": "快捷键唤起历史面板",
+    "message": "History panel shortcut"
+  },
+  "editShortcut": {
+    "description": "点击修改快捷键",
+    "message": "Click to change the shortcut"
+  },
+  "shortcutNotSet": {
+    "description": "未设置",
+    "message": "Not set"
+  },
+  "historyPanelHint": {
+    "description": "↑↓ 选择 · Enter 粘贴 · Esc 关闭",
+    "message": "↑↓ Navigate · Enter Paste · Esc Close"
+  },
+  "typeFilter": {
+    "description": "内容类型",
+    "message": "Content type"
+  },
+  "type_all": {
+    "description": "全部",
+    "message": "All"
+  },
+  "type_link": {
+    "description": "链接",
+    "message": "Link"
+  },
+  "type_email": {
+    "description": "邮箱",
+    "message": "Email"
+  },
+  "type_phone": {
+    "description": "电话",
+    "message": "Phone"
+  },
+  "type_color": {
+    "description": "颜色",
+    "message": "Color"
+  },
+  "type_json": {
+    "description": "JSON",
+    "message": "JSON"
+  },
+  "formatJSON": {
+    "description": "格式化复制",
+    "message": "Copy formatted"
+  },
+  "copyFormat": {
+    "description": "复制格式",
+    "message": "Copy format"
+  },
+  "copyFormat_plain": {
+    "description": "纯文本",
+    "message": "Plain text"
+  },
+  "copyFormat_markdown": {
+    "description": "Markdown",
+    "message": "Markdown"
+  },
+  "copyFormat_quote": {
+    "description": "引用（附来源链接）",
+    "message": "Quote with source link"
+  },
+  "historySection": {
+    "description": "历史记录",
+    "message": "History"
+  },
+  "historyMaxLength": {
+    "description": "最多保留",
+    "message": "Keep up to"
+  },
+  "historyMaxLengthOption": {
+    "description": "$COUNT$ 条",
+    "message": "$COUNT$ items",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "historyExpireDays": {
+    "description": "自动清理",
+    "message": "Auto delete"
+  },
+  "expireNever": {
+    "description": "永不",
+    "message": "Never"
+  },
+  "expireDaysOption": {
+    "description": "$DAYS$ 天前的记录",
+    "message": "Older than $DAYS$ days",
+    "placeholders": {
+      "days": {
+        "content": "$1"
+      }
+    }
+  },
+  "historyPinnedHint": {
+    "description": "置顶记录不占条数，也不会被自动清理",
+    "message": "Pinned items don't count toward the limit and are never auto-deleted"
+  },
+  "historyBackup": {
+    "description": "备份",
+    "message": "Backup"
+  },
+  "exportHistory": {
+    "description": "导出",
+    "message": "Export"
+  },
+  "importHistory": {
+    "description": "导入",
+    "message": "Import"
+  },
+  "exportSuccess": {
+    "description": "已导出 $COUNT$ 条记录",
+    "message": "Exported $COUNT$ items",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "importSuccess": {
+    "description": "已导入 $ADDED$ 条新记录，跳过 $SKIPPED$ 条无效记录",
+    "message": "Imported $ADDED$ new items, skipped $SKIPPED$ invalid",
+    "placeholders": {
+      "added": {
+        "content": "$1"
+      },
+      "skipped": {
+        "content": "$2"
+      }
+    }
+  },
+  "importInvalid": {
+    "description": "文件格式不正确，请选择本插件导出的 JSON 文件",
+    "message": "Invalid file. Please choose a JSON file exported by this extension"
+  },
+  "importTooLarge": {
+    "description": "文件过大（超过 20MB）",
+    "message": "File is too large (over 20MB)"
+  },
+  "importChooseFile": {
+    "description": "请点击「导入」选择备份文件",
+    "message": "Click “Import” to choose a backup file"
+  },
+  "generalSection": {
+    "description": "通用",
+    "message": "General"
+  },
+  "language": {
+    "description": "语言",
+    "message": "Language"
+  },
+  "languageAuto": {
+    "description": "跟随浏览器",
+    "message": "Follow browser"
   }
 }

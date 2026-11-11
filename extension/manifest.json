@@ -13,6 +13,15 @@
     "default_title": "__MSG_defaultTitle__",
     "default_popup": "popup.html"
   },
+  "commands": {
+    "toggle-history-panel": {
+      "suggested_key": {
+        "default": "Alt+Shift+V",
+        "mac": "Alt+Shift+V"
+      },
+      "description": "__MSG_openHistoryPanel__"
+    }
+  },
   "background": {
     "service_worker": "background.js"
   },
@@ -28,6 +37,13 @@
       "matches": ["<all_urls>"],
       "all_frames": true,
       "js": [
+        "i18n.js",
+        "text-cleaner.js",
+        "content-type.js",
+        "history-store.js",
+        "html-to-markdown.js",
+        "copy-formatter.js",
+        "history-panel.js",
         "content-script.js"
       ],
       "match_about_blank": true,
@@ -42,7 +58,12 @@
     "storage",
     "contextMenus",
     "scripting",
-    "tabs"
+    "tabs",
+    "favicon",
+    "unlimitedStorage"
+  ],
+  "host_permissions": [
+    "<all_urls>"
   ],
   "web_accessible_resources": [
     {

@@ -1,0 +1,220 @@
+/* 类型筛选、类型标签、JSON 格式化、设置页下拉框 / 备份，以及标签页模式 */
+
+/* ---------- 类型筛选 ---------- */
+.type_filter {
+  display: flex;
+  gap: 4px;
+  margin: 8px 10px 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.type_filter__item {
+  flex-shrink: 0;
+  height: 24px;
+  padding: 0 10px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #fff;
+  color: #6b7280;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+.type_filter__item:hover {
+  border-color: #c6e3cc;
+  color: #2f8a41;
+}
+.type_filter__item.active {
+  background: #51b362;
+  border-color: #51b362;
+  color: #fff;
+}
+.type_filter__item:focus-visible,
+.json_format:focus-visible {
+  outline: 2px solid #51b362;
+  outline-offset: 2px;
+}
+
+/* ---------- 类型标签 ---------- */
+.copy_history .type_tag {
+  --tag-color: #6b7280;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  padding: 0 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  line-height: 16px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--tag-color);
+  background: color-mix(in srgb, var(--tag-color) 12%, transparent);
+}
+.copy_history .type_tag--link { --tag-color: #2563eb; }
+.copy_history .type_tag--email { --tag-color: #7c3aed; }
+.copy_history .type_tag--phone { --tag-color: #0891b2; }
+.copy_history .type_tag--color { --tag-color: #c2410c; }
+.copy_history .type_tag--json { --tag-color: #2f8a41; }
+.copy_history .color_swatch {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.15);
+}
+/* 分隔点：标签之后的来源 / 时间前加 · */
+.copy_history .type_tag + .source_link::before,
+.copy_history .type_tag + .source_time::before {
+  content: "·";
+  margin-right: 6px;
+  color: #c0c4cc;
+}
+
+.copy_history .json_format {
+  flex-shrink: 0;
+  margin-left: auto;
+  padding: 0 6px;
+  border: none;
+  border-radius: 4px;
+  background: none;
+  color: #2f8a41;
+  font: inherit;
+  font-size: 11px;
+  line-height: 16px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s ease, background 0.15s ease;
+}
+.copy_history .copy_item:hover .json_format,
+.copy_history .json_format:focus-visible {
+  opacity: 1;
+}
+.copy_history .json_format:hover {
+  background: #eef8f0;
+}
+
+/* ---------- 设置页 ---------- */
+.settings-select {
+  flex-shrink: 0;
+  max-width: 150px;
+  height: 28px;
+  padding: 0 24px 0 8px;
+  border: 1px solid #e2e6ea;
+  border-radius: 6px;
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%239ca3af' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 8px center;
+  appearance: none;
+  color: inherit;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+.settings-select:hover {
+  border-color: #c6e3cc;
+}
+.settings-select:focus-visible {
+  outline: none;
+  border-color: #51b362;
+  box-shadow: 0 0 0 3px rgba(81, 179, 98, 0.2);
+}
+.settings-hint {
+  margin: 0;
+  padding: 0 0 8px;
+  font-size: 11px;
+  line-height: 1.5;
+  color: #9ca3af;
+}
+.settings-row--actions {
+  cursor: default;
+}
+.settings-actions {
+  display: flex;
+  gap: 6px;
+}
+.btn--small {
+  height: 26px;
+  padding: 0 10px;
+  font-size: 12px;
+}
+.settings-status {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #2f8a41;
+}
+.settings-status:empty {
+  display: none;
+}
+.settings-status[data-variant="error"] {
+  color: #dc2626;
+}
+.settings-status[data-variant="info"] {
+  color: #4b5563;
+}
+
+/* ---------- 以标签页打开时居中 ---------- */
+/* 设置页、二维码是相对 body 绝对定位的浮层，body 本身限宽才能整体居中 */
+body.is-tab {
+  width: 400px;
+  margin: 0 auto;
+  min-height: 100vh;
+}
+html:has(body.is-tab) {
+  background: #f3f4f6;
+}
+body.is-tab .wrapper,
+body.is-tab .options_wrapper,
+body.is-tab .qrcode_wrapper {
+  box-shadow: 0 8px 32px rgba(15, 23, 42, 0.08);
+}
+
+@media (prefers-color-scheme: dark) {
+  .type_filter__item {
+    background: #242830;
+    border-color: #2f343c;
+    color: #9ca3af;
+  }
+  .type_filter__item:hover {
+    border-color: #386049;
+    color: #7dd38c;
+  }
+  .type_filter__item.active {
+    background: #3f9a50;
+    border-color: #3f9a50;
+    color: #fff;
+  }
+  .copy_history .type_tag--link { --tag-color: #93c5fd; }
+  .copy_history .type_tag--email { --tag-color: #c4b5fd; }
+  .copy_history .type_tag--phone { --tag-color: #67e8f9; }
+  .copy_history .type_tag--color { --tag-color: #fdba74; }
+  .copy_history .type_tag--json { --tag-color: #7dd38c; }
+  .copy_history .type_tag + .source_link::before,
+  .copy_history .type_tag + .source_time::before {
+    color: #4b5260;
+  }
+  .copy_history .json_format {
+    color: #7dd38c;
+  }
+  .copy_history .json_format:hover {
+    background: #243a2b;
+  }
+  .settings-select {
+    background-color: #242830;
+    border-color: #3a3f47;
+  }
+  .settings-hint {
+    color: #6b7280;
+  }
+  .settings-status {
+    color: #7dd38c;
+  }
+  .settings-status[data-variant="error"] {
+    color: #f87171;
+  }
+  .settings-status[data-variant="info"] {
+    color: #9ca3af;
+  }
+  html:has(body.is-tab) {
+    background: #15181d;
+  }
+}
