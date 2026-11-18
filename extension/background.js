@@ -10,6 +10,7 @@ const i18nReady = I18n.init().catch(() => {});
 I18n.onChange(() => ensureContextMenus());
 
 const BYPASS_SCRIPT_ID = "bypass";
+const BYPASS_PASTE_SCRIPT_ID = "bypass-paste";
 const ICON_SIZES = [16, 24, 32, 48, 128];
 const COLOR_ICON_PATH = ICON_SIZES.reduce((acc, size) => {
   acc[size] = "images/icon@128.png";
@@ -52,11 +53,12 @@ async function getGrayIcon() {
 }
 
 async function getSyncState() {
-  const { whitelist, pluginEnabled } = await chrome.storage.sync.get([
+  const { whitelist, pluginEnabled, forcePaste } = await chrome.storage.sync.get([
     "whitelist",
     "pluginEnabled",
+    "forcePaste",
   ]);
-  return { whitelist: whitelist || {}, pluginEnabled };
+  return { whitelist: whitelist || {}, pluginEnabled, forcePaste };
 }
 
 function isOriginDisabledBy(state, origin) {
@@ -177,6 +179,54 @@ async function syncBypassScript() {
   }
 }
 
+/**
+ * 强力粘贴：默认关闭，仅在设置里开启、且当前站点未被整体禁用时才注册
+ */
+async function registerBypassPasteScript(state) {
+  const excludeMatches = await buildExcludeMatches(state);
+  const config = {
+    id: BYPASS_PASTE_SCRIPT_ID,
+    matches: ["<all_urls>"],
+    excludeMatches,
+    allFrames: true,
+    js: ["bypass-paste.js"],
+    runAt: "document_start",
+    world: "MAIN",
+  };
+
+  try {
+    const existing = await chrome.scripting.getRegisteredContentScripts({
+      ids: [BYPASS_PASTE_SCRIPT_ID],
+    });
+    if (existing && existing.length) {
+      await chrome.scripting.updateContentScripts([config]);
+    } else {
+      await chrome.scripting.registerContentScripts([config]);
+    }
+  } catch (e) {
+    try {
+      await chrome.scripting.registerContentScripts([config]);
+    } catch (e2) {}
+  }
+}
+
+async function unregisterBypassPasteScript() {
+  try {
+    await chrome.scripting.unregisterContentScripts({ ids: [BYPASS_PASTE_SCRIPT_ID] });
+  } catch (e) {
+    // 未注册，忽略
+  }
+}
+
+async function syncBypassPasteScript() {
+  const state = await getSyncState();
+  if (state.pluginEnabled === "off" || !state.forcePaste) {
+    await unregisterBypassPasteScript();
+  } else {
+    await registerBypassPasteScript(state);
+  }
+}
+
 function createMenuIdempotent(id, title) {
   return new Promise((resolve) => {
     chrome.contextMenus.create({ id, title, contexts: ["all"] }, () => {
@@ -222,11 +272,14 @@ async function ensureContextMenus() {
   await createMenuIdempotent("site_disable", i18n("site_disable"));
 }
 
-// 监听插件开关 / 白名单 / 菜单开关变化，实时同步 bypass.js、菜单与图标
+// 监听插件开关 / 白名单 / 菜单开关 / 强力粘贴开关变化，实时同步 bypass.js、bypass-paste.js、菜单与图标
 chrome.storage.onChanged.addListener(async (changes, area) => {
   if (area !== "sync") return;
   if ("contextMenu" in changes) {
     await ensureContextMenus();
+  }
+  if ("forcePaste" in changes) {
+    await syncBypassPasteScript();
   }
   const touched = "pluginEnabled" in changes || "whitelist" in changes;
   if (!touched) return;
@@ -240,22 +293,26 @@ chrome.storage.onChanged.addListener(async (changes, area) => {
     // 白名单变化（pluginEnabled 不变）
     await registerBypassScript();
   }
+  await syncBypassPasteScript();
   await refreshAllTabIcons();
 });
 
 // service worker 启动时同步一次（每次唤醒都跑，幂等的菜单创建保证菜单不丢）
 syncBypassScript();
+syncBypassPasteScript();
 refreshAllTabIcons();
 ensureContextMenus();
 
 chrome.runtime.onInstalled.addListener(async () => {
   await syncBypassScript();
+  await syncBypassPasteScript();
   await ensureContextMenus();
   await refreshAllTabIcons();
 });
 
 chrome.runtime.onStartup.addListener(async () => {
   await syncBypassScript();
+  await syncBypassPasteScript();
   await ensureContextMenus();
   await refreshAllTabIcons();
 });

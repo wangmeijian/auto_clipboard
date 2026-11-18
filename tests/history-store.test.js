@@ -218,3 +218,45 @@ test("serveRecord：并发消息按顺序串行写入，不丢记录", async () 
   assert.equal(listener({ type: "history:record", text: "x" }, { id: "other" }, () => {}), undefined);
   delete global.chrome;
 });
+
+test("clearEntries：默认保留置顶记录", () => {
+  const history = [
+    { value: "a", topping: true },
+    { value: "b", topping: false },
+  ];
+  assert.deepEqual(HistoryStore.clearEntries(history, false), [{ value: "a", topping: true }]);
+  assert.equal(history.length, 2); // 不修改入参
+});
+
+test("clearEntries：includePinned 时全部清空", () => {
+  assert.deepEqual(HistoryStore.clearEntries([{ value: "a", topping: true }], true), []);
+});
+
+test("isClearPromptCoolingDown：关闭后 24 小时内处于冷却", () => {
+  const now = 1_000_000_000;
+  const { isClearPromptCoolingDown, CLEAR_PROMPT_COOLDOWN_MS } = HistoryStore;
+  assert.equal(isClearPromptCoolingDown(undefined, now), false);
+  assert.equal(isClearPromptCoolingDown(now - CLEAR_PROMPT_COOLDOWN_MS + 1, now), true);
+  assert.equal(isClearPromptCoolingDown(now - CLEAR_PROMPT_COOLDOWN_MS, now), false);
+  assert.equal(isClearPromptCoolingDown("bad", now), false);
+});
+
+test("recordDelete：只保留窗口内的时间戳，并判断是否达到阈值", () => {
+  const { recordDelete, BULK_DELETE_WINDOW_MS, BULK_DELETE_THRESHOLD } = HistoryStore;
+  assert.equal(BULK_DELETE_WINDOW_MS, 10000);
+  assert.equal(BULK_DELETE_THRESHOLD, 10);
+  let times = [];
+  let reached = false;
+  for (let i = 0; i < 10; i++) ({ times, reached } = recordDelete(times, 1000 + i * 900));
+  assert.equal(reached, true);
+  times = [];
+  for (let i = 0; i < 10; i++) ({ times, reached } = recordDelete(times, i * 1500));
+  assert.equal(reached, false);
+  assert.ok(times.length < 10);
+});
+
+test("recordDelete：不修改入参", () => {
+  const input = [1, 2];
+  HistoryStore.recordDelete(input, 3);
+  assert.deepEqual(input, [1, 2]);
+});

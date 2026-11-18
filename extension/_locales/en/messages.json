@@ -167,6 +167,14 @@
     "description": "手动复制（Ctrl/⌘+C）只保留纯文本",
     "message": "Copy plain text only with Ctrl/⌘+C"
   },
+  "forcePaste": {
+    "description": "强力粘贴（突破网站的粘贴限制）",
+    "message": "Force paste (bypass sites that block pasting)"
+  },
+  "forcePasteHint": {
+    "description": "部分网站会自行处理粘贴内容，强行突破可能导致内容重复或格式异常",
+    "message": "Some sites handle paste content themselves; forcing it through may duplicate content or break formatting"
+  },
   "openHistoryPanel": {
     "description": "打开剪切板历史面板",
     "message": "Open clipboard history panel"
@@ -329,5 +337,17 @@
   "languageAuto": {
     "description": "跟随浏览器",
     "message": "Follow browser"
+  },
+  "clearPromptTitle": {
+    "message": "Deleting a lot of records? Clear them all at once."
+  },
+  "clearAllHistory": {
+    "message": "Clear all history"
+  },
+  "clearIncludePinned": {
+    "message": "Also remove pinned records"
+  },
+  "close": {
+    "message": "Close"
   }
 }

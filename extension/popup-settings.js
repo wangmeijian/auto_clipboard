@@ -13,6 +13,7 @@ const SETTINGS_DEFAULTS = {
   passwordQuickView: true,
   cleanText: true,
   plainTextCopy: false,
+  forcePaste: false,
   copyFormat: CopyFormatter.DEFAULT_FORMAT,
   historyMaxLength: HistoryStore.DEFAULT_SETTINGS.maxLength,
   historyExpireDays: HistoryStore.DEFAULT_SETTINGS.expireDays,
@@ -86,6 +87,8 @@ function initSettingsPage({ isTab, pendingImport, onHistoryChange }) {
             ${toggleRow("passwordQuickView", "passwordQuickView")}
             ${toggleRow("cleanText", "cleanText")}
             ${toggleRow("plainTextCopy", "plainTextCopy")}
+            ${toggleRow("forcePaste", "forcePaste")}
+            <p class="settings-hint">${t("forcePasteHint")}</p>
             ${selectRow("copyFormat", "copyFormat", formatOptions)}
             <button type="button" class="settings-row settings-row--link" id="shortcutRow" title="${t("editShortcut")}">
               <span class="settings-row__label">${t("historyShortcut")}</span>
@@ -170,7 +173,7 @@ function initSettingsPage({ isTab, pendingImport, onHistoryChange }) {
   const preview = dq("#preview");
   const selectionPreview = dq("#selectionPreview");
   const tips = dq(".option_tips");
-  const CHECKBOXES = ["ctrlCopy", "tooltip", "contextMenu", "passwordQuickView", "cleanText", "plainTextCopy"];
+  const CHECKBOXES = ["ctrlCopy", "tooltip", "contextMenu", "passwordQuickView", "cleanText", "plainTextCopy", "forcePaste"];
   const VALUES = ["background", "color", "selectionBgColor", "selectionTextColor", "copyFormat", "historyMaxLength", "historyExpireDays", "language"];
 
   const updatePreview = () => {
@@ -217,6 +220,7 @@ function initSettingsPage({ isTab, pendingImport, onHistoryChange }) {
       passwordQuickView: form.passwordQuickView.checked,
       cleanText: form.cleanText.checked,
       plainTextCopy: form.plainTextCopy.checked,
+      forcePaste: form.forcePaste.checked,
       copyFormat: form.copyFormat.value,
       historyMaxLength: Number(form.historyMaxLength.value),
       historyExpireDays: Number(form.historyExpireDays.value),

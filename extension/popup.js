@@ -13,6 +13,8 @@ class Popup {
   constructor() {
     this._history = [];
     this._timer = null;
+    // 最近的删除时间戳，10 秒内达到阈值时提示一键清空
+    this._deleteTimes = [];
     // 当前类型筛选：all 或 ContentType.TYPES 之一
     this._typeFilter = "all";
     const params = new URLSearchParams(location.search);
@@ -250,6 +252,51 @@ class Popup {
       history.filter((entry) => entry.value !== item.value)
     );
     this._reload();
+    this._trackDelete();
+  }
+
+  /**
+   * @desc 10 秒内连续删除 10 条及以上时弹出一键清空小窗（关闭后 24 小时内不再弹）
+   */
+  async _trackDelete() {
+    const { times, reached } = HistoryStore.recordDelete(this._deleteTimes);
+    this._deleteTimes = times;
+    if (!reached) return;
+    if (document.querySelector(".clear_prompt")) return;
+    const dismissedAt = await HistoryStore.getClearPromptDismissedAt();
+    if (HistoryStore.isClearPromptCoolingDown(dismissedAt)) return;
+    this._showClearPrompt();
+  }
+
+  _showClearPrompt() {
+    const prompt = document.createElement("div");
+    prompt.className = "clear_prompt";
+    prompt.setAttribute("role", "dialog");
+    prompt.setAttribute("aria-label", i18n("clearPromptTitle"));
+    prompt.innerHTML = `
+      <button type="button" class="clear_prompt__close" aria-label="${i18n("close")}">×</button>
+      <p class="clear_prompt__title">${escapeHTML(i18n("clearPromptTitle"))}</p>
+      <button type="button" class="clear_prompt__clear">${escapeHTML(i18n("clearAllHistory"))}</button>
+      <label class="clear_prompt__option">
+        <input type="checkbox" class="clear_prompt__pinned" />
+        <span>${escapeHTML(i18n("clearIncludePinned"))}</span>
+      </label>
+    `;
+    prompt.querySelector(".clear_prompt__close").addEventListener("click", () => {
+      HistoryStore.dismissClearPrompt();
+      this._deleteTimes = [];
+      prompt.remove();
+    });
+    prompt.querySelector(".clear_prompt__clear").addEventListener("click", async () => {
+      const includePinned = prompt.querySelector(".clear_prompt__pinned").checked;
+      this._history = await HistoryStore.update((history) =>
+        HistoryStore.clearEntries(history, includePinned)
+      );
+      this._deleteTimes = [];
+      prompt.remove();
+      this._reload();
+    });
+    document.body.appendChild(prompt);
   }
 
   /**

@@ -218,3 +218,66 @@ body.is-tab .qrcode_wrapper {
     background: #15181d;
   }
 }
+
+/* ---------- 连续删除后的一键清空小窗 ---------- */
+.clear_prompt {
+  position: fixed;
+  left: 10px;
+  right: 10px;
+  bottom: 10px;
+  z-index: 20;
+  padding: 12px 14px;
+  border: 1px solid #fed7aa;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
+}
+.clear_prompt__title {
+  margin: 0 22px 10px 0;
+  font-size: 13px;
+  color: #374151;
+}
+.clear_prompt__close {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  width: 22px;
+  height: 22px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #9ca3af;
+  font-size: 16px;
+  line-height: 22px;
+  cursor: pointer;
+}
+.clear_prompt__close:hover { background: #f3f4f6; color: #374151; }
+.clear_prompt__clear {
+  display: block;
+  width: 100%;
+  height: 32px;
+  border: 0;
+  border-radius: 6px;
+  background: #f97316;
+  color: #fff;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.clear_prompt__clear:hover { background: #ea580c; }
+.clear_prompt__option {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  font-size: 12px;
+  color: #6b7280;
+  cursor: pointer;
+}
+.clear_prompt__close:focus-visible,
+.clear_prompt__clear:focus-visible,
+.clear_prompt__pinned:focus-visible {
+  outline: 2px solid #f97316;
+  outline-offset: 2px;
+}

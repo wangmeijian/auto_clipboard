@@ -19,6 +19,12 @@ const HistoryStore = (() => {
   const EXPORT_APP = "auto_clipboard";
   const EXPORT_VERSION = 1;
   const MAX_IMPORT_ITEMS = 10000;
+  // 批量清空提示：关闭后 24 小时内不再弹出，时间戳存在 storage.local
+  const CLEAR_PROMPT_DISMISSED_KEY = "clearPromptDismissedAt";
+  const CLEAR_PROMPT_COOLDOWN_MS = DAY_MS;
+  // 10 秒内删除 10 条及以上视为批量删除
+  const BULK_DELETE_WINDOW_MS = 10000;
+  const BULK_DELETE_THRESHOLD = 10;
 
   /**
    * @desc 早期版本存的是 string，统一转成对象
@@ -81,6 +87,37 @@ const HistoryStore = (() => {
       kept += 1;
       return kept <= maxLength;
     });
+  }
+
+  /**
+   * @desc 清空历史，返回新数组；默认保留置顶记录
+   */
+  function clearEntries(history, includePinned = false) {
+    return includePinned ? [] : history.filter((item) => item.topping);
+  }
+
+  /**
+   * @desc 批量清空提示是否仍在冷却期（用户关闭后 24 小时内）
+   */
+  function isClearPromptCoolingDown(dismissedAt, now = Date.now()) {
+    return Number.isFinite(dismissedAt) && now - dismissedAt < CLEAR_PROMPT_COOLDOWN_MS;
+  }
+
+  /**
+   * @desc 记录一次删除，返回窗口内的删除时间戳及是否达到批量删除阈值（不修改入参）
+   */
+  function recordDelete(times, now = Date.now()) {
+    const recent = [...times, now].filter((time) => now - time < BULK_DELETE_WINDOW_MS);
+    return { times: recent, reached: recent.length >= BULK_DELETE_THRESHOLD };
+  }
+
+  async function getClearPromptDismissedAt() {
+    const result = (await chrome.storage?.local?.get([CLEAR_PROMPT_DISMISSED_KEY])) ?? {};
+    return result[CLEAR_PROMPT_DISMISSED_KEY];
+  }
+
+  async function dismissClearPrompt(now = Date.now()) {
+    await chrome.storage.local?.set({ [CLEAR_PROMPT_DISMISSED_KEY]: now });
   }
 
   function getHostname(url) {
@@ -291,6 +328,14 @@ const HistoryStore = (() => {
     insertEntry,
     normalizeSettings,
     prune,
+    clearEntries,
+    isClearPromptCoolingDown,
+    recordDelete,
+    BULK_DELETE_WINDOW_MS,
+    BULK_DELETE_THRESHOLD,
+    getClearPromptDismissedAt,
+    dismissClearPrompt,
+    CLEAR_PROMPT_COOLDOWN_MS,
     getHostname,
     formatRelativeTime,
     buildExport,
