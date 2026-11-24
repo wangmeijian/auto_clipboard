@@ -76,6 +76,25 @@ function safeOrigin(url) {
   }
 }
 
+/**
+ * 调用 chrome.action 的方法并显式读取 lastError。
+ * 标签页关闭的瞬间（onUpdated 在页面卸载时仍会触发）tabId 已失效，
+ * Promise 形式下 try/catch 拦不住 Chrome 内部记录的 "No tab with id"，
+ * 会在扩展错误页留下 Unchecked runtime.lastError。
+ */
+function callAction(method, details) {
+  return new Promise((resolve) => {
+    try {
+      chrome.action[method](details, () => {
+        void chrome.runtime.lastError;
+        resolve();
+      });
+    } catch (e) {
+      resolve();
+    }
+  });
+}
+
 async function updateActionIcon(tabId, url, state) {
   if (typeof tabId !== "number") return;
   const syncState = state || (await getSyncState());
@@ -85,19 +104,19 @@ async function updateActionIcon(tabId, url, state) {
   try {
     if (disabled) {
       const grayIcon = await getGrayIcon();
-      await chrome.action.setIcon({ tabId, imageData: grayIcon });
-      await chrome.action.setBadgeBackgroundColor({ tabId, color: OFF_BADGE_COLOR });
+      await callAction("setIcon", { tabId, imageData: grayIcon });
+      await callAction("setBadgeBackgroundColor", { tabId, color: OFF_BADGE_COLOR });
       // setBadgeTextColor 需 Chrome 110+，低版本跳过
       if (chrome.action.setBadgeTextColor) {
-        await chrome.action.setBadgeTextColor({ tabId, color: "#FFFFFF" });
+        await callAction("setBadgeTextColor", { tabId, color: "#FFFFFF" });
       }
-      await chrome.action.setBadgeText({ tabId, text: "off" });
+      await callAction("setBadgeText", { tabId, text: "off" });
     } else {
-      await chrome.action.setIcon({ tabId, path: COLOR_ICON_PATH });
-      await chrome.action.setBadgeText({ tabId, text: "" });
+      await callAction("setIcon", { tabId, path: COLOR_ICON_PATH });
+      await callAction("setBadgeText", { tabId, text: "" });
     }
   } catch (e) {
-    // tab 已关闭或权限不足，忽略
+    // 灰度图标生成失败等，忽略
   }
 }
 
