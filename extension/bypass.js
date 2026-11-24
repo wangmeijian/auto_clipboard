@@ -42,7 +42,20 @@
   var _origAEL = EventTarget.prototype.addEventListener;
   // 原始 handler -> 包裹后的 handler，供 removeEventListener 找到真正注册过的函数
   var wrapped = new WeakMap();
+  // 文档被 Permissions Policy 明确禁止 unload 时，页面注册的 unload 监听本就不会触发，
+  // 直接跳过注册，避免浏览器把违规日志的堆栈记在本脚本头上。
+  // 仅当浏览器认识 unload 这个 feature 且当前文档不允许时才跳过，其余情况原样放行。
+  function isUnloadDisallowed() {
+    try {
+      var pp = document.permissionsPolicy || document.featurePolicy;
+      return !!pp && pp.features().indexOf('unload') !== -1 && !pp.allowsFeature('unload');
+    } catch (err) {
+      return false;
+    }
+  }
+
   EventTarget.prototype.addEventListener = function(type, fn, options) {
+    if (type === 'unload' && isUnloadDisallowed()) return;
     if (bypassEvents.indexOf(type) !== -1 && typeof fn === 'function') {
       var _fn = fn;
       fn = function(e) {
