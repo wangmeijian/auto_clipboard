@@ -29,12 +29,13 @@
 
   // 1. 劫持 addEventListener：包裹 handler，使针对粘贴的 preventDefault 失效
   var _origAEL = EventTarget.prototype.addEventListener;
+  // 原始 handler -> 包裹后的 handler，供 removeEventListener 找到真正注册过的函数
+  var wrapped = new WeakMap();
   EventTarget.prototype.addEventListener = function(type, fn, options) {
     if (bypassEvents.indexOf(type) !== -1 && typeof fn === 'function') {
       var _fn = fn;
       fn = wrapHandler(type, fn);
-      // 保留原始 handler 引用，供 removeEventListener 使用
-      fn._original = _fn;
+      wrapped.set(_fn, fn);
     }
     return _origAEL.call(this, type, fn, options);
   };
@@ -42,8 +43,8 @@
   // removeEventListener 也需要对应处理
   var _origREL = EventTarget.prototype.removeEventListener;
   EventTarget.prototype.removeEventListener = function(type, fn, options) {
-    if (bypassEvents.indexOf(type) !== -1 && typeof fn === 'function' && fn._original) {
-      return _origREL.call(this, type, fn._original, options);
+    if (bypassEvents.indexOf(type) !== -1 && typeof fn === 'function' && wrapped.has(fn)) {
+      return _origREL.call(this, type, wrapped.get(fn), options);
     }
     return _origREL.call(this, type, fn, options);
   };

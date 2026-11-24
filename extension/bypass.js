@@ -4,12 +4,44 @@
  * 无需创建 <script> 标签注入，不触发页面 CSP 告警
  */
 (function() {
-  var noop = function() {};
   // 需要突破的事件：阻止页面通过 preventDefault 来禁止这些操作
   var bypassEvents = ['selectstart', 'copy', 'cut', 'dragstart'];
 
+  // 包裹 handler 并让 preventDefault 失效。
+  // 例外：copy/cut 事件里 handler 若通过 clipboardData 写入了内容（Google Docs/Sheets 等
+  // 在线编辑器的做法），其 preventDefault 是「用我写入的内容覆盖浏览器默认复制」的必要信号，
+  // 必须保留，否则浏览器会用（空的）原生选区覆盖写入内容，导致粘贴为空白。
+  function runNeutralized(self, _fn, e) {
+    var _pd = e.preventDefault;
+    var isClip = (e.type === 'copy' || e.type === 'cut') && e.clipboardData;
+    var wrote = false, prevented = false;
+    var dt = isClip ? e.clipboardData : null;
+    var _set = null, _items = null;
+    if (dt) {
+      try {
+        _set = dt.setData;
+        dt.setData = function() { wrote = true; return _set.apply(dt, arguments); };
+      } catch (err) {}
+      try {
+        _items = dt.items && dt.items.add;
+        if (_items) dt.items.add = function() { wrote = true; return _items.apply(dt.items, arguments); };
+      } catch (err) {}
+    }
+    e.preventDefault = function() { prevented = true; };
+    try { _fn.call(self, e); } finally {
+      e.preventDefault = _pd;
+      if (dt) {
+        try { if (_set) delete dt.setData; } catch (err) {}
+        try { if (_items) delete dt.items.add; } catch (err) {}
+      }
+      if (prevented && wrote) _pd.call(e);
+    }
+  }
+
   // 1. 劫持 addEventListener：包裹 handler，使 preventDefault 失效
   var _origAEL = EventTarget.prototype.addEventListener;
+  // 原始 handler -> 包裹后的 handler，供 removeEventListener 找到真正注册过的函数
+  var wrapped = new WeakMap();
   EventTarget.prototype.addEventListener = function(type, fn, options) {
     if (bypassEvents.indexOf(type) !== -1 && typeof fn === 'function') {
       var _fn = fn;
@@ -19,12 +51,9 @@
         if (t && (t.tagName === 'VIDEO' || t.tagName === 'AUDIO' || (t.closest && (t.closest('video') || t.closest('audio'))))) {
           return _fn.call(this, e);
         }
-        var _pd = e.preventDefault;
-        e.preventDefault = noop;
-        try { _fn.call(this, e); } finally { e.preventDefault = _pd; }
+        runNeutralized(this, _fn, e);
       };
-      // 保留原始 handler 引用，供 removeEventListener 使用
-      fn._original = _fn;
+      wrapped.set(_fn, fn);
     }
     return _origAEL.call(this, type, fn, options);
   };
@@ -32,8 +61,8 @@
   // removeEventListener 也需要对应处理
   var _origREL = EventTarget.prototype.removeEventListener;
   EventTarget.prototype.removeEventListener = function(type, fn, options) {
-    if (bypassEvents.indexOf(type) !== -1 && typeof fn === 'function' && fn._original) {
-      return _origREL.call(this, type, fn._original, options);
+    if (bypassEvents.indexOf(type) !== -1 && typeof fn === 'function' && wrapped.has(fn)) {
+      return _origREL.call(this, type, wrapped.get(fn), options);
     }
     return _origREL.call(this, type, fn, options);
   };
@@ -55,9 +84,7 @@
             if (t && (t.tagName === 'VIDEO' || t.tagName === 'AUDIO' || (t.closest && (t.closest('video') || t.closest('audio'))))) {
               return _fn.call(this, e);
             }
-            var _pd = e.preventDefault;
-            e.preventDefault = noop;
-            try { _fn.call(this, e); } finally { e.preventDefault = _pd; }
+            runNeutralized(this, _fn, e);
           };
         }
         desc.set.call(this, fn);
