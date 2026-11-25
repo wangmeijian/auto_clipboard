@@ -19,6 +19,7 @@ module.exports = {
     Clipboard: "readonly",
     // 扩展内各脚本通过 manifest / importScripts / <script> 按顺序加载，共享以下全局模块
     I18n: "readonly",
+    Theme: "readonly",
     TextCleaner: "readonly",
     ContentType: "readonly",
     HistoryStore: "readonly",

@@ -18,6 +18,7 @@ const SETTINGS_DEFAULTS = {
   historyMaxLength: HistoryStore.DEFAULT_SETTINGS.maxLength,
   historyExpireDays: HistoryStore.DEFAULT_SETTINGS.expireDays,
   language: I18n.AUTO,
+  theme: Theme.normalize(),
 };
 const MAX_IMPORT_FILE_SIZE = 20 * 1024 * 1024;
 
@@ -73,6 +74,8 @@ function initSettingsPage({ isTab, pendingImport, onHistoryChange }) {
     { value: I18n.AUTO, label: t("languageAuto") },
     ...I18n.LANGUAGES.map(({ value, label }) => ({ value, label })),
   ];
+
+  const themeOptions = Theme.OPTIONS.map((value) => ({ value, label: t(`theme_${value}`) }));
 
   const optionsHTML = `
     <div class="auto_clipboard_options">
@@ -150,6 +153,7 @@ function initSettingsPage({ isTab, pendingImport, onHistoryChange }) {
         <section class="settings-section">
           <h3 class="settings-section__title">${t("generalSection")}</h3>
           <div class="settings-section__body">
+            ${selectRow("theme", "theme", themeOptions)}
             ${selectRow("language", "language", languageOptions)}
           </div>
         </section>
@@ -174,7 +178,7 @@ function initSettingsPage({ isTab, pendingImport, onHistoryChange }) {
   const selectionPreview = dq("#selectionPreview");
   const tips = dq(".option_tips");
   const CHECKBOXES = ["ctrlCopy", "tooltip", "contextMenu", "passwordQuickView", "cleanText", "plainTextCopy", "forcePaste"];
-  const VALUES = ["background", "color", "selectionBgColor", "selectionTextColor", "copyFormat", "historyMaxLength", "historyExpireDays", "language"];
+  const VALUES = ["background", "color", "selectionBgColor", "selectionTextColor", "copyFormat", "historyMaxLength", "historyExpireDays", "language", "theme"];
 
   const updatePreview = () => {
     preview.style.background = form.background.value;
@@ -204,6 +208,7 @@ function initSettingsPage({ isTab, pendingImport, onHistoryChange }) {
       historyMaxLength: normalizedHistory.maxLength,
       historyExpireDays: normalizedHistory.expireDays,
       language: I18n.getLanguage(),
+      theme: Theme.normalize(config.theme),
     });
   });
 
@@ -225,6 +230,7 @@ function initSettingsPage({ isTab, pendingImport, onHistoryChange }) {
       historyMaxLength: Number(form.historyMaxLength.value),
       historyExpireDays: Number(form.historyExpireDays.value),
       language: form.language.value,
+      theme: Theme.normalize(form.theme.value),
     });
     // contextMenu 的菜单同步交给 background.js 监听 storage.onChanged 处理
     // popup 直接操作 contextMenus 会与 background 竞争，导致菜单闪烁
@@ -239,9 +245,12 @@ function initSettingsPage({ isTab, pendingImport, onHistoryChange }) {
   form.addEventListener("reset", (e) => {
     e.preventDefault();
     fill({ ...SETTINGS_DEFAULTS, language: form.language.value });
+    Theme.set(form.theme.value);
   });
 
   form.addEventListener("change", (e) => {
+    // 主题切换立即预览，点保存后才持久化
+    if (e.target.name === "theme") Theme.set(e.target.value);
     if (["background", "color", "selectionBgColor", "selectionTextColor"].includes(e.target.name)) {
       updatePreview();
     }

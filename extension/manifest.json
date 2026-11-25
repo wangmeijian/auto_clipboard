@@ -43,6 +43,7 @@
         "history-store.js",
         "html-to-markdown.js",
         "copy-formatter.js",
+        "theme.js",
         "history-panel.js",
         "content-script.js"
       ],

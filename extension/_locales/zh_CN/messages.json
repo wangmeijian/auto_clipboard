@@ -92,6 +92,18 @@
   "thank_you": {
     "message": "感谢您的捐助"
   },
+  "donate_lead": {
+    "message": "如果它帮你省下了时间"
+  },
+  "donate_sub": {
+    "message": "请我喝杯咖啡，让它持续更新"
+  },
+  "donate_scan": {
+    "message": "微信扫一扫"
+  },
+  "donate_note": {
+    "message": "自愿赞赏，金额随心。你的每一次支持都是继续打磨的动力"
+  },
   "donate": {
     "message": "捐助"
   },
@@ -289,6 +301,19 @@
   "generalSection": {
     "message": "通用",
     "description": "General"
+  },
+  "theme": {
+    "message": "主题",
+    "description": "Theme"
+  },
+  "theme_auto": {
+    "message": "跟随系统"
+  },
+  "theme_light": {
+    "message": "浅色"
+  },
+  "theme_dark": {
+    "message": "深色"
   },
   "language": {
     "message": "语言",

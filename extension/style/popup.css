@@ -400,13 +400,83 @@ body{
   left: 0;
   opacity: 1;
 }
-/* 赞赏码 */
+/* 赞赏页 */
+.qrcode_content {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background:
+    radial-gradient(120% 60% at 50% 0%, #fff4e0 0%, rgba(255, 244, 224, 0) 70%),
+    #fff;
+}
+.donate_body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 28px 28px 24px;
+  text-align: center;
+}
+.donate_lead {
+  margin: 0;
+  font-family: "Songti SC", "Noto Serif SC", Georgia, serif;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #3b2a14;
+}
+.donate_sub {
+  margin: 8px 0 26px;
+  font-size: 13px;
+  color: #8a7355;
+}
+.donate_card {
+  position: relative;
+  padding: 14px 14px 12px;
+  border-radius: 20px;
+  background: #fff;
+  border: 1px solid #f0e2c8;
+  box-shadow: 0 12px 32px rgba(180, 130, 40, 0.16), 0 2px 6px rgba(180, 130, 40, 0.08);
+  transform: rotate(-1.2deg);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.donate_card:hover {
+  transform: rotate(0) translateY(-2px);
+  box-shadow: 0 16px 38px rgba(180, 130, 40, 0.22), 0 2px 6px rgba(180, 130, 40, 0.1);
+}
 .qrcode_content .qrcode {
-  width: 300px;
-  height: 300px;
-  margin: 0 auto;
+  width: 240px;
+  height: 240px;
+  border-radius: 10px;
   background: url('chrome-extension://__MSG_@@extension_id__/images/qrcode.jpg') center center no-repeat;
   background-size: cover;
+}
+.donate_scan {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 10px;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: #a07a2c;
+}
+.donate_scan_dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #c8952e;
+}
+.donate_note {
+  margin: auto 0 0;
+  padding-top: 24px;
+  max-width: 280px;
+  font-size: 12px;
+  line-height: 1.7;
+  color: #a39880;
+}
+@media (prefers-reduced-motion: reduce) {
+  .donate_card { transition: none; }
 }
 /* ===================== 设置页 ===================== */
 .auto_clipboard_options {
@@ -853,6 +923,20 @@ body{
     border-right-color: #3a3f47;
   }
 
+  /* 赞赏页 */
+  .qrcode_content {
+    background:
+      radial-gradient(120% 60% at 50% 0%, #3a2d18 0%, rgba(58, 45, 24, 0) 70%),
+      #1c1f24;
+  }
+  .donate_lead { color: #f3e3c3; }
+  .donate_sub { color: #b89c6c; }
+  .donate_card {
+    border-color: #4a3b22;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+  }
+  .donate_note { color: #8a8372; }
+
   /* 设置页 */
   .auto_clipboard_options {
     background: #15171b;
@@ -955,6 +1039,7 @@ body{
   .popup_title .qrcode_back,
   .copy_history .delete_item,
   .copy_history .stick_item,
+  .footer .donate,
   .footer .github {
     filter: invert(0.78) hue-rotate(180deg) brightness(1.1);
   }

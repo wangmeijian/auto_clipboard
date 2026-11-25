@@ -252,6 +252,7 @@ class HistoryPanel {
         </div>
       </div>
     `;
+    Theme.track(shadow.querySelector("style"));
     const refs = {
       overlay: shadow.querySelector(".overlay"),
       input: shadow.querySelector(".search"),

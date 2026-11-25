@@ -59,7 +59,14 @@ class AutoClipboard {
     });
 
     // 语言包需在创建提示浮层、密码图标之前加载完
-    Promise.all([I18n.init().catch(() => {}), this._getStorage()]).then(([, config]) => {
+    // 各项初始化互不依赖，按名字取结果，增删步骤不会让后面的取值错位
+    const ready = {
+      i18n: I18n.init().catch(() => {}),
+      theme: Theme.init().catch(() => {}),
+      config: this._getStorage(),
+    };
+    Promise.all(Object.values(ready)).then(async () => {
+      const config = await ready.config;
       this._updateCopyOptions(config);
       this._setEnabled(this._computeEnabled(config), config);
     });
@@ -1038,6 +1045,7 @@ class PasswordHelper {
     const tip = document.createElement("div");
     tip.className = "ac-pwd-tip";
     shadow.appendChild(style);
+    Theme.track(style);
     shadow.appendChild(button);
     shadow.appendChild(tip);
     (document.body || document.documentElement).appendChild(host);

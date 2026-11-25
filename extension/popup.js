@@ -27,7 +27,7 @@ class Popup {
    * @desc 生成页面
    */
   async _initPage() {
-    await I18n.init().catch(() => {});
+    await Promise.all([I18n.init().catch(() => {}), Theme.init()]);
     // 切换语言后整页重新渲染，并停留在设置页（语言是在设置页里切换的）
     I18n.onChange(() => {
       const params = new URLSearchParams(location.search);
@@ -72,7 +72,7 @@ class Popup {
         <div class="footer">
           <div class="donate-wrap"><span class="donate"></span> ${i18n(
             "donate"
-          )}</div> |
+          )}</div>
           <a class="github-wrap" href="https://github.com/wangmeijian/auto_clipboard" target="_blank"><span class="github"></span> ${i18n(
             "contribute"
           )}</a>
@@ -108,7 +108,15 @@ class Popup {
     const html = `
       <div class="qrcode_content">
         <h1 class="popup_title"><span class="qrcode_back"></span>${i18n("thank_you")}</h1>
-        <div class="qrcode"></div>
+        <div class="donate_body">
+          <p class="donate_lead">${i18n("donate_lead")}</p>
+          <p class="donate_sub">${i18n("donate_sub")}</p>
+          <div class="donate_card">
+            <div class="qrcode" role="img" aria-label="${i18n("donate_scan")}"></div>
+            <div class="donate_scan"><span class="donate_scan_dot"></span>${i18n("donate_scan")}</div>
+          </div>
+          <p class="donate_note">${i18n("donate_note")}</p>
+        </div>
       </div>
     `
     const qrcodeDom = document.createElement("div");
