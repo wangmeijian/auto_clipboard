@@ -19,14 +19,15 @@ const COLOR_ICON_PATH = ICON_SIZES.reduce((acc, size) => {
 
 const OFF_BADGE_COLOR = "#FF8A00";
 
-let grayIconCache = null;
+let disabledIconCache = null;
 
 /**
- * 将彩色 icon 转为灰度 ImageData，缓存供 chrome.action.setIcon 使用
+ * 将彩色 icon 转为纯黑 ImageData（保留透明度，轮廓不变），缓存供 chrome.action.setIcon 使用
+ * 关闭状态用黑色而不是灰色：灰色在浅色工具栏上太淡，几乎看不见
  * service worker 重启会丢缓存，下次调用时按需重新生成
  */
-async function getGrayIcon() {
-  if (grayIconCache) return grayIconCache;
+async function getDisabledIcon() {
+  if (disabledIconCache) return disabledIconCache;
   const response = await fetch(chrome.runtime.getURL("images/icon@128.png"));
   const blob = await response.blob();
   const bitmap = await createImageBitmap(blob);
@@ -38,18 +39,15 @@ async function getGrayIcon() {
     const imageData = ctx.getImageData(0, 0, size, size);
     const data = imageData.data;
     for (let i = 0; i < data.length; i += 4) {
-      const gray = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
-      data[i] = gray;
-      data[i + 1] = gray;
-      data[i + 2] = gray;
-      // 整体再降一点 alpha，让"禁用"视觉更弱
-      data[i + 3] = Math.round(data[i + 3] * 0.6);
+      data[i] = 0;
+      data[i + 1] = 0;
+      data[i + 2] = 0;
     }
     ctx.putImageData(imageData, 0, 0);
     result[size] = imageData;
   }
-  grayIconCache = result;
-  return grayIconCache;
+  disabledIconCache = result;
+  return disabledIconCache;
 }
 
 async function getSyncState() {
@@ -103,8 +101,8 @@ async function updateActionIcon(tabId, url, state) {
   const disabled = isOriginDisabledBy(syncState, origin);
   try {
     if (disabled) {
-      const grayIcon = await getGrayIcon();
-      await callAction("setIcon", { tabId, imageData: grayIcon });
+      const disabledIcon = await getDisabledIcon();
+      await callAction("setIcon", { tabId, imageData: disabledIcon });
       await callAction("setBadgeBackgroundColor", { tabId, color: OFF_BADGE_COLOR });
       // setBadgeTextColor 需 Chrome 110+，低版本跳过
       if (chrome.action.setBadgeTextColor) {
