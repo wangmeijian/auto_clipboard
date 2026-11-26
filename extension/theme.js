@@ -47,8 +47,13 @@ const Theme = (() => {
     if (rules) applyToRules(rules, theme);
   }
 
+  // 只有扩展自己的页面（popup 等）才可改写 document 的样式表；
+  // content script 运行在宿主网页里，document.styleSheets 是网页的，不能碰
+  const ownsDocument = () =>
+    typeof location !== "undefined" && location.protocol === "chrome-extension:";
+
   function applyAll() {
-    if (typeof document !== "undefined" && document.styleSheets) {
+    if (ownsDocument() && typeof document !== "undefined" && document.styleSheets) {
       Array.from(document.styleSheets).forEach((sheet) => applyToSheet(sheet, current));
       if (document.documentElement) {
         // 同步表单控件、滚动条等浏览器自带部件的配色
