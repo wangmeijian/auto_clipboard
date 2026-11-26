@@ -147,7 +147,7 @@
   width: calc(100% - 24px);
   padding: 0 14px 0 38px;
   border: 1px solid transparent;
-  border-radius: 12px;
+  border-radius: 4px;
   background-color: var(--ui-surface);
   background-image: var(--ui-search-icon);
   background-repeat: no-repeat;
@@ -196,7 +196,7 @@
 .copy_history .copy_item {
   --accent: transparent;
   border: none;
-  border-radius: 12px;
+  border-radius: 4px;
   background: var(--ui-surface);
   box-shadow: var(--ui-card-shadow);
   transition: box-shadow 0.18s ease, transform 0.18s ease, background 0.15s ease;
@@ -222,18 +222,99 @@
   background: color-mix(in srgb, var(--ui-brand) 8%, var(--ui-surface));
 }
 .copy_history .copy_item:has(.stick_item.topping)::before { left: 0; background: var(--accent); }
+/* ---------- hover：整张卡片可点，不位移，靠色条/底色/操作按钮渐显传达状态 ---------- */
+.copy_history .copy_item {
+  cursor: copy;
+  transition: box-shadow 0.2s ease, background-color 0.2s ease, transform 0.12s ease;
+}
+
+.copy_history .copy_item::before {
+  transition: top 0.2s cubic-bezier(0.22, 1, 0.36, 1), bottom 0.2s cubic-bezier(0.22, 1, 0.36, 1),
+    width 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
 .copy_history .copy_item:hover,
-.copy_history .copy_item:has(.stick_item.topping):hover {
-  background: var(--ui-surface);
+.copy_history .copy_item:has(.stick_item.topping):hover,
+.copy_history .copy_item:focus-visible {
   border: none;
-  box-shadow: var(--ui-card-shadow-hover);
-  transform: translateY(-1px);
+  background: color-mix(in srgb, var(--accent, var(--ui-brand)) 7%, var(--ui-surface));
+  }
+  
+  .copy_history .copy_item:hover::before,
+  .copy_history .copy_item:focus-visible::before {
+    top: 9px;
+    bottom: 9px;
+    width: 4px;
+  }
+  
+  .copy_history .copy_item:focus-visible {
+    outline: 2px solid var(--ui-brand);
+    outline-offset: 1px;
+  }
+  
+  .copy_history .copy_item:active {
+    transform: scale(0.992);
+    box-shadow: var(--ui-card-shadow);
+  }
+  
+  .copy_history .copy_item .click_target {
+    cursor: inherit;
+  }
+  
+  /* 操作按钮：悬停时从边缘轻推入场；悬停在按钮本身时染成语义色 */
+  .copy_history .action_item {
+    width: 26px;
+    height: 26px;
+    opacity: 0;
+    transform: scale(0.85);
+    transition: opacity 0.18s ease, transform 0.18s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.15s ease;
+  }
+  
+  .copy_history .stick_item {
+    transform: translateX(-4px) scale(0.85);
+  }
+  
+  .copy_history .delete_item {
+    transform: translateX(4px) scale(0.85);
+  }
+  
+  .copy_history .copy_item:hover .action_item,
+  .copy_history .copy_item:focus-within .action_item {
+    opacity: 0.6;
+    transform: none;
+    pointer-events: auto;
+  }
+  
+  .copy_history .copy_item:hover .action_item:hover,
+  .copy_history .action_item:focus-visible {
+    opacity: 1;
+    background-color: var(--ui-hover);
+  }
+  
+  .copy_history .copy_item:hover .stick_item:hover {
+    background-color: color-mix(in srgb, var(--ui-brand) 16%, transparent);
+  }
+  
+  .copy_history .copy_item:hover .delete_item:hover {
+    background-color: #dcf3e1;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .copy_history .copy_item:hover .delete_item:hover {
+      background-color: #1f4d2b;
+    }
+  }
+  
+  .copy_history .action_item:active {
+    transform: scale(0.88);
+  }
+  
+  /* 已置顶的图标常驻，hover 时不再重复入场 */
+  .copy_history .copy_item.stick .stick_item.topping {
+    transform: none;
 }
-.copy_history .copy_item:hover::before { top: 8px; bottom: 8px; }
-.copy_history .copy_item:has(.stick_item.topping):hover {
-  background: color-mix(in srgb, var(--ui-brand) 11%, var(--ui-surface));
+.copy_history .copy_item.stick .stick_item.topping:hover {
+  transform: scale(1.1);
 }
-.copy_history .copy_item:active { transform: none; box-shadow: var(--ui-card-shadow); }
 .copy_history .click_target { font-size: 13.5px; font-weight: 500; }
 .copy_history .copy_item pre,
 .copy_history .copy_item code { color: var(--ui-text); }
@@ -312,5 +393,9 @@
   .popup_title,
   .footer .donate-wrap,
   .footer .github-wrap { transition: none; }
-  .copy_history .copy_item:hover { transform: none; }
+                                                                .copy_history .copy_item:active,
+                                                                .copy_history .action_item {
+                                                                  transform: none;
+                                                                  transition: opacity 0.01s;
+                                                                }
 }

@@ -390,6 +390,15 @@ class Popup {
       }
 
       const classList = target.classList;
+      const isAction = classList.contains("delete_item") || classList.contains("stick_item");
+      // 点击卡片其余区域（留白、元信息行）同样复制
+      const card = closest(".copy_item");
+      if (card && !isAction && !closest(".source_link")) {
+        const content = card.querySelector(".click_target");
+        const item = content && this._itemAt(content);
+        if (item) this._copyText(item.value);
+        return;
+      }
       if (classList.contains("delete_item")) {
         const item = this._itemAt(target);
         if (item) this._delete(item);
