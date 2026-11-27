@@ -130,7 +130,7 @@ kbd {
   padding: clamp(3rem, 7vw, 6rem) clamp(1.25rem, 5vw, 4rem);
 }
 h2 { font-size: clamp(2rem, 1.2rem + 3vw, 3.5rem); line-height: 1.05; letter-spacing: -0.035em; font-weight: 800; }
-.features h2 { max-width: 14ch; }
+.features h2 { text-wrap: balance; }
 .grid {
   display: grid; gap: 1rem; margin-top: 3rem;
   grid-template-columns: repeat(6, 1fr);
