@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Auto Clipboard — Select to copy. Copy restrictions, gone.</title>
+  <meta name="description" content="Auto Clipboard is a free, open-source browser extension that copies any text you select, bypasses copy restrictions, and keeps a searchable clipboard history.">
+  <meta name="theme-color" content="#51b362">
+  <link rel="icon" href="assets/icon.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="nav">
+    <a class="brand" href="#top" aria-label="Auto Clipboard">
+      <img src="assets/icon.png" width="28" height="28" alt="">
+      <span>Auto Clipboard</span>
+    </a>
+    <nav aria-label="Main navigation">
+      <a href="#features" data-i18n="nav.features">Features</a>
+      <a href="#how" data-i18n="nav.how">How it works</a>
+      <a href="#privacy" data-i18n="nav.privacy">Privacy</a>
+      <a href="https://github.com/wangmeijian/auto_clipboard" rel="noopener" target="_blank">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-lang="en" aria-pressed="true">EN</button>
+      <button type="button" data-lang="zh" aria-pressed="false">中文</button>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <p class="eyebrow" data-i18n="hero.eyebrow">Free · Open source · Chrome &amp; Edge</p>
+        <h1 id="hero-title">
+          <span data-i18n="hero.title1">Select it.</span>
+          <span class="accent" data-i18n="hero.title2">It's copied.</span>
+        </h1>
+        <p class="lead" data-i18n="hero.lead">Highlight any text and it lands in your clipboard. Copy locks on stubborn websites are removed, and everything you copy is kept in a searchable history.</p>
+        <div class="cta">
+          <a class="btn primary" href="https://chrome.google.com/webstore/detail/auto-clipboard/inhnhgihdkbalmmojcbpalkkmhkmcdjm" rel="noopener" target="_blank" data-i18n="cta.chrome">Add to Chrome</a>
+          <a class="btn" href="https://microsoftedge.microsoft.com/addons/detail/%E8%87%AA%E5%8A%A8%E5%89%AA%E5%88%87%E6%9D%BF/oecjpmpbghigjifackhbapkamgaemnkj" rel="noopener" target="_blank" data-i18n="cta.edge">Add to Edge</a>
+        </div>
+        <p class="stat"><strong>5,0000+</strong> <span data-i18n="hero.stat">users since 2022</span></p>
+      </div>
+
+      <div class="hero-visual">
+        <div class="phone">
+          <img class="shot-light" src="assets/popup-light.png" width="400" height="600" alt="Clipboard history panel">
+          <img class="shot-dark" src="assets/popup-dark.png" width="400" height="600" alt="">
+        </div>
+        <div class="float f1"><kbd>Alt</kbd><kbd>Shift</kbd><kbd>V</kbd></div>
+        <div class="float f2" data-i18n="hero.toast">✓ Copied</div>
+      </div>
+    </section>
+
+    <section id="features" class="features" aria-labelledby="features-title">
+      <h2 id="features-title" data-i18n="features.title">Everything copy &amp; paste should have been.</h2>
+      <div class="grid">
+        <article class="card big">
+          <span class="num">01</span>
+          <h3 data-i18n="f1.t">Copy restrictions, gone</h3>
+          <p data-i18n="f1.d">Unlocks text selection and copying on sites that disable it. An optional power-paste mode handles inputs that block pasting.</p>
+        </article>
+        <article class="card">
+          <span class="num">02</span>
+          <h3 data-i18n="f2.t">Select to copy</h3>
+          <p data-i18n="f2.d">Copy on select, with copyright tails stripped. Configure per site, via the right-click menu, or the master switch.</p>
+        </article>
+        <article class="card">
+          <span class="num">03</span>
+          <h3 data-i18n="f3.t">Searchable history</h3>
+          <p data-i18n="f3.d">Search, pin and filter by type. Links and JSON are detected, and each entry can jump back to its source page.</p>
+        </article>
+        <article class="card accent-card">
+          <span class="num">04</span>
+          <h3 data-i18n="f4.t">Quick panel</h3>
+          <p data-i18n="f4.d">Press Alt+Shift+V anywhere and fill an input with one click.</p>
+        </article>
+        <article class="card">
+          <span class="num">05</span>
+          <h3 data-i18n="f5.t">Reveal passwords</h3>
+          <p data-i18n="f5.d">See and copy what's inside a password field.</p>
+        </article>
+        <article class="card">
+          <span class="num">06</span>
+          <h3 data-i18n="f6.t">History control</h3>
+          <p data-i18n="f6.d">Set retention count and expiry, import or export, and bulk-clear in one click.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="how" class="how" aria-labelledby="how-title">
+      <div class="how-copy">
+        <h2 id="how-title" data-i18n="how.title">Make it yours.</h2>
+        <ol>
+          <li><strong data-i18n="how.s1t">Install</strong><span data-i18n="how.s1d">Add it from the Chrome Web Store or Edge Add-ons.</span></li>
+          <li><strong data-i18n="how.s2t">Select</strong><span data-i18n="how.s2d">Highlight text on any page. That's it — it's copied.</span></li>
+          <li><strong data-i18n="how.s3t">Customize</strong><span data-i18n="how.s3d">Tweak the toast position, colors, theme and per-site rules.</span></li>
+        </ol>
+      </div>
+      <div class="phone small">
+        <img class="shot-light" src="assets/settings-light.png" width="400" height="600" loading="lazy" alt="Settings panel">
+        <img class="shot-dark" src="assets/settings-dark.png" width="400" height="600" loading="lazy" alt="">
+      </div>
+    </section>
+
+    <section id="privacy" class="privacy" aria-labelledby="privacy-title">
+      <h2 id="privacy-title" data-i18n="privacy.title">Your clipboard stays yours.</h2>
+      <p data-i18n="privacy.d">All data is stored locally in your browser. Nothing is uploaded, ever. The code is fully open source under the MIT license — read it, fork it, improve it.</p>
+      <a class="btn" href="https://github.com/wangmeijian/auto_clipboard" rel="noopener" target="_blank" data-i18n="privacy.cta">View source on GitHub</a>
+    </section>
+
+    <section class="support" aria-labelledby="support-title">
+      <img src="assets/donate.jpg" width="140" height="140" loading="lazy" alt="Donation QR code">
+      <div>
+        <h2 id="support-title" data-i18n="support.title">Buy me a coffee ☕</h2>
+        <p data-i18n="support.d">Auto Clipboard is free and maintained in spare time. If it saves you a few clicks a day, consider supporting it.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <span>© <span id="year"></span> Auto Clipboard</span>
+    <span data-i18n="footer.note">For research and learning only. Please use responsibly.</span>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
